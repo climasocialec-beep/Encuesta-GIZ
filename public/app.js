@@ -124,8 +124,89 @@ function formatDuration(start, end = new Date().toISOString()) {
 }
 
 function loginScreen() {
-  if (backendMode === 'supabase') return `<div class="login-page"><div class="login-intro"><div class="login-brand"><img class="brand-logo" src="/logo-icon.png" alt="Clima Social" /><div><strong>Clima Social</strong><span>Gestión GIZ</span></div></div><div class="login-message"><p class="eyebrow">Clima Social GIZ</p><h1>El trabajo de campo,<br><em>más claro y ordenado.</em></h1><p>Ingresa con tu usuario para consultar la operación en tiempo real.</p></div><div class="login-footer">Sistema centralizado · Datos protegidos y auditados</div></div><div class="login-panel"><div class="login-panel-inner"><p class="eyebrow">Acceso seguro</p><h2>Iniciar sesión</h2><p class="login-copy">Usa las credenciales asignadas por Clima Social.</p><form id="login-form"><label for="auth-user">Usuario</label><select id="auth-user">${appUsers.map(user => `<option value="${user.username}">${user.name}</option>`).join('')}</select><label for="auth-password">Clave</label><input id="auth-password" type="password" autocomplete="current-password" placeholder="Tu clave" required /><button class="login-submit" type="submit">Ingresar <span>→</span></button></form><p class="demo-hint">Acceso protegido por Supabase.</p></div></div></div>`;
-  return `<div class="login-page"><div class="login-intro"><div class="login-brand"><img class="brand-logo" src="/logo-icon.png" alt="Clima Social" /><div><strong>Clima Social</strong><span>Gestión GIZ</span></div></div><div class="login-message"><p class="eyebrow">Clima Social GIZ</p><h1>El trabajo de campo,<br><em>más claro y ordenado.</em></h1><p>Ingresa con tu usuario para ver únicamente los contactos que tienes asignados y registrar cada llamada.</p><div class="login-stat"><strong>3</strong><span>operadores<br>trabajando en equipo</span></div></div><div class="login-footer">Sistema centralizado · Datos protegidos y auditados</div></div><div class="login-panel"><div class="login-panel-inner"><p class="eyebrow">Acceso al sistema</p><h2>Iniciar sesión</h2><p class="login-copy">Selecciona tu usuario para continuar.</p><form id="login-form"><label for="user-select">Usuario</label><select id="user-select">${appUsers.map(user => `<option value="${user.username}">${user.name} · ${user.role === 'operator' ? 'Operador/a' : 'Supervisor'}</option>`).join('')}</select><label for="demo-pin">Clave</label><input id="demo-pin" type="password" placeholder="En producción será tu clave" value="demo" /><button class="login-submit" type="submit">Ingresar <span>→</span></button></form><p class="demo-hint">Modo de demostración: usa la clave <strong>demo</strong>.</p><div class="login-divider"><span>o</span></div><button class="login-help" type="button">¿Necesitas ayuda para ingresar?</button></div></div></div>`;
+  const brandHeaderHtml = `
+    <div class="login-brand-header">
+      <div style="display: flex; align-items: center; gap: 10px;">
+        <img class="brand-logo-cs" src="/logo-icon.svg" alt="Clima Social" style="height: 44px; width: 44px;" />
+        <div style="text-align: left;">
+          <div style="font-size: 14px; font-weight: 900; color: #ffffff; letter-spacing: -0.02em;">CLIMA <span style="color: #c23b49;">SOCIAL</span></div>
+          <div style="font-size: 8px; font-family: var(--font-mono); color: #8ec5d6; font-weight: 700; letter-spacing: 0.08em;">ESTUDIOS Y ASESORAMIENTO</div>
+        </div>
+      </div>
+      <span class="brand-divider" style="height: 34px; background: rgba(255,255,255,0.25);"></span>
+      <div style="display: flex; align-items: center; gap: 8px;">
+        <div class="brand-giz-badge" style="font-size: 15px; padding: 6px 11px;" title="Deutsche Gesellschaft für Internationale Zusammenarbeit (GIZ)">
+          <span>giz</span>
+        </div>
+        <div style="text-align: left;">
+          <div style="font-size: 10px; font-weight: 700; color: #ffffff;">Cooperación Alemana</div>
+          <div style="font-size: 8px; color: #b3a8bc;">GIZ Ecuador</div>
+        </div>
+      </div>
+    </div>
+  `;
+
+  if (backendMode === 'supabase') return `
+    <div class="login-page">
+      <div class="login-intro">
+        ${brandHeaderHtml}
+        <div class="login-message">
+          <p class="eyebrow">Clima Social &amp; Cooperación Alemana GIZ</p>
+          <h1>El trabajo de campo,<br><em>más claro y ordenado.</em></h1>
+          <p>Plataforma centralizada de gestión y monitoreo en tiempo real para el levantamiento de encuestas de satisfacción.</p>
+        </div>
+        <div class="login-footer">Sistema centralizado · Datos protegidos y auditados</div>
+      </div>
+      <div class="login-panel">
+        <div class="login-panel-inner">
+          <p class="eyebrow">Acceso seguro</p>
+          <h2>Iniciar sesión</h2>
+          <p class="login-copy">Usa las credenciales asignadas por Clima Social.</p>
+          <form id="login-form">
+            <label for="auth-user">Usuario</label>
+            <select id="auth-user">${appUsers.map(user => `<option value="${user.username}">${user.name}</option>`).join('')}</select>
+            <label for="auth-password">Clave</label>
+            <input id="auth-password" type="password" autocomplete="current-password" placeholder="Tu clave" required />
+            <button class="login-submit" type="submit">Ingresar <span>→</span></button>
+          </form>
+          <p class="demo-hint">Acceso protegido por Supabase.</p>
+        </div>
+      </div>
+    </div>`;
+
+  return `
+    <div class="login-page">
+      <div class="login-intro">
+        ${brandHeaderHtml}
+        <div class="login-message">
+          <p class="eyebrow">Clima Social &amp; Cooperación Alemana GIZ</p>
+          <h1>El trabajo de campo,<br><em>más claro y ordenado.</em></h1>
+          <p>Ingresa con tu usuario para gestionar tus contactos asignados, enviar plantillas de WhatsApp y registrar cada resultado en vivo.</p>
+          <div class="login-stat">
+            <strong>3</strong>
+            <span>operadoras activas<br>trabajando en equipo</span>
+          </div>
+        </div>
+        <div class="login-footer">Sistema centralizado · Datos protegidos y auditados</div>
+      </div>
+      <div class="login-panel">
+        <div class="login-panel-inner">
+          <p class="eyebrow">Acceso al sistema</p>
+          <h2>Iniciar sesión</h2>
+          <p class="login-copy">Selecciona tu usuario para continuar.</p>
+          <form id="login-form">
+            <label for="user-select">Usuario</label>
+            <select id="user-select">${appUsers.map(user => `<option value="${user.username}">${user.name} · ${user.role === 'operator' ? 'Operadora' : 'Supervisor'}</option>`).join('')}</select>
+            <label for="demo-pin">Clave</label>
+            <input id="demo-pin" type="password" placeholder="En producción será tu clave" value="demo" />
+            <button class="login-submit" type="submit">Ingresar al sistema <span>→</span></button>
+          </form>
+          <p class="demo-hint">Modo de demostración: usa la clave <strong>demo</strong>.</p>
+          <div class="login-divider"><span>o</span></div>
+          <button class="login-help" type="button">¿Necesitas asistencia técnica?</button>
+        </div>
+      </div>
+    </div>`;
 }
 
 function renderLogin() {
@@ -257,7 +338,7 @@ function updateShell() {
   login.hidden = true;
   shell.classList.toggle('operator-shell', currentUser.role === 'operator');
   document.getElementById('sidebar').innerHTML = currentUser.role === 'operator' ? operatorSidebar() : supervisorSidebar();
-  document.querySelector('.crumb').innerHTML = `<span>Campaña activa</span><b>/</b><strong>Clima Social GIZ</strong>`;
+  document.querySelector('.crumb').innerHTML = `<span class="crumb-root">Campañas</span><b class="crumb-sep">/</b><strong class="crumb-active">Clima Social · GIZ</strong>`;
   document.querySelector('.top-avatar').textContent = currentUser.initials;
   document.querySelector('.top-user-name').textContent = currentUser.name;
   document.querySelector('.sync-status').innerHTML = backendMode === 'supabase' ? '<span class="live-dot"></span> Conectado a Supabase' : '<span class="live-dot"></span> Modo demo local';
@@ -265,12 +346,132 @@ function updateShell() {
 
 function operatorSidebar() {
   const assigned = visibleContacts();
-  return `<div class="brand"><img class="brand-logo" src="/logo-icon.png" alt="Clima Social" /><div><strong>Clima Social</strong><span>Clima Social GIZ</span></div></div><div class="workspace-label">MI ESPACIO DE TRABAJO</div><nav class="main-nav" aria-label="Navegación principal"><button class="nav-item ${activeView === 'operator' ? 'active' : ''}" data-view="operator"><span class="nav-icon">◒</span>Mis contactos <span class="nav-badge">${assigned.length}</span></button><button class="nav-item ${activeView === 'history' ? 'active' : ''}" data-view="history"><span class="nav-icon">↺</span>Mi historial</button></nav><div class="sidebar-campaign"><div class="campaign-label"><span class="live-dot"></span> CAMPAÑA ACTIVA</div><strong>Clima Social GIZ</strong><span>Base asignada</span><div class="mini-progress"><span style="width:${percentage(managedCount(assigned), assigned.length)}"></span></div><div class="campaign-meta"><span>${percentage(managedCount(assigned), assigned.length)} avance</span><span>${assigned.length} contactos</span></div></div><div class="sidebar-footer"><div class="user-card"><div class="avatar avatar-violet">${currentUser.initials}</div><div class="user-details"><strong>${currentUser.name}</strong><span>Operador/a</span></div><span class="user-menu-symbol">•••</span></div><div class="secure-note"><span>⌁</span> Datos protegidos y auditados</div></div>`;
+  return `
+    <div class="brand">
+      <div class="brand-logos-wrap">
+        <img class="brand-logo-cs" src="/logo-icon.svg" alt="Clima Social" />
+        <span class="brand-divider"></span>
+        <div class="brand-giz-badge" title="Deutsche Gesellschaft für Internationale Zusammenarbeit (GIZ)">
+          <span>giz</span>
+        </div>
+      </div>
+      <div class="brand-info">
+        <strong>Clima Social</strong>
+        <span>Mi espacio · Operación GIZ</span>
+      </div>
+    </div>
+    <div class="workspace-label">MI ESPACIO DE TRABAJO</div>
+    <nav class="main-nav" aria-label="Navegación principal">
+      <button class="nav-item ${activeView === 'operator' ? 'active' : ''}" data-view="operator">
+        <span class="nav-icon">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+        </span>
+        <span>Mis contactos</span>
+        <span class="nav-badge">${assigned.length}</span>
+      </button>
+      <button class="nav-item ${activeView === 'history' ? 'active' : ''}" data-view="history">
+        <span class="nav-icon">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/><path d="M12 7v5l4 2"/></svg>
+        </span>
+        <span>Mi historial</span>
+      </button>
+    </nav>
+    <div class="sidebar-campaign">
+      <div class="campaign-label"><span class="live-dot"></span> CAMPAÑA ACTIVA</div>
+      <strong>Clima Social · GIZ</strong>
+      <span>Base asignada</span>
+      <div class="mini-progress"><span style="width:${percentage(managedCount(assigned), assigned.length)}"></span></div>
+      <div class="campaign-meta">
+        <span>${percentage(managedCount(assigned), assigned.length)} avance</span>
+        <span>${assigned.length} contactos</span>
+      </div>
+    </div>
+    <div class="sidebar-footer">
+      <div class="user-card">
+        <div class="avatar avatar-emerald">${currentUser.initials}</div>
+        <div class="user-details">
+          <strong>${currentUser.name}</strong>
+          <span>Operador/a</span>
+        </div>
+        <span class="user-menu-symbol">•••</span>
+      </div>
+      <div class="secure-note"><span>🛡️</span> Datos protegidos y auditados</div>
+    </div>
+  `;
 }
 
 function supervisorSidebar() {
   const progress = percentage(managedCount(), state.contacts.length);
-  return `<div class="brand"><img class="brand-logo" src="/logo-icon.png" alt="Clima Social" /><div><strong>Clima Social</strong><span>Gestión GIZ</span></div></div><div class="workspace-label">SUPERVISIÓN</div><nav class="main-nav" aria-label="Navegación principal"><button class="nav-item ${activeView === 'dashboard' ? 'active' : ''}" data-view="dashboard"><span class="nav-icon">◉</span>Resumen <span class="nav-arrow">›</span></button><button class="nav-item ${activeView === 'contacts' ? 'active' : ''}" data-view="contacts"><span class="nav-icon">▦</span>Todos los contactos</button><button class="nav-item ${activeView === 'shifts' ? 'active' : ''}" data-view="shifts"><span class="nav-icon">◷</span>Jornadas</button><button class="nav-item ${activeView === 'history' ? 'active' : ''}" data-view="history"><span class="nav-icon">↺</span>Historial</button><button class="nav-item ${activeView === 'import' ? 'active' : ''}" id="import-nav" data-view="import" onclick="event.stopPropagation(); openImportView()"><span class="nav-icon">↥</span>Importar base</button></nav><div class="sidebar-campaign"><div class="campaign-label"><span class="live-dot"></span> CAMPAÑA ACTIVA</div><strong>Clima Social GIZ</strong><span>Base de campo</span><div class="mini-progress"><span style="width:${progress}"></span></div><div class="campaign-meta"><span>${progress} avance</span><span>${state.contacts.length} registros</span></div></div><div class="sidebar-footer"><div class="user-card"><div class="avatar avatar-violet">${currentUser.initials}</div><div class="user-details"><strong>${currentUser.name}</strong><span>Supervisor</span></div><span class="user-menu-symbol">•••</span></div><div class="secure-note"><span>⌁</span> Datos protegidos y auditados</div></div>`;
+  return `
+    <div class="brand">
+      <div class="brand-logos-wrap">
+        <img class="brand-logo-cs" src="/logo-icon.svg" alt="Clima Social" />
+        <span class="brand-divider"></span>
+        <div class="brand-giz-badge" title="Deutsche Gesellschaft für Internationale Zusammenarbeit (GIZ)">
+          <span>giz</span>
+        </div>
+      </div>
+      <div class="brand-info">
+        <strong>Clima Social</strong>
+        <span>Supervisión · GIZ</span>
+      </div>
+    </div>
+    <div class="workspace-label">SUPERVISIÓN</div>
+    <nav class="main-nav" aria-label="Navegación principal">
+      <button class="nav-item ${activeView === 'dashboard' ? 'active' : ''}" data-view="dashboard">
+        <span class="nav-icon">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="7" height="9" x="3" y="3" rx="1"/><rect width="7" height="5" x="14" y="3" rx="1"/><rect width="7" height="9" x="14" y="12" rx="1"/><rect width="7" height="5" x="3" y="16" rx="1"/></svg>
+        </span>
+        <span>Resumen</span>
+        <span class="nav-arrow">›</span>
+      </button>
+      <button class="nav-item ${activeView === 'contacts' ? 'active' : ''}" data-view="contacts">
+        <span class="nav-icon">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+        </span>
+        <span>Todos los contactos</span>
+      </button>
+      <button class="nav-item ${activeView === 'shifts' ? 'active' : ''}" data-view="shifts">
+        <span class="nav-icon">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+        </span>
+        <span>Jornadas</span>
+      </button>
+      <button class="nav-item ${activeView === 'history' ? 'active' : ''}" data-view="history">
+        <span class="nav-icon">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/><path d="M12 7v5l4 2"/></svg>
+        </span>
+        <span>Historial</span>
+      </button>
+      <button class="nav-item ${activeView === 'import' ? 'active' : ''}" id="import-nav" data-view="import" onclick="event.stopPropagation(); openImportView()">
+        <span class="nav-icon">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" x2="12" y1="3" y2="15"/></svg>
+        </span>
+        <span>Importar base</span>
+      </button>
+    </nav>
+    <div class="sidebar-campaign">
+      <div class="campaign-label"><span class="live-dot"></span> CAMPAÑA ACTIVA</div>
+      <strong>Clima Social · GIZ</strong>
+      <span>Base de campo</span>
+      <div class="mini-progress"><span style="width:${progress}"></span></div>
+      <div class="campaign-meta">
+        <span>${progress} avance</span>
+        <span>${state.contacts.length} registros</span>
+      </div>
+    </div>
+    <div class="sidebar-footer">
+      <div class="user-card">
+        <div class="avatar avatar-emerald">${currentUser.initials}</div>
+        <div class="user-details">
+          <strong>${currentUser.name}</strong>
+          <span>Supervisor</span>
+        </div>
+        <span class="user-menu-symbol">•••</span>
+      </div>
+      <div class="secure-note"><span>🛡️</span> Datos protegidos y auditados</div>
+    </div>
+  `;
 }
 
 function loadState() {
