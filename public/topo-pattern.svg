@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 800" width="100%" height="100%" fill="none" opacity="0.18">
+  <!-- Topographic Terrain Curves (Field Surveys & Mapping Theme) -->
+  <path d="M-100,200 C150,100 350,300 600,150 C850,0 1050,220 1200,180" stroke="#F0A200" stroke-width="1.5" fill="none" />
+  <path d="M-100,280 C180,180 380,380 640,240 C900,100 1020,300 1200,260" stroke="#C23B49" stroke-width="1.5" fill="none" />
+  <path d="M-100,360 C200,260 420,450 680,320 C940,190 1080,380 1200,350" stroke="#4F7E90" stroke-width="1.5" fill="none" />
+  <path d="M-100,450 C230,350 450,540 720,410 C990,280 1100,470 1200,440" stroke="#E2001A" stroke-width="1.5" fill="none" />
+  <path d="M-100,540 C260,440 490,620 760,500 C1030,380 1140,560 1200,530" stroke="#8EC5D6" stroke-width="1.5" fill="none" />
+  <path d="M-100,630 C290,530 520,710 800,590 C1070,470 1160,650 1200,620" stroke="#F0A200" stroke-width="1" stroke-dasharray="6 6" fill="none" />
+  
+  <!-- Subtle Grid Intersection Dots -->
+  <g fill="#FFFFFF" opacity="0.3">
+    <circle cx="150" cy="150" r="2" />
+    <circle cx="350" cy="150" r="2" />
+    <circle cx="550" cy="150" r="2" />
+    <circle cx="750" cy="150" r="2" />
+    <circle cx="950" cy="150" r="2" />
+
+    <circle cx="150" cy="350" r="2" />
+    <circle cx="350" cy="350" r="2" />
+    <circle cx="550" cy="350" r="2" />
+    <circle cx="750" cy="350" r="2" />
+    <circle cx="950" cy="350" r="2" />
+
+    <circle cx="150" cy="550" r="2" />
+    <circle cx="350" cy="550" r="2" />
+    <circle cx="550" cy="550" r="2" />
+    <circle cx="750" cy="550" r="2" />
+    <circle cx="950" cy="550" r="2" />
+  </g>
+</svg>
