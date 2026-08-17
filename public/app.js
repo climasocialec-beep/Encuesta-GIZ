@@ -861,18 +861,212 @@ function renderSelectedContact(contact) {
   `;
 }
 
+let operatorDateFilter = '';
+
+function isActionableContact(contact) {
+  if (!contact) return false;
+  return contact.status === 'pending' || contact.status === 'no-answer';
+}
+
+function extractDateStr(dateVal, rawDateVal) {
+  if (rawDateVal) {
+    try {
+      const d = new Date(rawDateVal);
+      if (!isNaN(d.getTime())) {
+        return new Intl.DateTimeFormat('es-EC', { timeZone: 'America/Guayaquil', day: '2-digit', month: '2-digit', year: 'numeric' }).format(d);
+      }
+    } catch {}
+  }
+  if (!dateVal) return '';
+  const s = String(dateVal).trim();
+  if (s.toLowerCase().startsWith('sin') || s.toLowerCase() === 'no' || s.toLowerCase() === '—') {
+    return '';
+  }
+  if (s.toLowerCase().startsWith('hoy')) {
+    return new Intl.DateTimeFormat('es-EC', { timeZone: 'America/Guayaquil', day: '2-digit', month: '2-digit', year: 'numeric' }).format(new Date());
+  }
+  if (s.toLowerCase().startsWith('ayer')) {
+    return new Intl.DateTimeFormat('es-EC', { timeZone: 'America/Guayaquil', day: '2-digit', month: '2-digit', year: 'numeric' }).format(new Date(Date.now() - 86400000));
+  }
+  const match = s.match(/\b\d{1,2}\/\d{1,2}\/\d{4}\b/);
+  if (match) return match[0];
+  return '';
+}
+
+function getContactLastDate(contact) {
+  if (!contact || (contact.attempts || 0) === 0) return '';
+  if (contact.lastAttemptAt) {
+    const d = extractDateStr('', contact.lastAttemptAt);
+    if (d && d !== 'Sin') return d;
+  }
+  if (contact.last) {
+    const d = extractDateStr(contact.last);
+    if (d && d !== 'Sin') return d;
+  }
+  return '';
+}
+
+function getOperatorActionableDates(contacts = []) {
+  const dates = new Set();
+  contacts.forEach(c => {
+    if (isActionableContact(c) && (c.attempts || 0) > 0) {
+      const d = getContactLastDate(c);
+      if (d && d !== 'Sin' && !d.toLowerCase().includes('sin')) {
+        dates.add(d);
+      }
+    }
+  });
+  return [...dates].filter(Boolean).sort().reverse();
+}
+
+function isContactInOperatorDate(contact, dateFilter) {
+  if (!contact) return false;
+  if (!dateFilter || dateFilter === 'all') return true;
+
+  if (dateFilter === 'uncalled') {
+    return (contact.attempts || 0) === 0 && contact.status === 'pending';
+  }
+
+  if ((contact.attempts || 0) === 0) return false;
+
+  const today = dayKey(new Date());
+  const yesterday = dayKey(new Date(Date.now() - 86400000));
+  const lastDate = getContactLastDate(contact);
+
+  if (dateFilter === 'today') {
+    if (contact.lastAttemptAt && dayKey(contact.lastAttemptAt) === today) return true;
+    const lastText = String(contact.last || '').toLowerCase();
+    if (lastText.startsWith('hoy')) return true;
+    return lastDate === today;
+  }
+
+  if (dateFilter === 'yesterday') {
+    if (contact.lastAttemptAt && dayKey(contact.lastAttemptAt) === yesterday) return true;
+    const lastText = String(contact.last || '').toLowerCase();
+    if (lastText.startsWith('ayer')) return true;
+    return lastDate === yesterday;
+  }
+
+  if (dateFilter === 'previous') {
+    return isPreviousDay(contact) && (contact.attempts || 0) > 0;
+  }
+
+  if (lastDate && lastDate === dateFilter) return true;
+
+  if (contact.lastAttemptAt) {
+    const d = extractDateStr('', contact.lastAttemptAt);
+    if (d === dateFilter) return true;
+  }
+
+  return false;
+}
+
+window.setOperatorDateFilter = function(val) {
+  operatorDateFilter = val;
+  const allAssigned = visibleContacts();
+  const activeActionable = allAssigned.filter(isActionableContact);
+  const filtered = val ? activeActionable.filter(item => isContactInOperatorDate(item, val)) : activeActionable;
+  const action = firstActionable(filtered) || filtered[0];
+  selectedContactId = action ? action.id : null;
+  render();
+};
+
+window.clearOperatorDateFilter = function() {
+  window.setOperatorDateFilter('');
+};
+
 function renderOperatorBoard() {
   const activeShift = getActiveShift();
-  if (!activeShift) return `${pageHeading('Jornada de trabajo', `Hola, ${escapeHtml(currentUser.name.split(' ')[0])}`, 'Antes de comenzar tus llamadas debes registrar el inicio de tu jornada.', '')}<article class="card shift-start-card"><div class="shift-icon">◷</div><h2>¿Lista para comenzar?</h2><p>Al iniciar la jornada registraremos la fecha y hora. Cuando termines, recuerda finalizarla para calcular tu tiempo de trabajo.</p><button class="button-primary" id="start-shift">Iniciar jornada <span>→</span></button></article>`;
-  const assigned = visibleContacts();
+  if (!activeShift) return `${pageHeading('Jornada de trabajo', `Hola, ${escapeHtml(currentUser.name.split(' ')[0])}`, 'Antes de comenzar tus llamadas debes registrar el inicio de tu jornada.', '')}<article class="card shift-start-card"><div class="shift-icon">◷</div><h2>¿Listo/a para comenzar?</h2><p>Al iniciar la jornada registraremos la fecha y hora. Cuando termines, recuerda finalizarla para calcular tu tiempo de trabajo.</p><button class="button-primary" id="start-shift">Iniciar jornada <span>→</span></button></article>`;
+
+  const allAssigned = visibleContacts();
+  const activeQueue = allAssigned.filter(isActionableContact);
+  const operatorDates = getOperatorActionableDates(activeQueue);
+
+  const filteredQueue = operatorDateFilter
+    ? activeQueue.filter(item => isContactInOperatorDate(item, operatorDateFilter))
+    : activeQueue;
+
   const selected = getContact(selectedContactId);
-  const contact = selected && selected.status !== 'effective' && selected.status !== 'wrong' ? selected : firstActionable(assigned);
-  if (!contact) return `${pageHeading('Jornada de hoy', 'Sin contactos asignados', 'El supervisor todavía no ha asignado registros para trabajar.', '<button class="button-secondary" id="end-shift">Finalizar jornada</button>')}`;
-  const normal = assigned.filter(item => item.status === 'pending' && item.attempts === 0);
-  const pending = assigned.filter(item => item.status === 'pending' && item.attempts > 0);
-  const noAnswer = assigned.filter(item => item.status === 'no-answer');
-  const managed = managedCount(assigned);
-  return `${pageHeading('Jornada de hoy', `Hola, ${escapeHtml(currentUser.name.split(' ')[0])}`, `${assigned.length} contactos asignados · ${managed} ya gestionados.`, '<button class="button-secondary" id="end-shift">Finalizar jornada</button>')}<div class="shift-live-note"><span class="live-dot"></span> Jornada iniciada ${formatDateTime(activeShift.startedAt)} · Tiempo transcurrido: ${formatDuration(activeShift.startedAt)}</div><div class="operator-summary"><div><span>Por llamar</span><strong>${normal.length}</strong></div><div><span>Pendientes</span><strong>${pending.length}</strong></div><div><span>No contestan</span><strong>${noAnswer.length}</strong></div></div><section class="operator-workspace"><div class="selected-workspace">${renderSelectedContact(contact)}</div><aside class="contact-board-side">${renderContactColumn('Por llamar', 'Contactos nuevos', normal, 'column-normal', contact)}${renderContactColumn('Pendientes', 'Por reintentar / Reprogramados', pending, 'column-pending', contact)}${renderContactColumn('No contestan', 'Volver a llamar', noAnswer, 'column-no-answer', contact)}</aside></section>`;
+  const contact = (selected && filteredQueue.some(item => item.id === selected.id))
+    ? selected
+    : (firstActionable(filteredQueue) || filteredQueue[0] || null);
+
+  if (contact && selectedContactId !== contact.id) {
+    selectedContactId = contact.id;
+  } else if (!contact && filteredQueue.length === 0) {
+    selectedContactId = null;
+  }
+
+  const normal = filteredQueue.filter(item => item.status === 'pending' && (item.attempts || 0) === 0);
+  const pending = filteredQueue.filter(item => item.status === 'pending' && (item.attempts || 0) > 0);
+  const noAnswer = filteredQueue.filter(item => item.status === 'no-answer');
+
+  const uncalledCount = activeQueue.filter(c => (c.attempts || 0) === 0).length;
+  const todayPendingCount = activeQueue.filter(c => isContactInOperatorDate(c, 'today')).length;
+  const yesterdayPendingCount = activeQueue.filter(c => isContactInOperatorDate(c, 'yesterday')).length;
+  const previousDayCount = activeQueue.filter(item => (item.attempts || 0) > 0 && isPreviousDay(item)).length;
+
+  const specificDates = operatorDates.filter(d => {
+    if (!d || d === dayKey(new Date()) || d === 'Sin') return false;
+    return activeQueue.some(c => isContactInOperatorDate(c, d));
+  });
+
+  return `
+    ${pageHeading('Jornada de hoy', `Hola, ${escapeHtml(currentUser.name.split(' ')[0])}`, `${activeQueue.length} contactos pendientes · ${uncalledCount} nuevos por llamar · ${previousDayCount} reintentos anteriores.`, '<button class="button-secondary" id="end-shift">Finalizar jornada</button>')}
+    <div class="shift-live-note"><span class="live-dot"></span> Jornada iniciada ${formatDateTime(activeShift.startedAt)} · Tiempo transcurrido: ${formatDuration(activeShift.startedAt)}</div>
+    
+    <div class="operator-summary">
+      <div><span>Por llamar</span><strong>${normal.length}</strong></div>
+      <div><span>Pendientes</span><strong>${pending.length}</strong></div>
+      <div><span>No contestan</span><strong>${noAnswer.length}</strong></div>
+      <div><span>Total en filtro</span><strong>${filteredQueue.length}</strong></div>
+    </div>
+
+    <div class="operator-filter-bar" style="display:flex;justify-content:space-between;align-items:center;margin:14px 0 16px 0;background:var(--bg-canvas);padding:10px 14px;border-radius:10px;border:1px solid var(--border-subtle);flex-wrap:wrap;gap:10px;">
+      <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
+        <span style="font-size:16px;">📅</span>
+        <strong style="font-size:13px;color:var(--text-main);">Filtrar pendientes por fecha:</strong>
+        <select id="operator-date-filter" class="filter-select" style="padding:6px 12px;font-size:12px;border-radius:8px;min-width:240px;" onchange="setOperatorDateFilter(this.value)">
+          <option value="" ${!operatorDateFilter ? 'selected' : ''}>📂 Todos los pendientes (${activeQueue.length} contactos)</option>
+          ${uncalledCount > 0 ? `<option value="uncalled" ${operatorDateFilter === 'uncalled' ? 'selected' : ''}>🆕 Nuevos por llamar (${uncalledCount})</option>` : ''}
+          ${todayPendingCount > 0 ? `<option value="today" ${operatorDateFilter === 'today' ? 'selected' : ''}>📅 Gestiones de Hoy (${todayPendingCount})</option>` : ''}
+          ${yesterdayPendingCount > 0 ? `<option value="yesterday" ${operatorDateFilter === 'yesterday' ? 'selected' : ''}>📅 Gestiones de Ayer (${yesterdayPendingCount})</option>` : ''}
+          ${previousDayCount > 0 ? `<option value="previous" ${operatorDateFilter === 'previous' ? 'selected' : ''}>⏳ Reintentos de días anteriores (${previousDayCount})</option>` : ''}
+          ${specificDates.map(d => {
+            const countOnDate = activeQueue.filter(c => isContactInOperatorDate(c, d)).length;
+            return `<option value="${escapeHtml(d)}" ${operatorDateFilter === d ? 'selected' : ''}>📆 Fecha: ${escapeHtml(d)} (${countOnDate} pendientes)</option>`;
+          }).join('')}
+        </select>
+      </div>
+      ${operatorDateFilter ? `
+        <div style="display:flex;align-items:center;gap:8px;">
+          <span style="font-size:12px;color:var(--cs-plum);font-weight:700;">Mostrando ${filteredQueue.length} de ${activeQueue.length} pendientes</span>
+          <button class="button-secondary" onclick="clearOperatorDateFilter()" style="padding:4px 10px;font-size:11px;" type="button">✕ Ver todos</button>
+        </div>
+      ` : ''}
+    </div>
+
+    <section class="operator-workspace">
+      <div class="selected-workspace">
+        ${contact ? renderSelectedContact(contact) : `
+          <article class="card selected-contact-card">
+            <div class="empty-state" style="padding:40px 20px;text-align:center;">
+              <div style="font-size:32px;margin-bottom:12px;">✓</div>
+              <h3>No hay contactos pendientes en este filtro</h3>
+              <p style="color:var(--text-muted);margin:8px 0 16px 0;">Todos los contactos de esta fecha ya fueron completados o no tienen llamadas pendientes.</p>
+              <button class="button-primary" onclick="clearOperatorDateFilter()" type="button">Ver todos los pendientes ➔</button>
+            </div>
+          </article>
+        `}
+      </div>
+      <aside class="contact-board-side">
+        ${renderContactColumn('Por llamar', 'Contactos nuevos', normal, 'column-normal', contact)}
+        ${renderContactColumn('Pendientes', 'Por reintentar / Reprogramados', pending, 'column-pending', contact)}
+        ${renderContactColumn('No contestan', 'Volver a llamar', noAnswer, 'column-no-answer', contact)}
+      </aside>
+    </section>
+  `;
 }
 
 let reassignFormState = { fromOp: 'TP', toOp: 'AY', base: 'all', scope: 'pending' };
@@ -1282,6 +1476,8 @@ async function exportHistoryXlsx() {
   }
 }
 
+let historySearchQuery = '';
+
 function groupHistory(history) {
   const groups = new Map();
   history.forEach(item => {
@@ -1292,16 +1488,26 @@ function groupHistory(history) {
   return [...groups.values()].map(items => {
     const ordered = items.slice().sort((a, b) => Number(a.attempt || 0) - Number(b.attempt || 0));
     const last = ordered[ordered.length - 1];
+    const contactObj = getContact(last.id || last.contactId);
     return {
-      contact: last.contact,
+      contact: contactObj?.name || last.contact,
       id: last.id,
       contactId: last.id,
+      phone: contactObj?.phone || contactObj?.phoneRaw || last.phone || '',
       operator: last.operator,
       attempts: ordered.length,
       result: last.result,
-      raffleEmail: ordered.find(item => item.raffleEmail)?.raffleEmail || '',
       details: ordered.map(item => `#${item.attempt || '-'} ${outcomeLabels[item.result] || item.result} · ${item.date || 'Sin fecha'}${item.notes ? ` · ${item.notes}` : ''}`).join('  |  ')
     };
+  });
+}
+
+function filterHistoryRealtime(query) {
+  historySearchQuery = query;
+  const q = query.trim().toLowerCase();
+  document.querySelectorAll('[data-history-row]').forEach(row => {
+    const text = row.dataset.historyRow || '';
+    row.hidden = q ? !text.includes(q) : false;
   });
 }
 
@@ -1309,9 +1515,60 @@ function renderHistory() {
   const allHistory = state.history;
   const history = currentUser.role === 'operator' ? allHistory.filter(item => item.operator === currentUser.name) : allHistory;
   const grouped = groupHistory(history);
-  const exportAction = currentUser.role === 'supervisor' ? '<button class="button-secondary" id="export-history">↧ Exportar Excel</button>' : '';
+  const exportAction = currentUser.role === 'supervisor' ? '<button class="button-secondary" onclick="exportHistoryXlsx()">⬇ Exportar Excel</button>' : '';
   const showActions = currentUser.role === 'supervisor';
-  return `${pageHeading('Trazabilidad', 'Historial de gestiones', 'Cada contacto aparece una sola vez con todos sus intentos.', exportAction)}<article class="card history-card"><div class="page-card-header"><div><h2 class="card-title">Contactos gestionados</h2><p class="card-subtitle">${grouped.length} contactos con historial</p></div><div class="filters"><input class="search-input" id="history-search" placeholder="Buscar contacto..." /></div></div><div class="table-wrap"><table class="data-table history-data-table"><thead><tr><th>Contacto</th><th>Historial de gestiones</th><th>Último resultado</th><th>Operadora</th><th>Intentos</th><th>Correo sorteo</th>${showActions ? '<th>Acciones</th>' : ''}</tr></thead><tbody>${grouped.length ? grouped.map(item => `<tr data-history-row="${escapeHtml(`${item.contact} ${item.id} ${item.details}`.toLowerCase())}"><td><div class="operator-cell"><div class="small-avatar">${initials(item.contact)}</div><div><strong>${escapeHtml(item.contact)}</strong><span>${escapeHtml(item.id)}</span></div></div></td><td><div class="history-detail">${escapeHtml(item.details)}</div></td><td><span class="table-status ${item.result}">${outcomeLabels[item.result] || item.result}</span></td><td>${escapeHtml(item.operator)}</td><td>${item.attempts}</td><td>${escapeHtml(item.raffleEmail || '—')}</td>${showActions ? `<td><button class="delete-history" data-delete-history="${escapeHtml(item.id)}" type="button">Borrar gestiones</button></td>` : ''}</tr>`).join('') : '<tr><td colspan="${showActions ? 7 : 6}"><div class="empty-state">No hay gestiones registradas.</div></td></tr>'}</tbody></table></div></article>`;
+
+  return `
+    ${pageHeading('Trazabilidad', 'Historial de gestiones', 'Cada contacto aparece con su teléfono, identificador y todo su historial de llamadas.', exportAction)}
+    <article class="card history-card">
+      <div class="page-card-header">
+        <div>
+          <h2 class="card-title">Contactos gestionados</h2>
+          <p class="card-subtitle">${grouped.length} contactos con historial registrado</p>
+        </div>
+        <div class="filters">
+          <input class="search-input" id="history-search" placeholder="Buscar por nombre, teléfono o ID..." value="${escapeHtml(historySearchQuery)}" oninput="filterHistoryRealtime(this.value)" />
+        </div>
+      </div>
+      <div class="table-wrap">
+        <table class="data-table history-data-table">
+          <thead>
+            <tr>
+              <th>Contacto y Teléfono</th>
+              <th>Historial de gestiones e intentos</th>
+              <th>Último resultado</th>
+              <th>Operador/a</th>
+              <th>Intentos</th>
+              ${showActions ? '<th>Acciones</th>' : ''}
+            </tr>
+          </thead>
+          <tbody>
+            ${grouped.length ? grouped.map(item => `
+              <tr data-history-row="${escapeHtml(`${item.contact} ${item.id} ${item.phone} ${item.operator} ${item.details}`.toLowerCase())}">
+                <td>
+                  <div class="operator-cell">
+                    <div class="small-avatar">${initials(item.contact)}</div>
+                    <div>
+                      <strong>${escapeHtml(item.contact)}</strong>
+                      <div style="display:flex;gap:6px;align-items:center;margin-top:2px;flex-wrap:wrap;">
+                        <span class="mono" style="font-size:11px;padding:1px 4px;">#${escapeHtml(item.id)}</span>
+                        ${item.phone ? `<span style="font-size:12px;font-weight:700;color:#10b981;letter-spacing:0.3px;">📞 ${escapeHtml(item.phone)}</span>` : ''}
+                      </div>
+                    </div>
+                  </div>
+                </td>
+                <td><div class="history-detail">${escapeHtml(item.details)}</div></td>
+                <td><span class="table-status ${item.result}">${outcomeLabels[item.result] || item.result}</span></td>
+                <td>${escapeHtml(item.operator)}</td>
+                <td><strong>${item.attempts}</strong></td>
+                ${showActions ? `<td><button class="delete-history" data-delete-history="${escapeHtml(item.id)}" type="button">Borrar gestiones</button></td>` : ''}
+              </tr>
+            `).join('') : `<tr><td colspan="${showActions ? 6 : 5}"><div class="empty-state">No hay gestiones registradas.</div></td></tr>`}
+          </tbody>
+        </table>
+      </div>
+    </article>
+  `;
 }
 
 function renderImport() { return `${pageHeading('Carga de información', 'Importar base de contactos', 'Sube un archivo Excel o CSV y asígnale un nombre para distinguirla de las demás.', '<button class="button-secondary" id="download-template">↓ Descargar plantilla</button>')}<section class="import-layout"><article class="card import-card"><div class="import-base-name"><label for="base-name">Nombre de la base</label><input id="base-name" placeholder="Ej. GADPP · Lote 1 · agosto 2026" /></div><div class="dropzone" id="dropzone"><div class="drop-icon">↥</div><h2>Arrastra tu archivo aquí</h2><p>Aceptamos archivos Excel y CSV. Se detecta automáticamente el formato de FACILITADOR o de hojas por operadora (PAMELA, BRENDA, etc.).</p><label class="button-primary" for="file-input">Seleccionar archivo</label><input class="file-input" type="file" id="file-input" accept=".xlsx,.xls,.csv,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,text/csv" /><small class="heading-copy">Máximo recomendado: 5,000 registros</small></div></article><article class="card import-tips"><h2>Antes de importar</h2><div class="tip"><div class="tip-num">1</div><div><strong>Identifica la base</strong><span>Usa un nombre como “GADPP · Lote 1” para encontrarla después.</span></div></div><div class="tip"><div class="tip-num">2</div><div><strong>Hojas por operadora</strong><span>Si el archivo tiene hojas PAMELA o BRENDA, se asignan automáticamente.</span></div></div><div class="tip"><div class="tip-num">3</div><div><strong>Revisa el resultado</strong><span>El sistema normalizará celulares y rellenará los campos disponibles.</span></div></div></article></section>${renderBaseManagement()}<article class="card quick-assign-card"><div class="page-card-header"><div><h2 class="card-title">Asignación rápida</h2><p class="card-subtitle">Agrupa contactos sin operadora a una persona</p></div></div><div class="quick-assign-body">${appUsers.filter(user => user.role === 'operator').map(user => { const pendientes = state.contacts.filter(contact => !contact.operator).length; return `<button class="assign-all-btn" data-assign-all="${user.initials}" type="button" ${pendientes && backendMode === 'supabase' ? '' : 'disabled'}>Asignar todo a ${user.name} (${pendientes})</button>`; }).join('')}</div></article>`; }
