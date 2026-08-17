@@ -218,8 +218,9 @@ end $$;
 -- ==============================================================================
 -- 16. CREACIÓN DE USUARIOS INICIALES (AUTH + PROFILES)
 -- ==============================================================================
--- Se crean los 4 usuarios iniciales con contraseña predeterminada: 'ClimaSocial2026!'
--- Cada operadora y supervisor podrá iniciar sesión inmediatamente.
+-- Contraseñas fáciles configuradas:
+--   * Supervisor: admin2026
+--   * Operadores: giz2026
 
 do $$
 declare
@@ -227,39 +228,40 @@ declare
   tat_id uuid := gen_random_uuid();
   ale_id uuid := gen_random_uuid();
   val_id uuid := gen_random_uuid();
-  hashed_pwd text := crypt('ClimaSocial2026!', gen_salt('bf'));
+  hashed_sup_pwd text := crypt('admin2026', gen_salt('bf'));
+  hashed_op_pwd text := crypt('giz2026', gen_salt('bf'));
 begin
-  -- 1. Supervisor Clima Social
+  -- 1. Supervisor Clima Social (clave: admin2026)
   if not exists (select 1 from auth.users where email = 'supervisor@climasocial.local') then
     insert into auth.users (id, instance_id, email, encrypted_password, email_confirmed_at, raw_app_meta_data, raw_user_meta_data, created_at, updated_at, role, aud)
-    values (sup_id, '00000000-0000-0000-0000-000000000000', 'supervisor@climasocial.local', hashed_pwd, now(), '{"provider":"email","providers":["email"]}', '{"full_name":"Clima Social","username":"supervisor"}', now(), now(), 'authenticated', 'authenticated');
+    values (sup_id, '00000000-0000-0000-0000-000000000000', 'supervisor@climasocial.local', hashed_sup_pwd, now(), '{"provider":"email","providers":["email"]}', '{"full_name":"Clima Social","username":"supervisor"}', now(), now(), 'authenticated', 'authenticated');
 
     insert into public.profiles (id, full_name, initials, username, role, active)
     values (sup_id, 'Clima Social', 'CS', 'supervisor', 'supervisor', true);
   end if;
 
-  -- 2. Tatiana Pasquel
+  -- 2. Tatiana Pasquel (clave: giz2026)
   if not exists (select 1 from auth.users where email = 'tatiana@climasocial.local') then
     insert into auth.users (id, instance_id, email, encrypted_password, email_confirmed_at, raw_app_meta_data, raw_user_meta_data, created_at, updated_at, role, aud)
-    values (tat_id, '00000000-0000-0000-0000-000000000000', 'tatiana@climasocial.local', hashed_pwd, now(), '{"provider":"email","providers":["email"]}', '{"full_name":"Tatiana Pasquel","username":"operadora1"}', now(), now(), 'authenticated', 'authenticated');
+    values (tat_id, '00000000-0000-0000-0000-000000000000', 'tatiana@climasocial.local', hashed_op_pwd, now(), '{"provider":"email","providers":["email"]}', '{"full_name":"Tatiana Pasquel","username":"operadora1"}', now(), now(), 'authenticated', 'authenticated');
 
     insert into public.profiles (id, full_name, initials, username, role, active)
     values (tat_id, 'Tatiana Pasquel', 'TP', 'operadora1', 'operator', true);
   end if;
 
-  -- 3. Alejandro Yanascual
+  -- 3. Alejandro Yanascual (clave: giz2026)
   if not exists (select 1 from auth.users where email = 'alejandro@climasocial.local') then
     insert into auth.users (id, instance_id, email, encrypted_password, email_confirmed_at, raw_app_meta_data, raw_user_meta_data, created_at, updated_at, role, aud)
-    values (ale_id, '00000000-0000-0000-0000-000000000000', 'alejandro@climasocial.local', hashed_pwd, now(), '{"provider":"email","providers":["email"]}', '{"full_name":"Alejandro Yanascual","username":"operadora2"}', now(), now(), 'authenticated', 'authenticated');
+    values (ale_id, '00000000-0000-0000-0000-000000000000', 'alejandro@climasocial.local', hashed_op_pwd, now(), '{"provider":"email","providers":["email"]}', '{"full_name":"Alejandro Yanascual","username":"operadora2"}', now(), now(), 'authenticated', 'authenticated');
 
     insert into public.profiles (id, full_name, initials, username, role, active)
     values (ale_id, 'Alejandro Yanascual', 'AY', 'operadora2', 'operator', true);
   end if;
 
-  -- 4. Valeria Cruz
+  -- 4. Valeria Cruz (clave: giz2026)
   if not exists (select 1 from auth.users where email = 'valeria@climasocial.local') then
     insert into auth.users (id, instance_id, email, encrypted_password, email_confirmed_at, raw_app_meta_data, raw_user_meta_data, created_at, updated_at, role, aud)
-    values (val_id, '00000000-0000-0000-0000-000000000000', 'valeria@climasocial.local', hashed_pwd, now(), '{"provider":"email","providers":["email"]}', '{"full_name":"Valeria Cruz","username":"operadora3"}', now(), now(), 'authenticated', 'authenticated');
+    values (val_id, '00000000-0000-0000-0000-000000000000', 'valeria@climasocial.local', hashed_op_pwd, now(), '{"provider":"email","providers":["email"]}', '{"full_name":"Valeria Cruz","username":"operadora3"}', now(), now(), 'authenticated', 'authenticated');
 
     insert into public.profiles (id, full_name, initials, username, role, active)
     values (val_id, 'Valeria Cruz', 'VC', 'operadora3', 'operator', true);
