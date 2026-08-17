@@ -2,7 +2,7 @@ services:
   - type: web
     name: call-center-clima-social-giz
     runtime: node
-    rootDir: call-center-giz
+    plan: free
     buildCommand: npm install
     startCommand: npm start
     healthCheckPath: /
