@@ -1555,15 +1555,25 @@ function groupHistory(history) {
     const ordered = items.slice().sort((a, b) => Number(a.attempt || 0) - Number(b.attempt || 0));
     const last = ordered[ordered.length - 1];
     const contactObj = getContact(last.id || last.contactId);
+    const searchableText = ordered.map(att => `${att.attempt} ${outcomeLabels[att.result] || att.result} ${att.date || ''} ${att.notes || ''}`).join(' ');
+
     return {
       contact: contactObj?.name || last.contact,
       id: last.id,
       contactId: last.id,
       phone: contactObj?.phone || contactObj?.phoneRaw || last.phone || '',
+      baseName: contactObj?.baseName || '',
       operator: last.operator,
       attempts: ordered.length,
       result: last.result,
-      details: ordered.map(item => `#${item.attempt || '-'} ${outcomeLabels[item.result] || item.result} · ${item.date || 'Sin fecha'}${item.notes ? ` · ${item.notes}` : ''}`).join('  |  ')
+      attemptsList: ordered.map((att, idx) => ({
+        attempt: att.attempt || (idx + 1),
+        result: att.result || 'pending',
+        date: att.date || '',
+        notes: att.notes || '',
+        operator: att.operator || ''
+      })),
+      searchableText
     };
   });
 }
@@ -1585,49 +1595,84 @@ function renderHistory() {
   const showActions = currentUser.role === 'supervisor';
 
   return `
-    ${pageHeading('Trazabilidad', 'Historial de gestiones', 'Cada contacto aparece con su teléfono, identificador y todo su historial de llamadas.', exportAction)}
+    ${pageHeading('Trazabilidad', 'Historial de gestiones', 'Cada contacto con su secuencia cronológica de llamadas, intentos y observaciones.', exportAction)}
     <article class="card history-card">
       <div class="page-card-header">
         <div>
           <h2 class="card-title">Contactos gestionados</h2>
-          <p class="card-subtitle">${grouped.length} contactos con historial registrado</p>
+          <p class="card-subtitle">${grouped.length} contactos con llamadas registradas</p>
         </div>
         <div class="filters">
-          <input class="search-input" id="history-search" placeholder="Buscar por nombre, teléfono o ID..." value="${escapeHtml(historySearchQuery)}" oninput="filterHistoryRealtime(this.value)" />
+          <input class="search-input" id="history-search" placeholder="Buscar por nombre, teléfono, notas o ID..." value="${escapeHtml(historySearchQuery)}" oninput="filterHistoryRealtime(this.value)" />
         </div>
       </div>
       <div class="table-wrap">
         <table class="data-table history-data-table">
           <thead>
             <tr>
-              <th>Contacto y Teléfono</th>
-              <th>Historial de gestiones e intentos</th>
-              <th>Último resultado</th>
+              <th style="min-width: 220px;">Participante y Teléfono</th>
+              <th style="min-width: 380px;">Secuencia de Intentos y Observaciones</th>
+              <th>Resultado Final</th>
               <th>Operador/a</th>
-              <th>Intentos</th>
+              <th style="text-align:center;">Total</th>
               ${showActions ? '<th>Acciones</th>' : ''}
             </tr>
           </thead>
           <tbody>
             ${grouped.length ? grouped.map(item => `
-              <tr data-history-row="${escapeHtml(`${item.contact} ${item.id} ${item.phone} ${item.operator} ${item.details}`.toLowerCase())}">
-                <td>
+              <tr data-history-row="${escapeHtml(`${item.contact} ${item.id} ${item.phone} ${item.operator} ${item.searchableText}`.toLowerCase())}">
+                <td style="vertical-align: top;">
                   <div class="operator-cell">
                     <div class="small-avatar">${initials(item.contact)}</div>
                     <div>
                       <strong>${escapeHtml(item.contact)}</strong>
-                      <div style="display:flex;gap:6px;align-items:center;margin-top:2px;flex-wrap:wrap;">
-                        <span class="mono" style="font-size:11px;padding:1px 4px;">#${escapeHtml(item.id)}</span>
-                        ${item.phone ? `<span style="font-size:12px;font-weight:700;color:#10b981;letter-spacing:0.3px;">📞 ${escapeHtml(item.phone)}</span>` : ''}
+                      <div class="contact-id-phone-badges">
+                        <span class="mono contact-tag-code">#${escapeHtml(item.id)}</span>
+                        ${item.phone ? `<a href="tel:${escapeHtml(item.phone)}" class="contact-phone-chip" title="Llamar">📞 ${escapeHtml(item.phone)}</a>` : ''}
                       </div>
+                      ${item.baseName ? `<span class="base-tag-small">${escapeHtml(item.baseName)}</span>` : ''}
                     </div>
                   </div>
                 </td>
-                <td><div class="history-detail">${escapeHtml(item.details)}</div></td>
-                <td><span class="table-status ${item.result}">${outcomeLabels[item.result] || item.result}</span></td>
-                <td>${escapeHtml(item.operator)}</td>
-                <td><strong>${item.attempts}</strong></td>
-                ${showActions ? `<td><button class="delete-history" data-delete-history="${escapeHtml(item.id)}" type="button">Borrar gestiones</button></td>` : ''}
+                <td style="vertical-align: top;">
+                  <div class="attempts-thread">
+                    ${item.attemptsList.map((att, idx) => `
+                      <div class="attempt-card outcome-${att.result}">
+                        <div class="attempt-header">
+                          <span class="attempt-pill outcome-${att.result}">Intento #${att.attempt || (idx + 1)}</span>
+                          <span class="attempt-outcome-text outcome-${att.result}">
+                            ${att.result === 'effective' ? '✓ Encuesta completada' : 
+                              att.result === 'pending' || att.result === 'rescheduled' || att.result === 'callback' ? '◷ Reprogramada / Reintento' :
+                              att.result === 'no-answer' ? '◌ No contesta' :
+                              att.result === 'wrong' ? '× Número incorrecto' :
+                              att.result === 'refused' ? '⊘ Rechazó participar' : (outcomeLabels[att.result] || att.result)}
+                          </span>
+                          ${att.date ? `<time class="attempt-timestamp">${escapeHtml(att.date)}</time>` : ''}
+                        </div>
+                        ${att.notes ? `
+                          <div class="attempt-note-box">
+                            <span class="note-icon">💬</span>
+                            <span class="note-text">${escapeHtml(att.notes)}</span>
+                          </div>
+                        ` : ''}
+                      </div>
+                    `).join('')}
+                  </div>
+                </td>
+                <td style="vertical-align: top;">
+                  <span class="table-status ${item.result}">${outcomeLabels[item.result] || item.result}</span>
+                </td>
+                <td style="vertical-align: top;">
+                  <div style="font-weight: 600; font-size: 13px;">${escapeHtml(item.operator)}</div>
+                </td>
+                <td style="vertical-align: top; text-align: center;">
+                  <span class="attempts-count-badge">${item.attempts} / 3</span>
+                </td>
+                ${showActions ? `
+                  <td style="vertical-align: top;">
+                    <button class="delete-history" data-delete-history="${escapeHtml(item.id)}" type="button" title="Eliminar gestiones">Borrar</button>
+                  </td>
+                ` : ''}
               </tr>
             `).join('') : `<tr><td colspan="${showActions ? 6 : 5}"><div class="empty-state">No hay gestiones registradas.</div></td></tr>`}
           </tbody>

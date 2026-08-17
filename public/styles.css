@@ -2567,3 +2567,194 @@ h1 {
     align-items: flex-start;
   }
 }
+
+/* ==========================================================================
+   HISTORIAL / TRAZABILIDAD MODULAR & TIMELINE DE INTENTOS
+   ========================================================================== */
+.contact-id-phone-badges {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 4px;
+  flex-wrap: wrap;
+}
+
+.contact-tag-code {
+  font-size: 11px;
+  padding: 1px 6px;
+  background: var(--bg-canvas);
+  border: 1px solid var(--border-medium);
+  border-radius: 4px;
+  font-weight: 700;
+}
+
+.contact-phone-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 11.5px;
+  font-family: var(--font-mono);
+  font-weight: 700;
+  color: #059669 !important;
+  background: rgba(16, 185, 129, 0.1);
+  padding: 1px 7px;
+  border-radius: 4px;
+  text-decoration: none;
+  border: 1px solid rgba(16, 185, 129, 0.25);
+  transition: all 0.15s ease;
+}
+
+.contact-phone-chip:hover {
+  background: rgba(16, 185, 129, 0.2);
+  transform: translateY(-1px);
+}
+
+.base-tag-small {
+  display: inline-block;
+  font-size: 10.5px;
+  color: var(--text-muted);
+  margin-top: 4px;
+}
+
+.attempts-thread {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  padding: 2px 0;
+  width: 100%;
+}
+
+.attempt-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  border-radius: 8px;
+  padding: 8px 12px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03);
+  transition: all 0.15s ease;
+}
+
+.attempt-card:hover {
+  border-color: var(--border-medium);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.06);
+}
+
+.attempt-card.outcome-effective {
+  border-left: 3.5px solid #10b981;
+  background: rgba(16, 185, 129, 0.02);
+}
+
+.attempt-card.outcome-pending,
+.attempt-card.outcome-rescheduled,
+.attempt-card.outcome-callback {
+  border-left: 3.5px solid #f59e0b;
+  background: rgba(245, 158, 11, 0.02);
+}
+
+.attempt-card.outcome-no-answer {
+  border-left: 3.5px solid #8b5cf6;
+  background: rgba(139, 92, 246, 0.02);
+}
+
+.attempt-card.outcome-wrong,
+.attempt-card.outcome-refused,
+.attempt-card.outcome-discarded {
+  border-left: 3.5px solid #ef4444;
+  background: rgba(239, 68, 68, 0.02);
+}
+
+.attempt-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.attempt-pill {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 800;
+  padding: 2px 6px;
+  border-radius: 4px;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.attempt-pill.outcome-effective {
+  background: rgba(16, 185, 129, 0.15);
+  color: #065f46;
+}
+
+.attempt-pill.outcome-pending,
+.attempt-pill.outcome-rescheduled,
+.attempt-pill.outcome-callback {
+  background: rgba(245, 158, 11, 0.15);
+  color: #92400e;
+}
+
+.attempt-pill.outcome-no-answer {
+  background: rgba(139, 92, 246, 0.15);
+  color: #5b21b6;
+}
+
+.attempt-pill.outcome-wrong,
+.attempt-pill.outcome-refused,
+.attempt-pill.outcome-discarded {
+  background: rgba(239, 68, 68, 0.15);
+  color: #991b1b;
+}
+
+.attempt-outcome-text {
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.attempt-outcome-text.outcome-effective { color: #059669; }
+.attempt-outcome-text.outcome-pending,
+.attempt-outcome-text.outcome-rescheduled,
+.attempt-outcome-text.outcome-callback { color: #d97706; }
+.attempt-outcome-text.outcome-no-answer { color: #7c3aed; }
+.attempt-outcome-text.outcome-wrong,
+.attempt-outcome-text.outcome-refused { color: #dc2626; }
+
+.attempt-timestamp {
+  margin-left: auto;
+  font-size: 10.5px;
+  font-family: var(--font-mono);
+  color: var(--text-muted);
+}
+
+.attempt-note-box {
+  margin-top: 6px;
+  padding: 5px 9px;
+  background: var(--bg-canvas);
+  border-radius: 6px;
+  font-size: 11.5px;
+  color: var(--text-main);
+  display: flex;
+  align-items: flex-start;
+  gap: 6px;
+  line-height: 1.35;
+  border: 1px solid var(--border-subtle);
+}
+
+.note-icon {
+  font-size: 12px;
+  flex-shrink: 0;
+  line-height: 1;
+}
+
+.note-text {
+  word-break: break-word;
+}
+
+.attempts-count-badge {
+  display: inline-block;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  font-weight: 800;
+  background: var(--bg-canvas);
+  border: 1px solid var(--border-medium);
+  padding: 3px 8px;
+  border-radius: 6px;
+  color: var(--text-main);
+}
