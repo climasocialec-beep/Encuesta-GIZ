@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#C23B49" />
+    <meta name="description" content="Gestión y monitoreo del Call Center · Clima Social GIZ" />
+    <title>Centro de gestión · Clima Social GIZ</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="styles.css?v=1" />
+  </head>
+  <body>
+    <div id="login-screen"></div>
+    <div class="app-shell" id="app-shell" hidden>
+      <aside class="sidebar" id="sidebar">
+        <div class="brand">
+          <img class="brand-logo" src="/logo-icon.png" alt="Clima Social" />
+          <div>
+            <strong>Centro de gestión</strong>
+            <span>Clima Social GIZ</span>
+          </div>
+        </div>
+
+        <div class="workspace-label">ESPACIO DE TRABAJO</div>
+        <nav class="main-nav" aria-label="Navegación principal">
+          <button class="nav-item active" data-view="dashboard"><span class="nav-icon">◉</span>Resumen <span class="nav-arrow">›</span></button>
+          <button class="nav-item" data-view="operator"><span class="nav-icon">◒</span>Mi jornada <span class="nav-badge">12</span></button>
+          <button class="nav-item" data-view="contacts"><span class="nav-icon">▦</span>Contactos</button>
+          <button class="nav-item" data-view="history"><span class="nav-icon">↺</span>Historial</button>
+          <button class="nav-item" data-view="import"><span class="nav-icon">↥</span>Importar base</button>
+        </nav>
+
+        <div class="sidebar-campaign">
+          <div class="campaign-label"><span class="live-dot"></span> CAMPAÑA ACTIVA</div>
+          <strong>Clima Social GIZ</strong>
+          <span>Base de campo · GIZ</span>
+          <div class="mini-progress"><span style="width: 59.5%"></span></div>
+          <div class="campaign-meta"><span>0% avance</span><span>0 registros</span></div>
+        </div>
+
+        <div class="sidebar-footer">
+          <div class="user-card">
+            <div class="avatar avatar-violet">CS</div>
+            <div class="user-details"><strong>Clima Social</strong><span>Supervisor</span></div>
+            <button class="more-button" aria-label="Más opciones">•••</button>
+          </div>
+          <div class="secure-note"><span>⌁</span> Datos protegidos y auditados</div>
+        </div>
+      </aside>
+
+      <main class="main-content">
+        <header class="topbar">
+          <div class="topbar-left">
+            <button class="mobile-menu" id="mobile-menu" aria-label="Abrir menú">☰</button>
+            <div class="crumb"><span>Campañas</span><b>/</b><strong>Clima Social GIZ</strong></div>
+          </div>
+          <div class="topbar-actions">
+            <div class="sync-status"><span class="live-dot"></span> Modo demo local</div>
+            <button class="icon-button" title="Notificaciones" aria-label="Notificaciones">♢<i></i></button>
+            <span class="top-user-name" id="top-user-name"></span>
+            <div class="top-avatar">AS</div>
+            <button class="logout-top" id="logout-top" type="button">Salir ↪</button>
+          </div>
+        </header>
+        <div class="franja-textil" aria-hidden="true"></div>
+
+        <div id="app-content"></div>
+      </main>
+    </div>
+    <div class="toast" id="toast" role="status" aria-live="polite"></div>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="app.js?v=16"></script>
+  </body>
+</html>
