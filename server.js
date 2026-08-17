@@ -4,6 +4,25 @@ const fs = require('fs');
 const ExcelJS = require('exceljs');
 const multer = require('multer');
 
+// Carga de variables de entorno locales si existe .env
+if (fs.existsSync(path.join(__dirname, '.env'))) {
+  try {
+    const envContent = fs.readFileSync(path.join(__dirname, '.env'), 'utf8');
+    for (const line of envContent.split(/\r?\n/)) {
+      const trimmed = line.trim();
+      if (!trimmed || trimmed.startsWith('#')) continue;
+      const match = trimmed.match(/^([^=]+)=(.*)$/);
+      if (match) {
+        const key = match[1].trim();
+        const val = match[2].trim().replace(/^["']|["']$/g, '');
+        if (!process.env[key]) process.env[key] = val;
+      }
+    }
+  } catch (err) {
+    console.warn('No fue posible leer el archivo .env:', err.message);
+  }
+}
+
 const app = express();
 const port = process.env.PORT || 10000;
 const upload = multer({ storage: multer.memoryStorage(), limits: { fileSize: 10 * 1024 * 1024 } });

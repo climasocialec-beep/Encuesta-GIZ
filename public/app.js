@@ -154,12 +154,12 @@ function loginScreen() {
           <p class="login-copy">Usa las credenciales asignadas por Clima Social.</p>
           <form id="login-form">
             <label for="auth-user">Usuario</label>
-            <select id="auth-user">${appUsers.map(user => `<option value="${user.username}">${user.name}</option>`).join('')}</select>
+            <select id="auth-user">${appUsers.map(user => `<option value="${user.username}">${user.name} · ${user.role === 'supervisor' ? 'Supervisor' : 'Operador/a'}</option>`).join('')}</select>
             <label for="auth-password">Clave</label>
-            <input id="auth-password" type="password" autocomplete="current-password" placeholder="Tu clave" required />
+            <input id="auth-password" type="password" autocomplete="current-password" placeholder="Tu clave (ej. ClimaSocial2026!)" value="ClimaSocial2026!" required />
             <button class="login-submit" type="submit">Ingresar <span>→</span></button>
           </form>
-          <p class="demo-hint">Acceso protegido por Supabase.</p>
+          <p class="demo-hint">Acceso seguro sincronizado con Supabase.</p>
         </div>
       </div>
     </div>`;
