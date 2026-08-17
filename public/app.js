@@ -126,22 +126,12 @@ function formatDuration(start, end = new Date().toISOString()) {
 function loginScreen() {
   const brandHeaderHtml = `
     <div class="login-brand-header">
-      <div style="display: flex; align-items: center; gap: 10px;">
-        <img class="brand-logo-cs" src="/logo-icon.svg" alt="Clima Social" style="height: 44px; width: 44px;" />
-        <div style="text-align: left;">
-          <div style="font-size: 14px; font-weight: 900; color: #ffffff; letter-spacing: -0.02em;">CLIMA <span style="color: #c23b49;">SOCIAL</span></div>
-          <div style="font-size: 8px; font-family: var(--font-mono); color: #8ec5d6; font-weight: 700; letter-spacing: 0.08em;">ESTUDIOS Y ASESORAMIENTO</div>
-        </div>
+      <div class="login-logo-item">
+        <img class="brand-logo-cs" src="/logo-clima-social.png" alt="Clima Social" onerror="this.src='/logo-icon.svg'" />
       </div>
-      <span class="brand-divider" style="height: 34px; background: rgba(255,255,255,0.25);"></span>
-      <div style="display: flex; align-items: center; gap: 8px;">
-        <div class="brand-giz-badge" style="font-size: 15px; padding: 6px 11px;" title="Deutsche Gesellschaft für Internationale Zusammenarbeit (GIZ)">
-          <span>giz</span>
-        </div>
-        <div style="text-align: left;">
-          <div style="font-size: 10px; font-weight: 700; color: #ffffff;">Cooperación Alemana</div>
-          <div style="font-size: 8px; color: #b3a8bc;">GIZ Ecuador</div>
-        </div>
+      <span class="brand-divider"></span>
+      <div class="login-logo-item">
+        <img class="brand-logo-giz" src="/logo-giz.png" alt="GIZ" onerror="this.style.display='none'" />
       </div>
     </div>
   `;
@@ -349,11 +339,9 @@ function operatorSidebar() {
   return `
     <div class="brand">
       <div class="brand-logos-wrap">
-        <img class="brand-logo-cs" src="/logo-icon.svg" alt="Clima Social" />
+        <img class="brand-logo-cs" src="/logo-clima-social.png" alt="Clima Social" onerror="this.src='/logo-icon.svg'" />
         <span class="brand-divider"></span>
-        <div class="brand-giz-badge" title="Deutsche Gesellschaft für Internationale Zusammenarbeit (GIZ)">
-          <span>giz</span>
-        </div>
+        <img class="brand-logo-giz" src="/logo-giz.png" alt="GIZ" onerror="this.style.display='none'" />
       </div>
       <div class="brand-info">
         <strong>Clima Social</strong>
@@ -405,11 +393,9 @@ function supervisorSidebar() {
   return `
     <div class="brand">
       <div class="brand-logos-wrap">
-        <img class="brand-logo-cs" src="/logo-icon.svg" alt="Clima Social" />
+        <img class="brand-logo-cs" src="/logo-clima-social.png" alt="Clima Social" onerror="this.src='/logo-icon.svg'" />
         <span class="brand-divider"></span>
-        <div class="brand-giz-badge" title="Deutsche Gesellschaft für Internationale Zusammenarbeit (GIZ)">
-          <span>giz</span>
-        </div>
+        <img class="brand-logo-giz" src="/logo-giz.png" alt="GIZ" onerror="this.style.display='none'" />
       </div>
       <div class="brand-info">
         <strong>Clima Social</strong>
