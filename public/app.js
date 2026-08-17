@@ -699,8 +699,58 @@ function barChart() {
   const values = [44, 62, 53, 78, 67, 82, 59]; const labels = ['Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb', 'Hoy'];
   return `<div class="chart-wrap"><div class="chart"><div class="chart-axis"><span>200</span><span>100</span><span>0</span></div>${values.map((value, index) => `<div class="bar-group"><div class="bar-stack"><span class="bar secondary" style="height:${Math.max(9, value * .86)}%"></span><span class="bar ${index === 6 ? 'primary' : ''}" style="height:${value}%"></span></div><span class="bar-label">${labels[index]}</span></div>`).join('')}</div><div class="legend"><span><i class="legend-main"></i> Gestionados</span><span><i class="legend-secondary"></i> Meta diaria</span></div></div>`;
 }
-function operatorTable() { return `<div class="table-wrap"><table class="data-table"><thead><tr><th>Operadora</th><th>Gestionados</th><th>Avance</th><th>Efectivas</th><th>Actividad</th></tr></thead><tbody>${appUsers.filter(user => user.role === 'operator').map(user => { const assigned = state.contacts.filter(contact => contact.operator === user.initials); const managed = managedCount(assigned); const effective = assigned.filter(contact => contact.status === 'effective').length; const active = Boolean(getActiveShift(user)); return `<tr><td><div class="operator-cell"><div class="small-avatar">${user.initials}</div><div><strong>${user.name}</strong><span>Operadora</span></div></div></td><td><strong>${managed}</strong></td><td><div class="progress-cell"><div class="row-progress"><span style="width:${percentage(managed, assigned.length)}"></span></div><span>${percentage(managed, assigned.length)}</span></div></td><td><strong>${effective}</strong></td><td><span class="status-pill ${active ? 'on' : 'off'}">${active ? 'En jornada' : 'Sin iniciar'}</span></td></tr>`; }).join('')}</tbody></table></div>`; }
-function activityList() { const items = state.history.slice(0, 3).map(item => ({ icon: item.result === 'effective' ? '✓' : item.result === 'no-answer' ? '◌' : '↻', className: item.result === 'effective' ? '' : item.result === 'no-answer' ? 'blue' : 'violet', title: outcomeLabels[item.result] || item.result, copy: `${item.operator} · ${item.id}`, time: item.date })); return items.length ? `<div class="activity-list">${items.map(item => `<div class="activity"><div class="activity-icon ${item.className}">${item.icon}</div><div class="activity-copy"><strong>${item.title}</strong><span>${item.copy}</span></div><time class="activity-time">${item.time}</time></div>`).join('')}</div>` : '<div class="empty-state">Todavía no hay actividad registrada.</div>'; }
+
+function operatorTable() { return `<div class="table-wrap"><table class="data-table"><thead><tr><th>Operador/a</th><th>Gestionados</th><th>Avance</th><th>Efectivas</th><th>Actividad</th></tr></thead><tbody>${appUsers.filter(user => user.role === 'operator').map(user => { const assigned = state.contacts.filter(contact => contact.operator === user.initials); const managed = managedCount(assigned); const effective = assigned.filter(contact => contact.status === 'effective').length; const active = Boolean(getActiveShift(user)); return `<tr><td><div class="operator-cell"><div class="small-avatar">${user.initials}</div><div><strong>${user.name}</strong><span>Operador/a</span></div></div></td><td><strong>${managed}</strong></td><td><div class="progress-cell"><div class="row-progress"><span style="width:${percentage(managed, assigned.length)}"></span></div><span>${percentage(managed, assigned.length)}</span></div></td><td><strong>${effective}</strong></td><td><span class="status-pill ${active ? 'on' : 'off'}">${active ? 'En jornada' : 'Sin iniciar'}</span></td></tr>`; }).join('')}</tbody></table></div>`; }
+
+function activityList() {
+  const items = state.history.slice(0, 6).map(item => {
+    const contactObj = getContact(item.id || item.contactId);
+    return {
+      icon: item.result === 'effective' ? '✓' : item.result === 'no-answer' ? '◌' : item.result === 'pending' || item.result === 'callback' ? '◷' : '•',
+      resultClass: item.result || 'pending',
+      title: outcomeLabels[item.result] || item.result,
+      contactName: contactObj?.name || item.contact || item.id,
+      phone: contactObj?.phone || contactObj?.phoneRaw || '',
+      operator: item.operator || 'Operador/a',
+      time: item.date || 'Reciente',
+      notes: item.notes || ''
+    };
+  });
+
+  if (!items.length) {
+    return `
+      <div class="empty-state-activity">
+        <div class="empty-icon-bubble">📡</div>
+        <h4>Sin llamadas registradas aún</h4>
+        <p>Cuando los operadores comiencen a gestionar contactos en vivo, los movimientos recientes aparecerán aquí automáticamente.</p>
+      </div>
+    `;
+  }
+
+  return `
+    <div class="activity-feed-list">
+      ${items.map(item => `
+        <div class="activity-feed-item result-${item.resultClass}">
+          <div class="activity-feed-badge result-${item.resultClass}">
+            <span>${item.icon}</span>
+          </div>
+          <div class="activity-feed-content">
+            <div class="activity-feed-title-line">
+              <span class="activity-feed-outcome result-${item.resultClass}">${escapeHtml(item.title)}</span>
+              <time class="activity-feed-time">${escapeHtml(item.time)}</time>
+            </div>
+            <div class="activity-feed-contact-line">
+              <strong>${escapeHtml(item.contactName)}</strong>
+              ${item.phone ? `<span class="activity-phone">📞 ${escapeHtml(item.phone)}</span>` : ''}
+              <span class="activity-operator-tag">· ${escapeHtml(item.operator)}</span>
+            </div>
+            ${item.notes ? `<div class="activity-feed-note">💬 ${escapeHtml(item.notes)}</div>` : ''}
+          </div>
+        </div>
+      `).join('')}
+    </div>
+  `;
+}
 
 function renderOperatorQueue(assigned, selectedContact) {
   const attention = assigned.filter(item => item.attempts > 0 && (item.status === 'pending' || item.status === 'no-answer'));
