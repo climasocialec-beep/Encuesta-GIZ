@@ -1,24 +1,164 @@
 -- ==============================================================================
--- MIGRACIÓN ROBUSTA: PODERES DE SUPERVISOR Y ACTUALIZACIÓN ATÓMICA DE ESTADOS
+-- MIGRACIÓN ROBUSTA: PODERES DE SUPERVISOR Y GESTIÓN INFALIBLE DE JORNADAS
 -- Clima Social GIZ
 -- ==============================================================================
 
--- 1. Permitir a supervisores actualizar y crear intentos de llamada libremente
+-- 1. Políticas RLS para Intentos de Llamada
 drop policy if exists "supervisors manage all call attempts" on public.call_attempts;
 create policy "supervisors manage all call attempts" on public.call_attempts
   for all to authenticated
-  using (public.current_user_role() in ('supervisor', 'admin') or true)
-  with check (public.current_user_role() in ('supervisor', 'admin') or true);
+  using (true)
+  with check (true);
 
--- 2. Permitir a supervisores actualizar todos los contactos
+-- 2. Políticas RLS para Contactos
 drop policy if exists "supervisors update all contacts" on public.contacts;
 create policy "supervisors update all contacts" on public.contacts
   for all to authenticated
-  using (public.current_user_role() in ('supervisor', 'admin') or true)
-  with check (public.current_user_role() in ('supervisor', 'admin') or true);
+  using (true)
+  with check (true);
 
--- 3. Función RPC Administrativa (SECURITY DEFINER)
--- Se ejecuta con privilegios de administrador garantizando que NUNCA sea bloqueada por RLS
+-- 3. Políticas RLS para Jornadas (operator_shifts)
+drop policy if exists "authenticated manage operator_shifts" on public.operator_shifts;
+create policy "authenticated manage operator_shifts" on public.operator_shifts
+  for all to authenticated
+  using (true)
+  with check (true);
+
+-- 4. RPC: Cierre Forzado de Jornada Específica (SECURITY DEFINER)
+create or replace function public.admin_close_shift(
+  p_shift_id uuid,
+  p_ended_at timestamptz default now()
+)
+returns json
+language plpgsql
+security definer
+set search_path = public
+as $$
+declare
+  v_count integer;
+  v_final_ended timestamptz := coalesce(p_ended_at, now());
+begin
+  update public.operator_shifts
+  set ended_at = v_final_ended
+  where id = p_shift_id;
+
+  get diagnostics v_count = row_count;
+
+  return json_build_object(
+    'success', true,
+    'shift_id', p_shift_id,
+    'updated_count', v_count,
+    'ended_at', v_final_ended
+  );
+end;
+$$;
+
+grant execute on function public.admin_close_shift(uuid, timestamptz) to authenticated;
+grant execute on function public.admin_close_shift(uuid, timestamptz) to anon;
+grant execute on function public.admin_close_shift(uuid, timestamptz) to service_role;
+
+-- 5. RPC: Cierre de TODAS las jornadas abiertas de un operador (SECURITY DEFINER)
+create or replace function public.admin_close_all_operator_shifts(
+  p_operator_id uuid,
+  p_ended_at timestamptz default now()
+)
+returns json
+language plpgsql
+security definer
+set search_path = public
+as $$
+declare
+  v_count integer;
+  v_final_ended timestamptz := coalesce(p_ended_at, now());
+begin
+  update public.operator_shifts
+  set ended_at = v_final_ended
+  where operator_id = p_operator_id
+    and (ended_at is null or ended_at = '');
+
+  get diagnostics v_count = row_count;
+
+  return json_build_object(
+    'success', true,
+    'operator_id', p_operator_id,
+    'updated_count', v_count,
+    'ended_at', v_final_ended
+  );
+end;
+$$;
+
+grant execute on function public.admin_close_all_operator_shifts(uuid, timestamptz) to authenticated;
+grant execute on function public.admin_close_all_operator_shifts(uuid, timestamptz) to anon;
+grant execute on function public.admin_close_all_operator_shifts(uuid, timestamptz) to service_role;
+
+-- 6. RPC: Operador cierra sus propias jornadas abiertas (SECURITY DEFINER)
+create or replace function public.operator_end_my_shifts(
+  p_ended_at timestamptz default now()
+)
+returns json
+language plpgsql
+security definer
+set search_path = public
+as $$
+declare
+  v_user_id uuid := auth.uid();
+  v_count integer;
+  v_final_ended timestamptz := coalesce(p_ended_at, now());
+begin
+  if v_user_id is null then
+    return json_build_object('success', false, 'error', 'No autenticado');
+  end if;
+
+  update public.operator_shifts
+  set ended_at = v_final_ended
+  where operator_id = v_user_id
+    and ended_at is null;
+
+  get diagnostics v_count = row_count;
+
+  return json_build_object(
+    'success', true,
+    'operator_id', v_user_id,
+    'updated_count', v_count,
+    'ended_at', v_final_ended
+  );
+end;
+$$;
+
+grant execute on function public.operator_end_my_shifts(timestamptz) to authenticated;
+grant execute on function public.operator_end_my_shifts(timestamptz) to anon;
+grant execute on function public.operator_end_my_shifts(timestamptz) to service_role;
+
+-- 7. RPC: Eliminar Jornada (SECURITY DEFINER)
+create or replace function public.admin_delete_shift(
+  p_shift_id uuid
+)
+returns json
+language plpgsql
+security definer
+set search_path = public
+as $$
+declare
+  v_count integer;
+begin
+  delete from public.operator_shifts
+  where id = p_shift_id;
+
+  get diagnostics v_count = row_count;
+
+  return json_build_object(
+    'success', true,
+    'shift_id', p_shift_id,
+    'deleted_count', v_count
+  );
+end;
+$$;
+
+grant execute on function public.admin_delete_shift(uuid) to authenticated;
+grant execute on function public.admin_delete_shift(uuid) to anon;
+grant execute on function public.admin_delete_shift(uuid) to service_role;
+
+-- 8. RPC: Actualización Administrativa de Contacto
 create or replace function public.admin_update_contact_status(
   p_contact_id uuid,
   p_status text
@@ -36,7 +176,6 @@ declare
   v_attempt_id uuid;
   v_operator_id uuid;
 begin
-  -- 1. Normalizar y mapear el estado al ENUM de Postgres
   if p_status = 'effective' then
     v_contact_status := 'effective'::public.contact_status;
     v_outcome_code := 'effective';
@@ -60,10 +199,8 @@ begin
     v_outcome_code := 'callback';
   end if;
 
-  -- 2. Obtener el ID del resultado (outcome)
   select id into v_outcome_id from public.outcomes where code = v_outcome_code limit 1;
 
-  -- 3. Actualizar la tabla principal de contactos
   update public.contacts
   set
     current_status = v_contact_status,
@@ -72,7 +209,6 @@ begin
     last_attempt_by = coalesce(auth.uid(), last_attempt_by)
   where id = p_contact_id;
 
-  -- 4. Actualizar o insertar en call_attempts para que el Historial sea 100% coherente
   select id into v_attempt_id
   from public.call_attempts
   where contact_id = p_contact_id
@@ -113,12 +249,11 @@ begin
 end;
 $$;
 
--- Permisos de ejecución para la función RPC
 grant execute on function public.admin_update_contact_status(uuid, text) to authenticated;
 grant execute on function public.admin_update_contact_status(uuid, text) to anon;
 grant execute on function public.admin_update_contact_status(uuid, text) to service_role;
 
--- 4. Función RPC Administrativa para Renombrar Lotes Instantáneamente
+-- 9. RPC: Renombrar Lote en Vivo
 create or replace function public.admin_rename_base(
   p_old_name text,
   p_new_name text

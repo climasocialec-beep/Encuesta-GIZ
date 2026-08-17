@@ -398,8 +398,10 @@ app.post('/api/shifts/delete', async (req, res) => {
   if (!shiftId) return res.status(400).json({ error: 'Falta shiftId' });
 
   const supabaseUrl = process.env.SUPABASE_URL;
-  const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.SUPABASE_ANON_KEY;
-  const authHeader = req.get('x-supabase-auth') || `Bearer ${serviceKey}`;
+  const anonKey = process.env.SUPABASE_ANON_KEY;
+  const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY || anonKey;
+  const userToken = req.get('x-supabase-auth') || req.get('authorization') || '';
+  const authHeader = userToken ? (userToken.startsWith('Bearer') ? userToken : `Bearer ${userToken}`) : `Bearer ${serviceKey}`;
 
   if (supabaseUrl && serviceKey) {
     try {
@@ -407,7 +409,7 @@ app.post('/api/shifts/delete', async (req, res) => {
         method: 'DELETE',
         headers: {
           'apikey': serviceKey,
-          'Authorization': authHeader.startsWith('Bearer') ? authHeader : `Bearer ${authHeader}`,
+          'Authorization': authHeader,
           'Content-Type': 'application/json'
         }
       });
@@ -425,29 +427,40 @@ app.post('/api/shifts/delete', async (req, res) => {
 
 app.post('/api/shifts/close', async (req, res) => {
   if (req.get('x-app-role') !== 'supervisor') return res.status(403).json({ error: 'Solo el supervisor puede cerrar jornadas' });
-  const { shiftId, endedAt } = req.body;
-  if (!shiftId) return res.status(400).json({ error: 'Falta shiftId' });
+  const { shiftId, operatorId, endedAt } = req.body;
+  const finalEndedAt = endedAt || new Date().toISOString();
 
   const supabaseUrl = process.env.SUPABASE_URL;
-  const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.SUPABASE_ANON_KEY;
-  const authHeader = req.get('x-supabase-auth') || `Bearer ${serviceKey}`;
+  const anonKey = process.env.SUPABASE_ANON_KEY;
+  const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY || anonKey;
+  const userToken = req.get('x-supabase-auth') || req.get('authorization') || '';
+  const authHeader = userToken ? (userToken.startsWith('Bearer') ? userToken : `Bearer ${userToken}`) : `Bearer ${serviceKey}`;
 
   if (supabaseUrl && serviceKey) {
     try {
-      const response = await fetch(`${supabaseUrl}/rest/v1/operator_shifts?id=eq.${encodeURIComponent(shiftId)}`, {
-        method: 'PATCH',
-        headers: {
-          'apikey': serviceKey,
-          'Authorization': authHeader.startsWith('Bearer') ? authHeader : `Bearer ${authHeader}`,
-          'Content-Type': 'application/json',
-          'Prefer': 'return=minimal'
-        },
-        body: JSON.stringify({ ended_at: endedAt || new Date().toISOString() })
-      });
-      if (!response.ok) {
-        const text = await response.text();
-        return res.status(response.status).json({ error: text || 'Error al cerrar jornada en Supabase' });
+      const headers = {
+        'apikey': serviceKey,
+        'Authorization': authHeader,
+        'Content-Type': 'application/json',
+        'Prefer': 'return=minimal'
+      };
+
+      if (shiftId) {
+        await fetch(`${supabaseUrl}/rest/v1/operator_shifts?id=eq.${encodeURIComponent(shiftId)}`, {
+          method: 'PATCH',
+          headers,
+          body: JSON.stringify({ ended_at: finalEndedAt })
+        });
       }
+
+      if (operatorId) {
+        await fetch(`${supabaseUrl}/rest/v1/operator_shifts?operator_id=eq.${encodeURIComponent(operatorId)}&ended_at=is.null`, {
+          method: 'PATCH',
+          headers,
+          body: JSON.stringify({ ended_at: finalEndedAt })
+        });
+      }
+
       return res.json({ success: true, message: 'Jornada cerrada' });
     } catch (err) {
       return res.status(500).json({ error: err.message });

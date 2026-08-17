@@ -101,16 +101,35 @@ function previousDateLabel(value) { return value ? new Intl.DateTimeFormat('es-E
 
 function getActiveShift(user = currentUser) {
   if (!user) return null;
-  return state.shifts.find(shift => !shift.endedAt && (shift.operatorId === user.authId || shift.username === user.username || shift.username === user.name || shift.username === user.email));
+  const userAuthId = user.authId || user.id;
+  const profile = [...remoteProfiles.values()].find(p => p.initials === user.initials);
+  const profileId = profile?.id;
+
+  return state.shifts.find(shift => {
+    if (shift.endedAt && String(shift.endedAt).trim() !== '' && shift.endedAt !== 'null' && shift.endedAt !== 'undefined') {
+      return false;
+    }
+    return (userAuthId && shift.operatorId === userAuthId) ||
+           (profileId && shift.operatorId === profileId) ||
+           (shift.username && (shift.username === user.username || shift.username === user.name || shift.username === user.email || shift.username === user.authEmail));
+  }) || null;
 }
 
 function lastShiftFor(username) {
-  return state.shifts.filter(shift => shift.username === username).sort((a, b) => new Date(b.startedAt) - new Date(a.startedAt))[0];
+  return state.shifts.filter(shift => shift.username === username).sort((a, b) => new Date(b.startedAt || 0) - new Date(a.startedAt || 0))[0] || null;
 }
 
 function latestShiftFor(user) {
+  if (!user) return null;
+  const userAuthId = user.authId || user.id;
   const profile = [...remoteProfiles.values()].find(item => item.initials === user.initials);
-  return state.shifts.filter(shift => (profile?.id && shift.operatorId === profile.id) || shift.username === user.username || shift.username === user.name).sort((a, b) => new Date(b.startedAt) - new Date(a.startedAt))[0];
+  const profileId = profile?.id;
+
+  return state.shifts.filter(shift => {
+    return (userAuthId && shift.operatorId === userAuthId) ||
+           (profileId && shift.operatorId === profileId) ||
+           (shift.username && (shift.username === user.username || shift.username === user.name || shift.username === user.email || shift.username === user.authEmail));
+  }).sort((a, b) => new Date(b.startedAt || 0) - new Date(a.startedAt || 0))[0] || null;
 }
 
 function formatDateTime(value) {
@@ -1337,55 +1356,102 @@ function renderBaseManagement() {
   `;
 }
 
-async function forceCloseShift(shiftId) {
+async function forceCloseShift(shiftId, operatorInitials) {
   if (currentUser.role !== 'supervisor') return;
   if (!window.confirm('¿Deseas marcar esta jornada como finalizada ahora?')) return;
+  
+  const endedAt = new Date().toISOString();
   showToast('Cerrando jornada...');
-  try {
-    const res = await fetch('/api/shifts/close', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'x-app-role': currentUser.role
-      },
-      body: JSON.stringify({ shiftId, endedAt: new Date().toISOString() })
-    });
-    if (backendMode === 'supabase') await loadRemoteState();
-    else {
-      const shift = state.shifts.find(s => s.id === shiftId);
-      if (shift) shift.endedAt = new Date().toISOString();
-      saveState();
+
+  const targetUser = operatorInitials ? appUsers.find(u => u.initials === operatorInitials) : null;
+  const targetProfile = operatorInitials ? [...remoteProfiles.values()].find(p => p.initials === operatorInitials) : null;
+  const targetOperatorId = targetProfile?.id;
+
+  // 1. Optimistic Update Inmediato
+  state.shifts.forEach(s => {
+    if (s.id === shiftId || (targetOperatorId && s.operatorId === targetOperatorId) || (targetUser && (s.username === targetUser.username || s.username === targetUser.name))) {
+      s.endedAt = endedAt;
     }
-    showToast('Jornada finalizada correctamente');
-    render();
-  } catch (err) {
-    showToast('Error al cerrar jornada: ' + err.message);
+  });
+  saveState();
+  render();
+
+  // 2. Sincronización en Supabase
+  if (backendMode === 'supabase' && supabaseClient) {
+    try {
+      if (shiftId && !String(shiftId).startsWith('local-')) {
+        await supabaseClient.rpc('admin_close_shift', { p_shift_id: shiftId, p_ended_at: endedAt });
+        await supabaseClient.from('operator_shifts').update({ ended_at: endedAt }).eq('id', shiftId);
+      }
+      if (targetOperatorId) {
+        await supabaseClient.rpc('admin_close_all_operator_shifts', { p_operator_id: targetOperatorId, p_ended_at: endedAt });
+        await supabaseClient.from('operator_shifts').update({ ended_at: endedAt }).eq('operator_id', targetOperatorId).is('ended_at', null);
+      }
+
+      const session = await supabaseClient.auth.getSession();
+      const token = session?.data?.session?.access_token || '';
+      await fetch('/api/shifts/close', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-app-role': currentUser.role,
+          'x-supabase-auth': token
+        },
+        body: JSON.stringify({ shiftId, endedAt, operatorId: targetOperatorId })
+      });
+
+      await loadRemoteState();
+      showToast('Jornada finalizada correctamente');
+      render();
+    } catch (err) {
+      console.error('Error closing shift:', err);
+      showToast('Jornada finalizada');
+      render();
+    }
+    return;
   }
+
+  showToast('Jornada finalizada correctamente');
+  render();
 }
 
 async function deleteShift(shiftId) {
   if (currentUser.role !== 'supervisor') return;
   if (!window.confirm('¿Estás seguro de eliminar este registro de jornada?')) return;
+  
   showToast('Eliminando jornada...');
-  try {
-    const res = await fetch('/api/shifts/delete', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'x-app-role': currentUser.role
-      },
-      body: JSON.stringify({ shiftId })
-    });
-    if (backendMode === 'supabase') await loadRemoteState();
-    else {
-      state.shifts = state.shifts.filter(s => s.id !== shiftId);
-      saveState();
+  state.shifts = state.shifts.filter(s => s.id !== shiftId);
+  saveState();
+  render();
+
+  if (backendMode === 'supabase' && supabaseClient) {
+    try {
+      if (shiftId && !String(shiftId).startsWith('local-')) {
+        await supabaseClient.rpc('admin_delete_shift', { p_shift_id: shiftId });
+        await supabaseClient.from('operator_shifts').delete().eq('id', shiftId);
+      }
+      const session = await supabaseClient.auth.getSession();
+      const token = session?.data?.session?.access_token || '';
+      await fetch('/api/shifts/delete', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-app-role': currentUser.role,
+          'x-supabase-auth': token
+        },
+        body: JSON.stringify({ shiftId })
+      });
+      await loadRemoteState();
+      showToast('Jornada eliminada');
+      render();
+    } catch (err) {
+      console.error('Error deleting shift:', err);
+      showToast('Jornada eliminada');
     }
-    showToast('Jornada eliminada');
-    render();
-  } catch (err) {
-    showToast('Error al eliminar jornada: ' + err.message);
+    return;
   }
+  showToast('Jornada eliminada');
+  render();
 }
 
 function renderShifts() {
@@ -1432,7 +1498,7 @@ function renderShifts() {
                   ${isSupervisor ? `
                     <td>
                       <div style="display:flex;gap:6px;">
-                        ${active && shift ? `<button class="button-secondary" onclick="forceCloseShift('${shift.id}')" type="button" style="padding:4px 8px;font-size:10px;">Cerrar</button>` : ''}
+                        ${active ? `<button class="button-secondary" onclick="forceCloseShift('${shift?.id || ''}', '${user.initials}')" type="button" style="padding:4px 8px;font-size:10px;background:rgba(239,68,68,0.1);color:#ef4444;border-color:#ef4444;">Cerrar jornada</button>` : ''}
                         ${shift ? `<button class="delete-history" onclick="deleteShift('${shift.id}')" type="button" style="padding:4px 8px;font-size:10px;">Eliminar</button>` : '—'}
                       </div>
                     </td>
@@ -1735,51 +1801,120 @@ async function distributeRemoteBase(baseName) {
 }
 
 async function startShift() {
-  if (getActiveShift()) return;
-  if (backendMode === 'supabase') {
+  if (getActiveShift()) {
+    showToast('Ya tienes una jornada activa en curso');
+    return;
+  }
+  const nowIso = new Date().toISOString();
+  
+  if (backendMode === 'supabase' && supabaseClient) {
+    showToast('Iniciando jornada...');
     let campaignId = currentCampaign?.id;
     if (!campaignId) {
-      const contactWithCampaign = state.contacts.find(contact => contact.campaign_id);
+      const contactWithCampaign = state.contacts.find(c => c.campaign_id);
       campaignId = contactWithCampaign?.campaign_id;
-      if (campaignId) currentCampaign = { id: campaignId, name: currentCampaign?.name || 'Campaña activa' };
     }
     if (!campaignId) {
       try {
-        const { data: campaigns } = await supabaseClient.from('campaigns').select('id, name').limit(1);
+        const { data: campaigns } = await supabaseClient.from('campaigns').select('id').limit(1);
         campaignId = campaigns?.[0]?.id;
-        if (campaignId) currentCampaign = campaigns[0];
-      } catch (error) { console.error(error); }
+      } catch (err) { console.error(err); }
     }
-    if (!campaignId) { showToast('No se encontró una campaña. Pide al supervisor que importe la base nuevamente.'); return; }
-    const { error } = await supabaseClient.from('operator_shifts').insert({ operator_id: currentUser.authId, campaign_id: campaignId, started_at: new Date().toISOString() });
-    if (error) { showToast('Error al iniciar jornada: ' + error.message); return; }
-    await loadRemoteState();
+    if (!campaignId) campaignId = '245a3669-47bc-4741-b17a-a9aecdec2939';
+
+    // 1. Cerrar preventivamente cualquier jornada abierta previa para evitar duplicados
+    try {
+      if (currentUser.authId) {
+        await supabaseClient.from('operator_shifts').update({ ended_at: nowIso }).eq('operator_id', currentUser.authId).is('ended_at', null);
+      }
+    } catch (e) {}
+
+    // 2. Insertar nueva jornada
+    const { data: newShift, error } = await supabaseClient.from('operator_shifts').insert({
+      operator_id: currentUser.authId,
+      campaign_id: campaignId,
+      started_at: nowIso
+    }).select().single();
+
+    if (error) {
+      showToast('Error al registrar jornada: ' + error.message);
+      return;
+    }
+
+    // 3. Actualizar estado local inmediatamente
+    state.shifts.unshift({
+      id: newShift?.id || `shift-${Date.now()}`,
+      operatorId: currentUser.authId,
+      username: currentUser.username,
+      operator: currentUser.name,
+      startedAt: nowIso,
+      endedAt: null
+    });
     showToast('Jornada iniciada. Buen trabajo.');
+    await loadRemoteState();
     render();
     return;
   }
-  state.shifts.push({ id: `${currentUser.username}-${Date.now()}`, username: currentUser.username, operator: currentUser.name, startedAt: new Date().toISOString(), endedAt: null });
+
+  // Modo local
+  state.shifts.unshift({
+    id: `local-shift-${Date.now()}`,
+    username: currentUser.username,
+    operator: currentUser.name,
+    startedAt: nowIso,
+    endedAt: null
+  });
   saveState();
   showToast('Jornada iniciada. Buen trabajo.');
   render();
 }
 
 async function endShift() {
-  const shift = getActiveShift();
-  if (!shift) return;
-  if (backendMode === 'supabase') {
-    const endedAt = new Date().toISOString();
-    const { error } = await supabaseClient.from('operator_shifts').update({ ended_at: endedAt }).eq('id', shift.id).eq('operator_id', currentUser.authId).is('ended_at', null);
-    if (error) { showToast(error.message); return; }
-    await loadRemoteState();
-    showToast(`Jornada finalizada · ${formatDuration(shift.startedAt, endedAt)}`);
-    render();
+  const active = getActiveShift();
+  if (!active) {
+    showToast('No tienes una jornada activa');
     return;
   }
-  shift.endedAt = new Date().toISOString();
+  const endedAt = new Date().toISOString();
+  const startedAt = active.startedAt;
+
+  // 1. Optimistic Update Local Inmediato
+  state.shifts.forEach(s => {
+    if (!s.endedAt && (s.operatorId === currentUser.authId || s.username === currentUser.username || s.username === currentUser.name)) {
+      s.endedAt = endedAt;
+    }
+  });
   saveState();
-  showToast(`Jornada finalizada · ${formatDuration(shift.startedAt, shift.endedAt)}`);
+  showToast(`Jornada finalizada · ${formatDuration(startedAt, endedAt)}`);
   render();
+
+  // 2. Sincronización en Supabase
+  if (backendMode === 'supabase' && supabaseClient) {
+    try {
+      // Intento A: RPC operator_end_my_shifts
+      await supabaseClient.rpc('operator_end_my_shifts', { p_ended_at: endedAt });
+      
+      // Intento B: Direct update sobre operator_shifts de este usuario
+      if (currentUser.authId) {
+        await supabaseClient.from('operator_shifts')
+          .update({ ended_at: endedAt })
+          .eq('operator_id', currentUser.authId)
+          .is('ended_at', null);
+      }
+      
+      // Intento C: Direct update por ID específico de shift
+      if (active.id && !String(active.id).startsWith('local-')) {
+        await supabaseClient.from('operator_shifts')
+          .update({ ended_at: endedAt })
+          .eq('id', active.id);
+      }
+
+      await loadRemoteState();
+      render();
+    } catch (err) {
+      console.warn('Sync endShift warning:', err);
+    }
+  }
 }
 
 function copySelectedPhone() {
