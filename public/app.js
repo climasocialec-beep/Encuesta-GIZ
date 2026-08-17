@@ -125,154 +125,34 @@ function formatDuration(start, end = new Date().toISOString()) {
 
 function loginScreen() {
   const isSupabase = backendMode === 'supabase';
-  const defaultPw = 'giz2026';
-  
   return `
-    <div class="login-page">
-      <div class="login-intro">
-        <div class="login-topo-overlay"></div>
-        <div class="login-glow-top"></div>
-        <div class="login-glow-bottom"></div>
-
-        <!-- 1. Cabecera Institucional Co-Branding de Alta Gama -->
-        <div class="login-brand-banner">
-          <div class="brand-partner-block">
-            <img class="hero-logo-cs" src="/logo-clima-social.png" alt="Clima Social" onerror="this.src='/logo-icon.svg'" />
-            <div class="brand-partner-text">
-              <span class="partner-title">CLIMA SOCIAL</span>
-              <span class="partner-sub">Estudios &amp; Asesoramiento</span>
-            </div>
-          </div>
-          <div class="brand-partner-divider">
-            <span class="alliance-dot"></span>
-            <span class="alliance-tag">COOPERACIÓN</span>
-          </div>
-          <div class="brand-partner-block">
-            <img class="hero-logo-giz" src="/logo-giz.png" alt="GIZ Ecuador" onerror="this.style.display='none'" />
-            <div class="brand-partner-text">
-              <span class="partner-title">GIZ ECUADOR</span>
-              <span class="partner-sub">Deutsche Zusammenarbeit</span>
-            </div>
-          </div>
+    <div class="login-page-clean">
+      <div class="login-card-simple">
+        <div class="login-header-simple">
+          <img class="login-logo-round" src="/logo-icon.svg" alt="Clima Social" />
+          <h1>Clima Social</h1>
+          <p class="login-sub-text">Centro de Gestión &bull; Encuesta GIZ</p>
         </div>
 
-        <!-- 2. Titular y Narrativa de Producto -->
-        <div class="login-headline-group">
-          <div class="eyebrow-pill">
-            <span class="pulse-indicator"></span>
-            <span>PLATAFORMA DE GESTIÓN DE CAMPO &bull; 2026</span>
-          </div>
-          <h1 class="hero-title">
-            Monitoreo en tiempo real,<br>
-            <em>trazabilidad y rigor en campo.</em>
-          </h1>
-          <p class="hero-description">
-            Sistema centralizado para la coordinación de llamadas de encuesta, verificación de cuotas territoriales y registro instantáneo para el proyecto de cooperación <strong>Clima Social &amp; GIZ</strong>.
-          </p>
-        </div>
-
-        <!-- 3. Módulos / Tarjetas de Valor Creativo (Llenan el espacio con diseño y utilidad) -->
-        <div class="hero-feature-grid">
-          <div class="hero-feat-card">
-            <div class="feat-icon feat-icon-purple">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M18 20V10M12 20V4M6 20v-6"/></svg>
-            </div>
-            <div class="feat-content">
-              <strong>Telemetría de Operadores</strong>
-              <span>Seguimiento en vivo de jornadas, avance y efectividad del equipo.</span>
-            </div>
+        <form id="login-form" class="login-form-simple">
+          <div class="form-field">
+            <label for="${isSupabase ? 'auth-user' : 'user-select'}">Usuario</label>
+            <select id="${isSupabase ? 'auth-user' : 'user-select'}">
+              ${appUsers.map(user => `<option value="${user.username}">${user.name} (${user.role === 'supervisor' ? 'Supervisor' : 'Operador/a'})</option>`).join('')}
+            </select>
           </div>
 
-          <div class="hero-feat-card">
-            <div class="feat-icon feat-icon-emerald">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
-            </div>
-            <div class="feat-content">
-              <strong>WhatsApp + KoboToolbox</strong>
-              <span>Guiones oficiales GIZ con apertura directa a chat en 1 clic.</span>
-            </div>
+          <div class="form-field">
+            <label for="${isSupabase ? 'auth-password' : 'demo-pin'}">Contraseña</label>
+            <input id="${isSupabase ? 'auth-password' : 'demo-pin'}" type="password" autocomplete="current-password" placeholder="Tu contraseña" value="${isSupabase ? 'giz2026' : 'demo'}" required />
           </div>
 
-          <div class="hero-feat-card">
-            <div class="feat-icon feat-icon-gold">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-            </div>
-            <div class="feat-content">
-              <strong>Auditoría &amp; Respaldo Seguro</strong>
-              <span>Sincronización en la nube con Supabase Realtime y RLS.</span>
-            </div>
-          </div>
-        </div>
+          <button class="login-btn-simple" type="submit">Ingresar al sistema</button>
+        </form>
 
-        <!-- 4. Metadata Footer -->
-        <div class="login-footer-meta">
-          <span>📍 Proyecto GIZ Ecuador</span>
-          <span class="footer-dot">&bull;</span>
-          <span>🔒 Cifrado TLS / Supabase</span>
-          <span class="footer-dot">&bull;</span>
-          <span>⏱️ Hora Ecuador (UTC-5)</span>
-        </div>
-      </div>
-
-      <!-- PANEL DERECHO DE ACCESO -->
-      <div class="login-panel">
-        <div class="login-card-container">
-          <div class="login-card-header">
-            <div class="login-security-tag">
-              <span class="sec-dot"></span>
-              <span>${isSupabase ? 'CONEXIÓN EN VIVO A SUPABASE' : 'MODO DEMOSTRACIÓN'}</span>
-            </div>
-            <h2>Iniciar sesión</h2>
-            <p class="login-copy">Selecciona tu perfil de operador o supervisor para ingresar a tu espacio de trabajo.</p>
-          </div>
-
-          <!-- Selector visual rápido con avatares -->
-          <div class="quick-user-selector">
-            <div class="quick-user-label">ACCESO RÁPIDO:</div>
-            <div class="quick-user-pills">
-              ${appUsers.map(u => `
-                <button type="button" class="quick-user-btn" data-username="${u.username}" data-role="${u.role}" title="${u.name} (${u.role === 'supervisor' ? 'Supervisor' : 'Operador/a'})">
-                  <span class="quick-avatar avatar-${u.role === 'supervisor' ? 'plum' : 'emerald'}">${u.initials}</span>
-                  <span class="quick-name">${u.name.split(' ')[0]}</span>
-                </button>
-              `).join('')}
-            </div>
-          </div>
-
-          <form id="login-form">
-            <div class="form-group">
-              <label for="${isSupabase ? 'auth-user' : 'user-select'}">Usuario / Operador/a</label>
-              <div class="input-with-icon">
-                <span class="input-icon">👤</span>
-                <select id="${isSupabase ? 'auth-user' : 'user-select'}">
-                  ${appUsers.map(user => `<option value="${user.username}" data-role="${user.role}">${user.name} &bull; ${user.role === 'supervisor' ? 'Supervisor' : 'Operador/a'}</option>`).join('')}
-                </select>
-              </div>
-            </div>
-
-            <div class="form-group">
-              <label for="${isSupabase ? 'auth-password' : 'demo-pin'}">Contraseña</label>
-              <div class="input-with-icon">
-                <span class="input-icon">🔑</span>
-                <input id="${isSupabase ? 'auth-password' : 'demo-pin'}" type="password" autocomplete="current-password" placeholder="Tu contraseña" value="${isSupabase ? 'giz2026' : 'demo'}" required />
-              </div>
-              <div class="pw-hint-bar">
-                <span>Claves: <strong>admin2026</strong> (Supervisor) &bull; <strong>giz2026</strong> (Operadoras)</span>
-              </div>
-            </div>
-
-            <button class="login-submit" type="submit">
-              <span>Ingresar al Sistema</span>
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
-            </button>
-          </form>
-
-          <div class="login-card-footer">
-            <div class="system-status-indicator">
-              <span class="live-dot"></span>
-              <span>${isSupabase ? 'Base de datos Supabase Realtime Activa' : 'Modo Demo Local'}</span>
-            </div>
-          </div>
+        <div class="login-footer-simple">
+          <span class="live-dot"></span>
+          <span>${isSupabase ? 'Conectado a Supabase' : 'Modo demo local'}</span>
         </div>
       </div>
     </div>
@@ -289,31 +169,13 @@ function renderLogin() {
   const isSupabase = backendMode === 'supabase';
   const userSelect = document.getElementById(isSupabase ? 'auth-user' : 'user-select');
   const pwInput = document.getElementById(isSupabase ? 'auth-password' : 'demo-pin');
-  const quickBtns = login.querySelectorAll('.quick-user-btn');
 
-  function syncSelection(username) {
-    if (userSelect) userSelect.value = username;
-    const user = appUsers.find(u => u.username === username);
-    if (pwInput && isSupabase) {
+  if (userSelect && pwInput && isSupabase) {
+    userSelect.addEventListener('change', () => {
+      const user = appUsers.find(u => u.username === userSelect.value);
       pwInput.value = user?.role === 'supervisor' ? 'admin2026' : 'giz2026';
-    }
-    quickBtns.forEach(btn => {
-      btn.classList.toggle('active', btn.dataset.username === username);
     });
   }
-
-  // Evento al cambiar el select
-  if (userSelect) {
-    userSelect.addEventListener('change', () => syncSelection(userSelect.value));
-    syncSelection(userSelect.value);
-  }
-
-  // Evento al hacer clic en los avatares rápidos
-  quickBtns.forEach(btn => {
-    btn.addEventListener('click', () => {
-      syncSelection(btn.dataset.username);
-    });
-  });
 
   document.getElementById('login-form').addEventListener('submit', event => {
     event.preventDefault();
@@ -323,7 +185,7 @@ function renderLogin() {
     }
     const user = appUsers.find(item => item.username === document.getElementById('user-select').value);
     if (!user || document.getElementById('demo-pin').value !== 'demo') {
-      showToast('Revisa tu usuario y clave de demostración');
+      showToast('Revisa tu usuario y clave');
       return;
     }
     currentUser = user;
@@ -404,7 +266,7 @@ async function loadRemoteState() {
   } catch (error) { console.error('Error loading campaign:', error); }
   if (!currentCampaign) {
     const contactWithCampaign = state.contacts.find(contact => contact.campaign_id);
-    if (contactWithCampaign?.campaign_id) currentCampaign = { id: contactWithCampaign.campaign_id, name: 'Campaña activa' };
+    if (contactWithCampaign?.campaign_id) currentCampaign = { id: contactWithCampaign.campaign_id, name: 'Encuesta GIZ' };
   }
   try {
     const { data: outcomes } = await supabaseClient.from('outcomes').select('id, code');
@@ -438,7 +300,7 @@ function updateShell() {
   login.hidden = true;
   shell.classList.toggle('operator-shell', currentUser.role === 'operator');
   document.getElementById('sidebar').innerHTML = currentUser.role === 'operator' ? operatorSidebar() : supervisorSidebar();
-  document.querySelector('.crumb').innerHTML = `<span class="crumb-root">Campañas</span><b class="crumb-sep">/</b><strong class="crumb-active">Clima Social · GIZ</strong>`;
+  document.querySelector('.crumb').innerHTML = `<span class="crumb-root">Campañas</span><b class="crumb-sep">/</b><strong class="crumb-active">Encuesta GIZ</strong>`;
   document.querySelector('.top-avatar').textContent = currentUser.initials;
   document.querySelector('.top-user-name').textContent = currentUser.name;
   document.querySelector('.sync-status').innerHTML = backendMode === 'supabase' ? '<span class="live-dot"></span> Conectado a Supabase' : '<span class="live-dot"></span> Modo demo local';
@@ -448,17 +310,15 @@ function operatorSidebar() {
   const assigned = visibleContacts();
   return `
     <div class="brand">
-      <div class="brand-logos-wrap">
-        <img class="brand-logo-cs" src="/logo-clima-social.png" alt="Clima Social" onerror="this.src='/logo-icon.svg'" />
-        <span class="brand-divider"></span>
-        <img class="brand-logo-giz" src="/logo-giz.png" alt="GIZ" onerror="this.style.display='none'" />
-      </div>
-      <div class="brand-info">
-        <strong>Clima Social</strong>
-        <span>Mi espacio · Operación GIZ</span>
+      <div class="brand-header-simple">
+        <img class="brand-logo-round" src="/logo-icon.svg" alt="Clima Social" />
+        <div class="brand-text-simple">
+          <strong>Clima Social</strong>
+          <span class="brand-sub-discreet">Encuesta GIZ</span>
+        </div>
       </div>
     </div>
-    <div class="workspace-label">MI ESPACIO DE TRABAJO</div>
+    <div class="workspace-label">MI ESPACIO</div>
     <nav class="main-nav" aria-label="Navegación principal">
       <button class="nav-item ${activeView === 'operator' ? 'active' : ''}" data-view="operator">
         <span class="nav-icon">
@@ -476,8 +336,8 @@ function operatorSidebar() {
     </nav>
     <div class="sidebar-campaign">
       <div class="campaign-label"><span class="live-dot"></span> CAMPAÑA ACTIVA</div>
-      <strong>Clima Social · GIZ</strong>
-      <span>Base asignada</span>
+      <strong>Encuesta GIZ</strong>
+      <span>Fase III · 2026</span>
       <div class="mini-progress"><span style="width:${percentage(managedCount(assigned), assigned.length)}"></span></div>
       <div class="campaign-meta">
         <span>${percentage(managedCount(assigned), assigned.length)} avance</span>
@@ -493,7 +353,7 @@ function operatorSidebar() {
         </div>
         <span class="user-menu-symbol">•••</span>
       </div>
-      <div class="secure-note"><span>🛡️</span> Datos protegidos y auditados</div>
+      <div class="secure-note"><span>🛡️</span> Sistema protegido</div>
     </div>
   `;
 }
@@ -502,14 +362,12 @@ function supervisorSidebar() {
   const progress = percentage(managedCount(), state.contacts.length);
   return `
     <div class="brand">
-      <div class="brand-logos-wrap">
-        <img class="brand-logo-cs" src="/logo-clima-social.png" alt="Clima Social" onerror="this.src='/logo-icon.svg'" />
-        <span class="brand-divider"></span>
-        <img class="brand-logo-giz" src="/logo-giz.png" alt="GIZ" onerror="this.style.display='none'" />
-      </div>
-      <div class="brand-info">
-        <strong>Clima Social</strong>
-        <span>Supervisión · GIZ</span>
+      <div class="brand-header-simple">
+        <img class="brand-logo-round" src="/logo-icon.svg" alt="Clima Social" />
+        <div class="brand-text-simple">
+          <strong>Clima Social</strong>
+          <span class="brand-sub-discreet">Encuesta GIZ</span>
+        </div>
       </div>
     </div>
     <div class="workspace-label">SUPERVISIÓN</div>
