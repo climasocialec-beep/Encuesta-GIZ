@@ -471,6 +471,129 @@ function operatorMonitoringTable() {
   return `<div class="table-wrap"><table class="data-table monitoring-table"><thead><tr><th>Operador/a</th><th>Asignados</th><th>Gestionados</th><th>Efectivas (En vivo)</th><th>Reprogramadas</th><th>No contestan</th><th>Rechazos</th><th>Jornada</th><th>Última actividad</th></tr></thead><tbody>${operators.map(user => { const assigned = state.contacts.filter(contact => contact.operator === user.initials); const managed = managedCount(assigned); const effective = assigned.filter(contact => contact.status === 'effective').length; const pending = assigned.filter(contact => contact.status === 'pending' && contact.attempts > 0).length; const noAnswer = assigned.filter(contact => contact.status === 'no-answer').length; const refused = assigned.filter(contact => contact.status === 'refused').length; const active = Boolean(getActiveShift(user)); const last = state.history.find(item => item.operator === user.name); return `<tr><td><div class="operator-cell"><div class="small-avatar">${user.initials}</div><div><strong>${user.name}</strong><span>${user.username}</span></div></div></td><td>${assigned.length}</td><td><strong>${managed}</strong></td><td class="metric-effective">${effective}</td><td class="metric-pending">${pending}</td><td class="metric-no-answer">${noAnswer}</td><td class="metric-refused">${refused}</td><td><span class="status-pill ${active ? 'on' : 'off'}">${active ? 'En jornada' : 'Sin iniciar'}</span></td><td>${last ? escapeHtml(last.date) : 'Sin actividad'}</td></tr>`; }).join('')}</tbody></table></div>`;
 }
 
+function renderFunnelChart(contacts = state.contacts) {
+  const total = contacts.length;
+  const managed = managedCount(contacts);
+  const effective = contacts.filter(c => c.status === 'effective').length;
+  const rescheduled = contacts.filter(c => c.status === 'pending' && c.attempts > 0).length;
+
+  const pctManaged = total ? `${Math.round((managed / total) * 100)}%` : '0%';
+  const pctConnected = total ? `${Math.round(((effective + rescheduled) / total) * 100)}%` : '0%';
+  const pctEffective = total ? `${Math.round((effective / total) * 100)}%` : '0%';
+
+  return `
+    <article class="card chart-card">
+      <div class="card-header">
+        <div>
+          <h2 class="card-title"><span>🔻</span> Embudo de Conversión</h2>
+          <p class="card-subtitle">Avance progresivo desde base hasta encuesta efectiva</p>
+        </div>
+      </div>
+      <div class="funnel-container" style="padding: 16px 20px; display: flex; flex-direction: column; gap: 12px;">
+        <div class="funnel-step">
+          <div style="display: flex; justify-content: space-between; font-size: 12px; margin-bottom: 4px;">
+            <span><strong>1. Base total cargada</strong></span>
+            <span><strong>${total}</strong> (100%)</span>
+          </div>
+          <div style="height: 14px; background: var(--bg-canvas); border-radius: 6px; overflow: hidden; border: 1px solid var(--border-subtle);">
+            <div style="height: 100%; width: 100%; background: #64748b; border-radius: 6px;"></div>
+          </div>
+        </div>
+
+        <div class="funnel-step">
+          <div style="display: flex; justify-content: space-between; font-size: 12px; margin-bottom: 4px;">
+            <span><strong>2. Llamadas realizadas</strong></span>
+            <span><strong>${managed}</strong> (${pctManaged})</span>
+          </div>
+          <div style="height: 14px; background: var(--bg-canvas); border-radius: 6px; overflow: hidden; border: 1px solid var(--border-subtle);">
+            <div style="height: 100%; width: ${pctManaged}; background: #3b82f6; border-radius: 6px;"></div>
+          </div>
+        </div>
+
+        <div class="funnel-step">
+          <div style="display: flex; justify-content: space-between; font-size: 12px; margin-bottom: 4px;">
+            <span><strong>3. Contacto logrado (Efectivas + Reprogramadas)</strong></span>
+            <span><strong>${effective + rescheduled}</strong> (${pctConnected})</span>
+          </div>
+          <div style="height: 14px; background: var(--bg-canvas); border-radius: 6px; overflow: hidden; border: 1px solid var(--border-subtle);">
+            <div style="height: 100%; width: ${pctConnected}; background: #f59e0b; border-radius: 6px;"></div>
+          </div>
+        </div>
+
+        <div class="funnel-step">
+          <div style="display: flex; justify-content: space-between; font-size: 12px; margin-bottom: 4px;">
+            <span><strong>4. Encuestas en vivo completadas</strong></span>
+            <span style="color: #10b981;"><strong>${effective}</strong> (${pctEffective})</span>
+          </div>
+          <div style="height: 14px; background: var(--bg-canvas); border-radius: 6px; overflow: hidden; border: 1px solid var(--border-subtle);">
+            <div style="height: 100%; width: ${Math.max(4, parseInt(pctEffective) || 0)}%; background: #10b981; border-radius: 6px;"></div>
+          </div>
+        </div>
+      </div>
+    </article>
+  `;
+}
+
+function renderHourlyChart(history = state.history) {
+  const buckets = [
+    { label: '08-10h', start: 8, end: 10, total: 0, effective: 0 },
+    { label: '10-12h', start: 10, end: 12, total: 0, effective: 0 },
+    { label: '12-14h', start: 12, end: 14, total: 0, effective: 0 },
+    { label: '14-16h', start: 14, end: 16, total: 0, effective: 0 },
+    { label: '16-18h', start: 16, end: 18, total: 0, effective: 0 },
+    { label: '18-20h', start: 18, end: 20, total: 0, effective: 0 }
+  ];
+
+  history.forEach(item => {
+    let hour = -1;
+    if (item.date) {
+      const match = item.date.match(/(\d{1,2}):(\d{2})/);
+      if (match) hour = parseInt(match[1], 10);
+    }
+    if (hour >= 0) {
+      const b = buckets.find(b => hour >= b.start && hour < b.end) || buckets[buckets.length - 1];
+      if (b) {
+        b.total += 1;
+        if (item.result === 'effective') b.effective += 1;
+      }
+    }
+  });
+
+  const maxTotal = Math.max(1, ...buckets.map(b => b.total));
+
+  return `
+    <article class="card chart-card">
+      <div class="card-header">
+        <div>
+          <h2 class="card-title"><span>⏰</span> Actividad por Franja Horaria</h2>
+          <p class="card-subtitle">Horas con mayor efectividad de llamada</p>
+        </div>
+      </div>
+      <div style="padding: 16px 20px;">
+        <div style="display: flex; justify-content: space-between; align-items: flex-end; height: 110px; gap: 8px; border-bottom: 1px solid var(--border-subtle); padding-bottom: 8px;">
+          ${buckets.map(b => {
+            const hTotal = Math.max(8, Math.round((b.total / maxTotal) * 90));
+            const hEff = b.total ? Math.max(4, Math.round((b.effective / maxTotal) * 90)) : 0;
+            return `
+              <div style="flex: 1; display: flex; flex-direction: column; align-items: center; gap: 4px; height: 100%; justify-content: flex-end;">
+                <div style="display: flex; gap: 3px; align-items: flex-end;">
+                  <div style="width: 12px; height: ${hTotal}px; background: #94a3b8; border-radius: 3px 3px 0 0;" title="Total: ${b.total}"></div>
+                  <div style="width: 12px; height: ${hEff}px; background: #10b981; border-radius: 3px 3px 0 0;" title="Efectivas: ${b.effective}"></div>
+                </div>
+                <span style="font-size: 10px; font-family: var(--font-mono); color: var(--text-muted);">${b.label}</span>
+              </div>
+            `;
+          }).join('')}
+        </div>
+        <div style="display: flex; gap: 16px; justify-content: center; margin-top: 10px; font-size: 11px; color: var(--text-muted);">
+          <span style="display: flex; align-items: center; gap: 5px;"><span style="width: 8px; height: 8px; background: #94a3b8; border-radius: 2px;"></span> Total llamadas</span>
+          <span style="display: flex; align-items: center; gap: 5px;"><span style="width: 8px; height: 8px; background: #10b981; border-radius: 2px;"></span> Efectivas</span>
+        </div>
+      </div>
+    </article>
+  `;
+}
+
 function renderSupervisorDashboard() {
   const total = state.contacts.length;
   const assigned = state.contacts.filter(contact => contact.operator).length;
@@ -481,7 +604,56 @@ function renderSupervisorDashboard() {
   const refused = count('refused');
   const discarded = count('discarded');
   const activeOperators = appUsers.filter(user => user.role === 'operator' && getActiveShift(user)).length;
-  return `${pageHeading('Monitoreo de campo', 'Estado de la operación GIZ', 'Supervisa en tiempo real el avance de encuestas asistidas, reprogramaciones y reintentos.', '<button class="button-primary" data-view-action="import" onclick="event.stopPropagation(); openImportView()"><span class="plus">+</span> Importar base</button>')}<section class="metric-grid supervisor-kpis">${metricCard('Operadores en jornada', activeOperators, 'de 3 operadores', '')}${metricCard('Contactos asignados', assigned, `de ${total} en base`, '')}${metricCard('Gestiones realizadas', managed, 'llamadas registradas', '')}${metricCard('Encuestas en vivo', effective, 'efectivas Kobo', 'trend-up')}${metricCard('Reprogramadas', rescheduled, 'citas pendientes', '')}${metricCard('No contestan', noAnswer, 'reintentos 1 y 2', '')}${metricCard('Incontactables', discarded, '3 intentos completados', '')}</section><section class="supervisor-focus-grid"><article class="card operator-monitoring-card"><div class="card-header"><div><h2 class="card-title">Seguimiento por operador/a</h2><p class="card-subtitle">Detalle operativo actualizado con cada llamada</p></div><span class="status-pill on">● En vivo</span></div>${operatorMonitoringTable()}</article><article class="card operation-summary-card"><div class="card-header"><div><h2 class="card-title">Estado general</h2><p class="card-subtitle">Distribución actual de la base</p></div></div><div class="operation-summary-list"><div><span class="summary-dot assigned"></span><strong>Asignados</strong><b>${assigned}</b></div><div><span class="summary-dot managed"></span><strong>Gestionados</strong><b>${managed}</b></div><div><span class="summary-dot effective"></span><strong>Efectivas en vivo</strong><b>${effective}</b></div><div><span class="summary-dot pending"></span><strong>Reprogramadas</strong><b>${rescheduled}</b></div><div><span class="summary-dot no-answer"></span><strong>No contestan</strong><b>${noAnswer}</b></div><div><span class="summary-dot refused"></span><strong>Rechazaron</strong><b>${refused}</b></div></div></article><article class="card supervisor-activity-card"><div class="card-header"><div><h2 class="card-title">Última actividad</h2><p class="card-subtitle">Movimientos recientes del equipo</p></div><button class="button-secondary" data-view-action="history">Ver historial</button></div>${activityList()}</article></section>`;
+
+  return `
+    ${pageHeading('Monitoreo de campo', 'Estado de la operación GIZ', 'Supervisa en tiempo real el avance de encuestas asistidas, reprogramaciones y reintentos.', '<div style="display:flex;gap:8px;"><button class="button-secondary" onclick="exportHistoryXlsx()">⬇ Exportar Excel</button><button class="button-primary" data-view-action="import" onclick="event.stopPropagation(); openImportView()"><span class="plus">+</span> Importar base</button></div>')}
+    <section class="metric-grid supervisor-kpis">
+      ${metricCard('Operadores en jornada', activeOperators, 'de 3 operadores', '')}
+      ${metricCard('Contactos asignados', assigned, `de ${total} en base`, '')}
+      ${metricCard('Gestiones realizadas', managed, 'llamadas registradas', '')}
+      ${metricCard('Encuestas en vivo', effective, 'efectivas Kobo', 'trend-up')}
+      ${metricCard('Reprogramadas', rescheduled, 'citas pendientes', '')}
+      ${metricCard('No contestan', noAnswer, 'reintentos 1 y 2', '')}
+      ${metricCard('Incontactables', discarded, '3 intentos completados', '')}
+    </section>
+
+    <section class="supervisor-focus-grid">
+      <article class="card operator-monitoring-card">
+        <div class="card-header">
+          <div><h2 class="card-title">Seguimiento por operador/a</h2><p class="card-subtitle">Detalle operativo actualizado con cada llamada</p></div>
+          <span class="status-pill on">● En vivo</span>
+        </div>
+        ${operatorMonitoringTable()}
+      </article>
+
+      <article class="card operation-summary-card">
+        <div class="card-header">
+          <div><h2 class="card-title">Estado general</h2><p class="card-subtitle">Distribución actual de la base</p></div>
+        </div>
+        <div class="operation-summary-list">
+          <div><span class="summary-dot assigned"></span><strong>Asignados</strong><b>${assigned}</b></div>
+          <div><span class="summary-dot managed"></span><strong>Gestionados</strong><b>${managed}</b></div>
+          <div><span class="summary-dot effective"></span><strong>Efectivas en vivo</strong><b>${effective}</b></div>
+          <div><span class="summary-dot pending"></span><strong>Reprogramadas</strong><b>${rescheduled}</b></div>
+          <div><span class="summary-dot no-answer"></span><strong>No contestan</strong><b>${noAnswer}</b></div>
+          <div><span class="summary-dot refused"></span><strong>Rechazaron</strong><b>${refused}</b></div>
+        </div>
+      </article>
+
+      <article class="card supervisor-activity-card">
+        <div class="card-header">
+          <div><h2 class="card-title">Última actividad</h2><p class="card-subtitle">Movimientos recientes del equipo</p></div>
+          <button class="button-secondary" data-view-action="history">Ver historial</button>
+        </div>
+        ${activityList()}
+      </article>
+    </section>
+
+    <section class="dashboard-grid" style="margin-top: 20px;">
+      ${renderFunnelChart()}
+      ${renderHourlyChart()}
+    </section>
+  `;
 }
 
 function renderDashboard() {
@@ -530,35 +702,6 @@ function renderOperator() {
 
 function renderContactColumn(title, description, items, tone, selectedContact) {
   return `<section class="contact-column ${tone}"><div class="contact-column-header"><div><h2>${title}</h2><p>${description}</p></div><strong>${items.length}</strong></div><div class="column-search-wrap"><input class="column-search" data-column-search="${tone}" type="search" placeholder="Buscar por nombre..." aria-label="Buscar en ${title}" /></div><div class="contact-column-list">${items.length ? items.map(item => `<button class="contact-board-card ${item.id === selectedContact.id ? 'selected' : ''}" data-contact-id="${item.id}"><div class="contact-board-card-top"><span class="contact-board-initials">${initials(item.name)}</span><span class="contact-board-status">${item.attempts ? `${item.attempts} intento${item.attempts === 1 ? '' : 's'}` : 'Nuevo'}</span></div><strong>${escapeHtml(item.name)}</strong><span>${escapeHtml(item.phone)}</span><small>${escapeHtml(item.parish)} · ${escapeHtml(item.id)}</small></button>`).join('') : '<div class="column-empty">No hay contactos aquí.</div>'}</div></section>`;
-}
-
-function contactStatusLabel(contact) {
-  if (contact.status === 'pending' && contact.attempts > 0) return isPreviousDay(contact) ? `Pendiente · ${previousDateLabel(contact.lastAttemptAt)}` : 'Pendiente';
-  if (contact.status === 'no-answer' && isPreviousDay(contact)) return `No contesta · ${previousDateLabel(contact.lastAttemptAt)}`;
-  return statusLabels[contact.status] || 'Pendiente';
-}
-
-function dayKey(value) { return value ? new Intl.DateTimeFormat('en-CA', { timeZone: 'America/Guayaquil', year: 'numeric', month: '2-digit', day: '2-digit' }).format(new Date(value)) : ''; }
-function isPreviousDay(contact) { const last = dayKey(contact.lastAttemptAt); return Boolean(last && last !== dayKey(new Date())); }
-function previousDateLabel(value) { return value ? new Intl.DateTimeFormat('es-EC', { timeZone: 'America/Guayaquil', day: '2-digit', month: '2-digit' }).format(new Date(value)) : 'fecha anterior'; }
-
-function getActiveShift(user = currentUser) {
-  if (!user) return null;
-  return state.shifts.find(shift => !shift.endedAt && (shift.operatorId === user.authId || shift.username === user.username || shift.username === user.name || shift.username === user.email));
-}
-
-function lastShiftFor(username) {
-  return state.shifts.filter(shift => shift.username === username).sort((a, b) => new Date(b.startedAt) - new Date(a.startedAt))[0];
-}
-
-function latestShiftFor(user) {
-  const profile = [...remoteProfiles.values()].find(item => item.initials === user.initials);
-  return state.shifts.filter(shift => (profile?.id && shift.operatorId === profile.id) || shift.username === user.username || shift.username === user.name).sort((a, b) => new Date(b.startedAt) - new Date(a.startedAt))[0];
-}
-
-function formatDateTime(value) {
-  if (!value) return '—';
-  return new Intl.DateTimeFormat('es-EC', { dateStyle: 'short', timeStyle: 'short' }).format(new Date(value));
 }
 
 function contactGreetingName(contact) {
@@ -732,24 +875,411 @@ function renderOperatorBoard() {
   return `${pageHeading('Jornada de hoy', `Hola, ${escapeHtml(currentUser.name.split(' ')[0])}`, `${assigned.length} contactos asignados · ${managed} ya gestionados.`, '<button class="button-secondary" id="end-shift">Finalizar jornada</button>')}<div class="shift-live-note"><span class="live-dot"></span> Jornada iniciada ${formatDateTime(activeShift.startedAt)} · Tiempo transcurrido: ${formatDuration(activeShift.startedAt)}</div><div class="operator-summary"><div><span>Por llamar</span><strong>${normal.length}</strong></div><div><span>Pendientes</span><strong>${pending.length}</strong></div><div><span>No contestan</span><strong>${noAnswer.length}</strong></div></div><section class="operator-workspace"><div class="selected-workspace">${renderSelectedContact(contact)}</div><aside class="contact-board-side">${renderContactColumn('Por llamar', 'Contactos nuevos', normal, 'column-normal', contact)}${renderContactColumn('Pendientes', 'Por reintentar / Reprogramados', pending, 'column-pending', contact)}${renderContactColumn('No contestan', 'Volver a llamar', noAnswer, 'column-no-answer', contact)}</aside></section>`;
 }
 
+let reassignFormState = { fromOp: 'TP', toOp: 'AY', base: 'all', scope: 'pending' };
+
+function getReassignCandidates(fromOp, base, scope) {
+  return state.contacts.filter(contact => {
+    if (fromOp === 'unassigned') {
+      if (contact.operator) return false;
+    } else {
+      if (contact.operator !== fromOp) return false;
+    }
+    if (base !== 'all' && (contact.baseName || 'Sin especificar') !== base) {
+      return false;
+    }
+    if (scope === 'pending') {
+      return contact.status !== 'effective' && contact.status !== 'refused' && contact.status !== 'wrong' && contact.status !== 'discarded';
+    } else if (scope === 'no-answer') {
+      return contact.status === 'no-answer';
+    } else if (scope === 'uncalled') {
+      return contact.attempts === 0;
+    }
+    return true;
+  });
+}
+
+function renderReassignmentCard() {
+  const operators = appUsers.filter(u => u.role === 'operator');
+  const bases = [...new Set(state.contacts.map(c => c.baseName).filter(Boolean))].sort();
+  const candidates = getReassignCandidates(reassignFormState.fromOp, reassignFormState.base, reassignFormState.scope);
+  const fromUserName = reassignFormState.fromOp === 'unassigned' ? 'Sin Asignar' : (operators.find(o => o.initials === reassignFormState.fromOp)?.name || reassignFormState.fromOp);
+  const toUserName = operators.find(o => o.initials === reassignFormState.toOp)?.name || reassignFormState.toOp;
+
+  return `
+    <article class="card quick-assign-card" style="margin-top:24px;">
+      <div class="page-card-header">
+        <div>
+          <h2 class="card-title"><span>⇄</span> Reasignación Flexible de Contactos</h2>
+          <p class="card-subtitle">Transfiere contactos entre operadores con filtros por lote y estado.</p>
+        </div>
+      </div>
+      
+      <div class="reassign-grid" style="display:grid;grid-template-columns:repeat(auto-fit, minmax(200px, 1fr));gap:14px;margin:16px 0;">
+        <div class="form-group" style="display:flex;flex-direction:column;gap:5px;">
+          <label style="font-weight:700;font-size:11px;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.5px;">1. Desde (Origen):</label>
+          <select id="reassign-from-select" class="filter-select" style="width:100%;">
+            ${operators.map(op => {
+              const count = state.contacts.filter(c => c.operator === op.initials).length;
+              return `<option value="${op.initials}" ${reassignFormState.fromOp === op.initials ? 'selected' : ''}>${op.name} (${count} contactos)</option>`;
+            }).join('')}
+            <option value="unassigned" ${reassignFormState.fromOp === 'unassigned' ? 'selected' : ''}>Sin Asignar (${state.contacts.filter(c => !c.operator).length})</option>
+          </select>
+        </div>
+
+        <div class="form-group" style="display:flex;flex-direction:column;gap:5px;">
+          <label style="font-weight:700;font-size:11px;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.5px;">2. Hacia (Destino):</label>
+          <select id="reassign-to-select" class="filter-select" style="width:100%;">
+            ${operators.map(op => `
+              <option value="${op.initials}" ${reassignFormState.toOp === op.initials ? 'selected' : ''}>${op.name}</option>
+            `).join('')}
+          </select>
+        </div>
+
+        <div class="form-group" style="display:flex;flex-direction:column;gap:5px;">
+          <label style="font-weight:700;font-size:11px;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.5px;">3. Base / Lote:</label>
+          <select id="reassign-base-select" class="filter-select" style="width:100%;">
+            <option value="all" ${reassignFormState.base === 'all' ? 'selected' : ''}>Todos los lotes</option>
+            ${bases.map(b => `<option value="${escapeHtml(b)}" ${reassignFormState.base === b ? 'selected' : ''}>${escapeHtml(b)}</option>`).join('')}
+          </select>
+        </div>
+
+        <div class="form-group" style="display:flex;flex-direction:column;gap:5px;">
+          <label style="font-weight:700;font-size:11px;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.5px;">4. Estado:</label>
+          <select id="reassign-scope-select" class="filter-select" style="width:100%;">
+            <option value="pending" ${reassignFormState.scope === 'pending' ? 'selected' : ''}>Solo pendientes / por llamar</option>
+            <option value="no-answer" ${reassignFormState.scope === 'no-answer' ? 'selected' : ''}>Solo no contesta (reintentos)</option>
+            <option value="uncalled" ${reassignFormState.scope === 'uncalled' ? 'selected' : ''}>Solo nuevos (0 intentos)</option>
+            <option value="all" ${reassignFormState.scope === 'all' ? 'selected' : ''}>Todos los registros</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="reassign-summary-box" style="background:var(--bg-canvas);padding:14px 18px;border-radius:8px;border:1px solid var(--border-subtle);display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;">
+        <div>
+          <span style="font-size:12px;color:var(--text-muted);">Acción preparada:</span>
+          <strong style="display:block;font-size:14px;color:var(--text-main);margin-top:2px;">
+            Transferir <span style="color:var(--cs-plum);font-weight:800;">${candidates.length} contactos</span> de <span>${escapeHtml(fromUserName)}</span> hacia <span style="color:#10b981;font-weight:700;">${escapeHtml(toUserName)}</span>
+          </strong>
+        </div>
+        <button class="button-primary" id="execute-custom-reassign-btn" type="button" ${candidates.length ? '' : 'disabled'}>
+          <span>⇄ Ejecutar Reasignación (${candidates.length})</span>
+        </button>
+      </div>
+    </article>
+  `;
+}
+
+async function executeCustomReassignment() {
+  if (currentUser.role !== 'supervisor') return;
+  const fromOp = reassignFormState.fromOp;
+  const toOp = reassignFormState.toOp;
+  const targetUser = appUsers.find(u => u.initials === toOp);
+  if (!targetUser) return showToast('Selecciona un operador de destino válido.');
+  if (fromOp === toOp) return showToast('El origen y el destino no pueden ser el mismo operador.');
+
+  const candidates = getReassignCandidates(fromOp, reassignFormState.base, reassignFormState.scope);
+  if (!candidates.length) return showToast('No hay contactos que coincidan con los filtros.');
+
+  const fromName = fromOp === 'unassigned' ? 'Sin Asignar' : (appUsers.find(u => u.initials === fromOp)?.name || fromOp);
+  const confirmed = window.confirm(`¿Confirmas transferir ${candidates.length} contactos de "${fromName}" a "${targetUser.name}"?`);
+  if (!confirmed) return;
+
+  if (backendMode === 'supabase') {
+    showToast('Reasignando en Supabase...');
+    const targetProfile = [...remoteProfiles.values()].find(u => u.initials === toOp);
+    const ids = candidates.map(c => c.remoteId || c.id);
+    const { error } = await supabaseClient.from('contacts').update({ assigned_operator_id: targetProfile?.id || null }).in('id', ids);
+    if (error) { showToast('Error en Supabase: ' + error.message); return; }
+    await loadRemoteState();
+    showToast(`✓ ${candidates.length} contactos reasignados a ${targetUser.name}`);
+    render();
+    return;
+  }
+  candidates.forEach(c => { c.operator = toOp; });
+  saveState();
+  showToast(`✓ ${candidates.length} contactos reasignados a ${targetUser.name}`);
+  render();
+}
+
 function renderContacts() {
   const contacts = visibleContacts();
   const title = currentUser.role === 'operator' ? 'Mis contactos' : 'Todos los contactos';
   const showAssignment = currentUser.role === 'supervisor';
   const bases = [...new Set(contacts.map(contact => contact.baseName).filter(Boolean))].sort();
   const baseOptions = bases.map(base => `<option value="${escapeHtml(base)}">${escapeHtml(base)}</option>`).join('');
-  return `${pageHeading('Base de contactos', title, currentUser.role === 'operator' ? 'Estos son únicamente los registros que te asignó el supervisor.' : 'Consulta el estado de cada registro y asigna el trabajo a tu equipo.', currentUser.role === 'supervisor' ? '<button class="button-primary" data-view-action="import"><span class="plus">+</span> Importar base</button>' : '')}<article class="card contacts-card"><div class="page-card-header"><div><h2 class="card-title">${contacts.length.toLocaleString('es-EC')} registros</h2><p class="card-subtitle">Actualizado en tiempo real</p></div><div class="filters"><input class="search-input" id="contact-search" placeholder="Buscar nombre, teléfono o ID..." /><select class="filter-select" id="base-filter"><option value="">Todas las bases</option>${baseOptions}</select><select class="filter-select" id="status-filter"><option value="">Todos los estados</option><option value="effective">Efectivas</option><option value="pending">Pendientes</option><option value="no-answer">No contesta</option><option value="wrong">Número incorrecto</option><option value="refused">Rechazaron la encuesta</option><option value="discarded">Descartados</option></select></div></div><div class="table-wrap"><table class="data-table" id="contacts-table"><thead><tr><th>Contacto</th><th>Identificador</th><th>Provincia</th><th>Base</th><th>Estado</th><th>Intentos</th><th>Última gestión</th>${showAssignment ? '<th>Asignar a</th>' : ''}</tr></thead><tbody>${contactRows(contacts, showAssignment)}</tbody></table></div></article>`;
+
+  return `
+    ${pageHeading('Base de contactos', title, currentUser.role === 'operator' ? 'Estos son únicamente los registros que te asignó el supervisor.' : 'Consulta el estado de cada registro y administra el trabajo de tu equipo.', showAssignment ? '<div style="display:flex;gap:8px;"><button class="button-secondary" onclick="exportHistoryXlsx()">⬇ Exportar Excel</button><button class="button-primary" data-view-action="import"><span class="plus">+</span> Importar base</button></div>' : '')}
+    <article class="card contacts-card">
+      <div class="page-card-header">
+        <div>
+          <h2 class="card-title">${contacts.length.toLocaleString('es-EC')} registros</h2>
+          <p class="card-subtitle">Actualizado en tiempo real</p>
+        </div>
+        <div class="filters">
+          <input class="search-input" id="contact-search" placeholder="Buscar nombre, teléfono o ID..." />
+          <select class="filter-select" id="base-filter"><option value="">Todas las bases</option>${baseOptions}</select>
+          <select class="filter-select" id="status-filter">
+            <option value="">Todos los estados</option>
+            <option value="effective">Efectivas</option>
+            <option value="pending">Pendientes</option>
+            <option value="no-answer">No contesta</option>
+            <option value="wrong">Número incorrecto</option>
+            <option value="refused">Rechazaron la encuesta</option>
+            <option value="discarded">Descartados</option>
+          </select>
+        </div>
+      </div>
+      <div class="table-wrap">
+        <table class="data-table" id="contacts-table">
+          <thead>
+            <tr>
+              <th>Contacto</th>
+              <th>Identificador</th>
+              <th>Provincia</th>
+              <th>Base</th>
+              <th>Estado</th>
+              <th>Intentos</th>
+              <th>Última gestión</th>
+              ${showAssignment ? '<th>Asignar a</th>' : ''}
+            </tr>
+          </thead>
+          <tbody>
+            ${contactRows(contacts, showAssignment)}
+          </tbody>
+        </table>
+      </div>
+    </article>
+    ${showAssignment ? renderReassignmentCard() : ''}
+  `;
 }
-function contactRows(contacts, showAssignment = false) { return contacts.length ? contacts.map(contact => `<tr><td><div class="operator-cell"><div class="small-avatar">${initials(contact.name)}</div><div><strong>${escapeHtml(contact.name)}</strong><span>${escapeHtml(contact.phone)}</span></div></div></td><td><span class="mono">${escapeHtml(contact.id)}</span></td><td>${escapeHtml(contact.location || 'No tiene información')}</td><td><span class="base-tag">${escapeHtml(contact.baseName || 'Sin especificar')}</span></td><td><span class="table-status ${contact.status}">${contactStatusLabel(contact)}</span></td><td>${contact.attempts}</td><td>${escapeHtml(contact.last)}</td>${showAssignment ? `<td><select class="assign-select" data-assign-contact="${contact.id}"><option value="">Sin asignar</option>${appUsers.filter(user => user.role === 'operator').map(user => `<option value="${user.initials}" ${contact.operator === user.initials ? 'selected' : ''}>${user.name}</option>`).join('')}</select></td>` : ''}</tr>`).join('') : `<tr><td colspan="${showAssignment ? 8 : 7}"><div class="empty-state">No hay contactos que coincidan con la búsqueda.</div></td></tr>`; }
+
+function contactRows(contacts, showAssignment = false) {
+  return contacts.length ? contacts.map(contact => `
+    <tr>
+      <td>
+        <div class="operator-cell">
+          <div class="small-avatar">${initials(contact.name)}</div>
+          <div>
+            <strong>${escapeHtml(contact.name)}</strong>
+            <span>${escapeHtml(contact.phone)}</span>
+          </div>
+        </div>
+      </td>
+      <td><span class="mono">${escapeHtml(contact.id)}</span></td>
+      <td>${escapeHtml(contact.location || 'No tiene información')}</td>
+      <td><span class="base-tag">${escapeHtml(contact.baseName || 'Sin especificar')}</span></td>
+      <td><span class="table-status ${contact.status}">${contactStatusLabel(contact)}</span></td>
+      <td>${contact.attempts}</td>
+      <td>${escapeHtml(contact.last)}</td>
+      ${showAssignment ? `
+        <td>
+          <select class="assign-select" data-assign-contact="${contact.id}">
+            <option value="">Sin asignar</option>
+            ${appUsers.filter(user => user.role === 'operator').map(user => `<option value="${user.initials}" ${contact.operator === user.initials ? 'selected' : ''}>${user.name}</option>`).join('')}
+          </select>
+        </td>
+      ` : ''}
+    </tr>
+  `).join('') : `<tr><td colspan="${showAssignment ? 8 : 7}"><div class="empty-state">No hay contactos que coincidan con la búsqueda.</div></td></tr>`;
+}
+
+async function renameBase(oldName) {
+  if (currentUser.role !== 'supervisor') return;
+  const newName = window.prompt(`Ingresa el nuevo nombre para la base "${oldName}":`, oldName);
+  if (!newName || newName.trim() === '' || newName.trim() === oldName) return;
+
+  const trimmedNew = newName.trim();
+  showToast('Renombrando lote...');
+
+  if (backendMode === 'supabase') {
+    const { error } = await supabaseClient.rpc('admin_rename_base', { p_old_name: oldName, p_new_name: trimmedNew });
+    if (error) {
+      const { error: patchError } = await supabaseClient.from('contacts').update({ extra_data: { base_name: trimmedNew } }).match({ 'extra_data->>base_name': oldName });
+    }
+    await loadRemoteState();
+  } else {
+    state.contacts.forEach(c => {
+      if ((c.baseName || 'Sin especificar') === oldName) c.baseName = trimmedNew;
+    });
+    saveState();
+  }
+  showToast(`Base renombrada a "${trimmedNew}"`);
+  render();
+}
 
 function renderBaseManagement() {
   const bases = [...new Set(state.contacts.map(contact => contact.baseName || 'Sin especificar'))].sort();
-  return `<article class="card base-management"><div class="page-card-header"><div><h2 class="card-title">Bases cargadas</h2><p class="card-subtitle">Administra las bases completas desde aquí</p></div></div><div class="base-management-list">${bases.length ? bases.map(base => { const contacts = state.contacts.filter(contact => (contact.baseName || 'Sin especificar') === base); const managed = contacts.filter(contact => contact.attempts > 0).length; const assigned = contacts.filter(contact => contact.operator).length; const unassigned = contacts.length - assigned; return `<div class="base-management-row"><div class="base-management-icon">▦</div><div class="base-management-copy"><strong>${escapeHtml(base)}</strong><span>${contacts.length} contactos · ${assigned} asignados · ${unassigned} sobrantes</span></div><button class="delete-base" data-delete-base="${escapeHtml(base)}" type="button">Eliminar</button></div>`; }).join('') : '<div class="empty-state">No hay bases cargadas.</div>'}</div></article>`;
+  return `
+    <article class="card base-management">
+      <div class="page-card-header">
+        <div>
+          <h2 class="card-title">Bases cargadas</h2>
+          <p class="card-subtitle">Administra los lotes cargados en el sistema</p>
+        </div>
+      </div>
+      <div class="base-management-list">
+        ${bases.length ? bases.map(base => {
+          const contacts = state.contacts.filter(contact => (contact.baseName || 'Sin especificar') === base);
+          const managed = contacts.filter(contact => contact.attempts > 0).length;
+          const assigned = contacts.filter(contact => contact.operator).length;
+          const unassigned = contacts.length - assigned;
+          return `
+            <div class="base-management-row">
+              <div class="base-management-icon">▦</div>
+              <div class="base-management-copy">
+                <strong>${escapeHtml(base)}</strong>
+                <span>${contacts.length} contactos · ${assigned} asignados · ${unassigned} sin asignar</span>
+              </div>
+              <div style="display:flex;gap:6px;">
+                <button class="button-secondary" onclick="renameBase('${escapeHtml(base)}')" type="button" style="padding:6px 12px;font-size:11px;">✎ Renombrar</button>
+                <button class="delete-base" data-delete-base="${escapeHtml(base)}" type="button">Eliminar</button>
+              </div>
+            </div>
+          `;
+        }).join('') : '<div class="empty-state">No hay bases cargadas.</div>'}
+      </div>
+    </article>
+  `;
+}
+
+async function forceCloseShift(shiftId) {
+  if (currentUser.role !== 'supervisor') return;
+  if (!window.confirm('¿Deseas marcar esta jornada como finalizada ahora?')) return;
+  showToast('Cerrando jornada...');
+  try {
+    const res = await fetch('/api/shifts/close', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-app-role': currentUser.role
+      },
+      body: JSON.stringify({ shiftId, endedAt: new Date().toISOString() })
+    });
+    if (backendMode === 'supabase') await loadRemoteState();
+    else {
+      const shift = state.shifts.find(s => s.id === shiftId);
+      if (shift) shift.endedAt = new Date().toISOString();
+      saveState();
+    }
+    showToast('Jornada finalizada correctamente');
+    render();
+  } catch (err) {
+    showToast('Error al cerrar jornada: ' + err.message);
+  }
+}
+
+async function deleteShift(shiftId) {
+  if (currentUser.role !== 'supervisor') return;
+  if (!window.confirm('¿Estás seguro de eliminar este registro de jornada?')) return;
+  showToast('Eliminando jornada...');
+  try {
+    const res = await fetch('/api/shifts/delete', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-app-role': currentUser.role
+      },
+      body: JSON.stringify({ shiftId })
+    });
+    if (backendMode === 'supabase') await loadRemoteState();
+    else {
+      state.shifts = state.shifts.filter(s => s.id !== shiftId);
+      saveState();
+    }
+    showToast('Jornada eliminada');
+    render();
+  } catch (err) {
+    showToast('Error al eliminar jornada: ' + err.message);
+  }
 }
 
 function renderShifts() {
   const operatorUsers = appUsers.filter(user => user.role === 'operator');
-  return `${pageHeading('Control de equipo', 'Registro de jornadas', 'Consulta cuándo inició y terminó cada persona su jornada de trabajo.', backendMode === 'supabase' ? '<span class="status-pill on">● Sincronizado con Supabase</span>' : '<span class="status-pill on">● Actualizado localmente</span>')}<article class="card history-card"><div class="page-card-header"><div><h2 class="card-title">Jornadas del equipo</h2><p class="card-subtitle">El registro queda asociado al usuario y a la fecha de trabajo.</p></div></div><div class="table-wrap"><table class="data-table shifts-table"><thead><tr><th>Operadora</th><th>Estado actual</th><th>Inicio</th><th>Fin</th><th>Duración</th></tr></thead><tbody>${operatorUsers.map(user => { const shift = latestShiftFor(user); const active = Boolean(getActiveShift(user)); return `<tr><td><div class="operator-cell"><div class="small-avatar">${user.initials}</div><div><strong>${user.name}</strong><span>${user.username}</span></div></div></td><td><span class="status-pill ${active ? 'on' : shift ? 'pause' : 'off'}">${active ? 'En jornada' : shift ? 'Finalizada' : 'Sin iniciar'}</span></td><td>${shift ? formatDateTime(shift.startedAt) : '—'}</td><td>${shift?.endedAt ? formatDateTime(shift.endedAt) : active ? 'En curso' : '—'}</td><td>${shift ? formatDuration(shift.startedAt, shift.endedAt || undefined) : '—'}</td></tr>`; }).join('')}</tbody></table></div></article>`;
+  const isSupervisor = currentUser.role === 'supervisor';
+
+  return `
+    ${pageHeading('Control de equipo', 'Registro de jornadas', 'Consulta el tiempo de trabajo e inicio/fin de cada operador.', backendMode === 'supabase' ? '<span class="status-pill on">● Sincronizado con Supabase</span>' : '<span class="status-pill on">● Actualizado localmente</span>')}
+    <article class="card history-card">
+      <div class="page-card-header">
+        <div>
+          <h2 class="card-title">Jornadas del equipo</h2>
+          <p class="card-subtitle">Seguimiento en vivo de horas laboradas</p>
+        </div>
+      </div>
+      <div class="table-wrap">
+        <table class="data-table shifts-table">
+          <thead>
+            <tr>
+              <th>Operador/a</th>
+              <th>Estado actual</th>
+              <th>Inicio</th>
+              <th>Fin</th>
+              <th>Duración</th>
+              ${isSupervisor ? '<th>Acciones</th>' : ''}
+            </tr>
+          </thead>
+          <tbody>
+            ${operatorUsers.map(user => {
+              const shift = latestShiftFor(user);
+              const active = Boolean(getActiveShift(user));
+              return `
+                <tr>
+                  <td>
+                    <div class="operator-cell">
+                      <div class="small-avatar">${user.initials}</div>
+                      <div><strong>${user.name}</strong><span>${user.username}</span></div>
+                    </div>
+                  </td>
+                  <td><span class="status-pill ${active ? 'on' : shift ? 'pause' : 'off'}">${active ? 'En jornada' : shift ? 'Finalizada' : 'Sin iniciar'}</span></td>
+                  <td>${shift ? formatDateTime(shift.startedAt) : '—'}</td>
+                  <td>${shift?.endedAt ? formatDateTime(shift.endedAt) : active ? 'En curso' : '—'}</td>
+                  <td>${shift ? formatDuration(shift.startedAt, shift.endedAt || undefined) : '—'}</td>
+                  ${isSupervisor ? `
+                    <td>
+                      <div style="display:flex;gap:6px;">
+                        ${active && shift ? `<button class="button-secondary" onclick="forceCloseShift('${shift.id}')" type="button" style="padding:4px 8px;font-size:10px;">Cerrar</button>` : ''}
+                        ${shift ? `<button class="delete-history" onclick="deleteShift('${shift.id}')" type="button" style="padding:4px 8px;font-size:10px;">Eliminar</button>` : '—'}
+                      </div>
+                    </td>
+                  ` : ''}
+                </tr>
+              `;
+            }).join('')}
+          </tbody>
+        </table>
+      </div>
+    </article>
+  `;
+}
+
+async function exportHistoryXlsx() {
+  if (currentUser.role !== 'supervisor') return;
+  showToast('Generando reporte Excel...');
+  try {
+    const res = await fetch('/export/xlsx', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-app-role': currentUser.role
+      },
+      body: JSON.stringify({ contacts: state.contacts, history: state.history })
+    });
+    if (!res.ok) throw new Error('Error al generar Excel en servidor');
+    const blob = await res.blob();
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `reporte-clima-social-giz-${new Date().toISOString().slice(0, 10)}.xlsx`;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    window.URL.revokeObjectURL(url);
+    showToast('Reporte Excel descargado');
+  } catch (err) {
+    console.error(err);
+    exportHistory();
+  }
 }
 
 function groupHistory(history) {
@@ -805,7 +1335,12 @@ function bindViewEvents() {
   document.querySelectorAll('[data-assign-contact]').forEach(select => select.addEventListener('change', () => { const contact = getContact(select.dataset.assignContact); if (!contact) return; const initialsValue = select.value; if (backendMode === 'supabase') { assignContactRemote(contact, initialsValue); return; } contact.operator = initialsValue; saveState(); showToast(initialsValue ? 'Contacto asignado correctamente' : 'Asignación retirada'); }));
   document.querySelectorAll('[data-delete-base]').forEach(button => button.addEventListener('click', () => deleteBase(button.dataset.deleteBase)));
   document.querySelectorAll('[data-delete-history]').forEach(button => button.addEventListener('click', () => deleteHistory(button.dataset.deleteHistory)));
-  document.querySelectorAll('[data-assign-all]').forEach(button => button.addEventListener('click', () => assignAllTo(button.dataset.assignAll)));
+  document.getElementById('reassign-from-select')?.addEventListener('change', e => { reassignFormState.fromOp = e.target.value; render(); });
+  document.getElementById('reassign-to-select')?.addEventListener('change', e => { reassignFormState.toOp = e.target.value; render(); });
+  document.getElementById('reassign-base-select')?.addEventListener('change', e => { reassignFormState.base = e.target.value; render(); });
+  document.getElementById('reassign-scope-select')?.addEventListener('change', e => { reassignFormState.scope = e.target.value; render(); });
+  document.getElementById('execute-custom-reassign-btn')?.addEventListener('click', executeCustomReassignment);
+
   document.querySelectorAll('[data-column-search]').forEach(input => input.addEventListener('input', () => {
     const query = input.value.trim().toLowerCase();
     const column = input.closest('.contact-column');

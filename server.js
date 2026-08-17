@@ -392,6 +392,121 @@ function styleTable(sheet, columnCount, colors, font, headerFont) {
   sheet.views = [{ state: 'frozen', ySplit: 1 }];
 }
 
+app.post('/api/shifts/delete', async (req, res) => {
+  if (req.get('x-app-role') !== 'supervisor') return res.status(403).json({ error: 'Solo el supervisor puede eliminar jornadas' });
+  const { shiftId } = req.body;
+  if (!shiftId) return res.status(400).json({ error: 'Falta shiftId' });
+
+  const supabaseUrl = process.env.SUPABASE_URL;
+  const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.SUPABASE_ANON_KEY;
+  const authHeader = req.get('x-supabase-auth') || `Bearer ${serviceKey}`;
+
+  if (supabaseUrl && serviceKey) {
+    try {
+      const response = await fetch(`${supabaseUrl}/rest/v1/operator_shifts?id=eq.${encodeURIComponent(shiftId)}`, {
+        method: 'DELETE',
+        headers: {
+          'apikey': serviceKey,
+          'Authorization': authHeader.startsWith('Bearer') ? authHeader : `Bearer ${authHeader}`,
+          'Content-Type': 'application/json'
+        }
+      });
+      if (!response.ok) {
+        const text = await response.text();
+        return res.status(response.status).json({ error: text || 'Error al eliminar en Supabase' });
+      }
+      return res.json({ success: true, message: 'Jornada eliminada' });
+    } catch (err) {
+      return res.status(500).json({ error: err.message });
+    }
+  }
+  return res.json({ success: true, mode: 'local' });
+});
+
+app.post('/api/shifts/close', async (req, res) => {
+  if (req.get('x-app-role') !== 'supervisor') return res.status(403).json({ error: 'Solo el supervisor puede cerrar jornadas' });
+  const { shiftId, endedAt } = req.body;
+  if (!shiftId) return res.status(400).json({ error: 'Falta shiftId' });
+
+  const supabaseUrl = process.env.SUPABASE_URL;
+  const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.SUPABASE_ANON_KEY;
+  const authHeader = req.get('x-supabase-auth') || `Bearer ${serviceKey}`;
+
+  if (supabaseUrl && serviceKey) {
+    try {
+      const response = await fetch(`${supabaseUrl}/rest/v1/operator_shifts?id=eq.${encodeURIComponent(shiftId)}`, {
+        method: 'PATCH',
+        headers: {
+          'apikey': serviceKey,
+          'Authorization': authHeader.startsWith('Bearer') ? authHeader : `Bearer ${authHeader}`,
+          'Content-Type': 'application/json',
+          'Prefer': 'return=minimal'
+        },
+        body: JSON.stringify({ ended_at: endedAt || new Date().toISOString() })
+      });
+      if (!response.ok) {
+        const text = await response.text();
+        return res.status(response.status).json({ error: text || 'Error al cerrar jornada en Supabase' });
+      }
+      return res.json({ success: true, message: 'Jornada cerrada' });
+    } catch (err) {
+      return res.status(500).json({ error: err.message });
+    }
+  }
+  return res.json({ success: true, mode: 'local' });
+});
+
+app.post('/api/contacts/update-status', async (req, res) => {
+  if (req.get('x-app-role') !== 'supervisor') return res.status(403).json({ error: 'Solo el supervisor puede cambiar resultados' });
+  const { contactId, status, outcomeId } = req.body;
+  if (!contactId || !status) return res.status(400).json({ error: 'Faltan parámetros' });
+
+  const supabaseUrl = process.env.SUPABASE_URL;
+  const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.SUPABASE_ANON_KEY;
+
+  if (supabaseUrl && serviceKey) {
+    try {
+      const nowIso = new Date().toISOString();
+      const statusToEnum = {
+        'effective': 'effective',
+        'pending': 'pending',
+        'no-answer': 'no_answer',
+        'wrong': 'wrong_number',
+        'refused': 'refused',
+        'discarded': 'discarded'
+      };
+      const mappedStatus = statusToEnum[status] || 'pending';
+
+      const restHeaders = {
+        'apikey': serviceKey,
+        'Authorization': `Bearer ${serviceKey}`,
+        'Content-Type': 'application/json',
+        'Prefer': 'return=minimal'
+      };
+
+      const updateContactRes = await fetch(`${supabaseUrl}/rest/v1/contacts?id=eq.${encodeURIComponent(contactId)}`, {
+        method: 'PATCH',
+        headers: restHeaders,
+        body: JSON.stringify({
+          current_status: mappedStatus,
+          last_outcome_id: outcomeId || null,
+          last_attempt_at: nowIso
+        })
+      });
+
+      if (!updateContactRes.ok) {
+        const text = await updateContactRes.text();
+        return res.status(updateContactRes.status).json({ error: text || 'Error al actualizar contacto en Supabase' });
+      }
+
+      return res.json({ success: true, message: 'Estado actualizado correctamente' });
+    } catch (err) {
+      return res.status(500).json({ error: err.message });
+    }
+  }
+  return res.json({ success: true, mode: 'local' });
+});
+
 app.get('/config', (_req, res) => {
   res.json({
     supabaseUrl: process.env.SUPABASE_URL || '',
