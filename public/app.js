@@ -53,8 +53,8 @@ const operators = [
   { initials: 'VC', name: 'Valeria Cruz', role: 'Operadora', managed: 0, progress: 0, effectiveness: '0%', last: 'Sin actividad', state: 'on', color: 'green' }
 ];
 
-const statusLabels = { pending: 'Pendiente', effective: 'Efectiva', 'no-answer': 'No contesta', wrong: 'Número incorrecto', refused: 'Rechazó la encuesta', discarded: 'Descartado', 'not-managed': 'No gestionado' };
-const outcomeLabels = { pending: 'Pendiente / reintento', callback: 'Pendiente / reintento', effective: 'Llamada efectiva', 'no-answer': 'No contesta', no_answer: 'No contesta', wrong: 'Número incorrecto', wrong_number: 'Número incorrecto', refused: 'Rechazó la encuesta' };
+const statusLabels = { pending: 'Pendiente', effective: 'Encuesta completada', rescheduled: 'Reprogramada', 'no-answer': 'No contesta', 'wa-sent': 'Enlace WhatsApp enviado', wrong: 'Número incorrecto', refused: 'Rechazó participar', discarded: 'Incontactable (3er intento)', 'not-managed': 'Sin gestión' };
+const outcomeLabels = { effective: 'Encuesta completada en vivo', pending: 'Reprogramada / Reintento', callback: 'Reprogramada / Cita acordada', rescheduled: 'Reprogramada / Cita acordada', 'no-answer': 'No contesta', no_answer: 'No contesta', 'wa-sent': 'Enlace autollenado enviado', refused: 'Rechazó participar', wrong: 'Número incorrecto / inválido', wrong_number: 'Número incorrecto / inválido' };
 let backendMode = 'demo';
 let supabaseClient = null;
 let currentCampaign = null;
@@ -468,7 +468,7 @@ function pageHeading(eyebrow, title, copy, action = '') {
 
 function operatorMonitoringTable() {
   const operators = appUsers.filter(user => user.role === 'operator');
-  return `<div class="table-wrap"><table class="data-table monitoring-table"><thead><tr><th>Operadora</th><th>Asignados</th><th>Gestionados</th><th>Efectivas</th><th>Esperan captura</th><th>No contestan</th><th>Rechazos</th><th>Jornada</th><th>Última actividad</th></tr></thead><tbody>${operators.map(user => { const assigned = state.contacts.filter(contact => contact.operator === user.initials); const managed = managedCount(assigned); const effective = assigned.filter(contact => contact.status === 'effective').length; const pending = assigned.filter(contact => contact.status === 'pending' && contact.attempts > 0).length; const noAnswer = assigned.filter(contact => contact.status === 'no-answer').length; const refused = assigned.filter(contact => contact.status === 'refused').length; const active = Boolean(getActiveShift(user)); const last = state.history.find(item => item.operator === user.name); return `<tr><td><div class="operator-cell"><div class="small-avatar">${user.initials}</div><div><strong>${user.name}</strong><span>${user.username}</span></div></div></td><td>${assigned.length}</td><td><strong>${managed}</strong></td><td class="metric-effective">${effective}</td><td class="metric-pending">${pending}</td><td class="metric-no-answer">${noAnswer}</td><td class="metric-refused">${refused}</td><td><span class="status-pill ${active ? 'on' : 'off'}">${active ? 'En jornada' : 'Sin iniciar'}</span></td><td>${last ? escapeHtml(last.date) : 'Sin actividad'}</td></tr>`; }).join('')}</tbody></table></div>`;
+  return `<div class="table-wrap"><table class="data-table monitoring-table"><thead><tr><th>Operador/a</th><th>Asignados</th><th>Gestionados</th><th>Efectivas (En vivo)</th><th>Reprogramadas</th><th>No contestan</th><th>Rechazos</th><th>Jornada</th><th>Última actividad</th></tr></thead><tbody>${operators.map(user => { const assigned = state.contacts.filter(contact => contact.operator === user.initials); const managed = managedCount(assigned); const effective = assigned.filter(contact => contact.status === 'effective').length; const pending = assigned.filter(contact => contact.status === 'pending' && contact.attempts > 0).length; const noAnswer = assigned.filter(contact => contact.status === 'no-answer').length; const refused = assigned.filter(contact => contact.status === 'refused').length; const active = Boolean(getActiveShift(user)); const last = state.history.find(item => item.operator === user.name); return `<tr><td><div class="operator-cell"><div class="small-avatar">${user.initials}</div><div><strong>${user.name}</strong><span>${user.username}</span></div></div></td><td>${assigned.length}</td><td><strong>${managed}</strong></td><td class="metric-effective">${effective}</td><td class="metric-pending">${pending}</td><td class="metric-no-answer">${noAnswer}</td><td class="metric-refused">${refused}</td><td><span class="status-pill ${active ? 'on' : 'off'}">${active ? 'En jornada' : 'Sin iniciar'}</span></td><td>${last ? escapeHtml(last.date) : 'Sin actividad'}</td></tr>`; }).join('')}</tbody></table></div>`;
 }
 
 function renderSupervisorDashboard() {
@@ -476,11 +476,12 @@ function renderSupervisorDashboard() {
   const assigned = state.contacts.filter(contact => contact.operator).length;
   const managed = managedCount();
   const effective = count('effective');
-  const pendingCapture = state.contacts.filter(contact => contact.status === 'pending' && contact.attempts > 0).length;
+  const rescheduled = state.contacts.filter(contact => contact.status === 'pending' && contact.attempts > 0).length;
   const noAnswer = count('no-answer');
   const refused = count('refused');
+  const discarded = count('discarded');
   const activeOperators = appUsers.filter(user => user.role === 'operator' && getActiveShift(user)).length;
-  return `${pageHeading('Monitoreo operativo', 'Estado del equipo', 'Supervisa el trabajo de las tres operadoras y el resultado real de cada gestión.', '<button class="button-primary" data-view-action="import" onclick="event.stopPropagation(); openImportView()"><span class="plus">+</span> Importar base</button>')}<section class="metric-grid supervisor-kpis">${metricCard('Operadoras en jornada', activeOperators, 'de 3 operadoras', '')}${metricCard('Contactos asignados', assigned, `de ${total} contactos`, '')}${metricCard('Gestiones realizadas', managed, 'con intento registrado', '')}${metricCard('Efectivas verificadas', effective, 'captura recibida', 'trend-up')}${metricCard('Esperan captura', pendingCapture, 'pendientes de confirmación', '')}${metricCard('No contestan', noAnswer, 'requieren seguimiento', '')}${metricCard('Rechazaron', refused, 'resultado definitivo', '')}</section><section class="supervisor-focus-grid"><article class="card operator-monitoring-card"><div class="card-header"><div><h2 class="card-title">Seguimiento por operadora</h2><p class="card-subtitle">Detalle operativo actualizado con cada gestión</p></div><span class="status-pill on">● En vivo</span></div>${operatorMonitoringTable()}</article><article class="card operation-summary-card"><div class="card-header"><div><h2 class="card-title">Estado general</h2><p class="card-subtitle">Distribución actual de la base</p></div></div><div class="operation-summary-list"><div><span class="summary-dot assigned"></span><strong>Asignados</strong><b>${assigned}</b></div><div><span class="summary-dot managed"></span><strong>Gestionados</strong><b>${managed}</b></div><div><span class="summary-dot effective"></span><strong>Efectivas</strong><b>${effective}</b></div><div><span class="summary-dot pending"></span><strong>Esperan captura</strong><b>${pendingCapture}</b></div><div><span class="summary-dot no-answer"></span><strong>No contestan</strong><b>${noAnswer}</b></div><div><span class="summary-dot refused"></span><strong>Rechazaron</strong><b>${refused}</b></div></div></article><article class="card supervisor-activity-card"><div class="card-header"><div><h2 class="card-title">Última actividad</h2><p class="card-subtitle">Movimientos recientes del equipo</p></div><button class="button-secondary" data-view-action="history">Ver historial</button></div>${activityList()}</article></section>`;
+  return `${pageHeading('Monitoreo de campo', 'Estado de la operación GIZ', 'Supervisa en tiempo real el avance de encuestas asistidas, reprogramaciones y reintentos.', '<button class="button-primary" data-view-action="import" onclick="event.stopPropagation(); openImportView()"><span class="plus">+</span> Importar base</button>')}<section class="metric-grid supervisor-kpis">${metricCard('Operadores en jornada', activeOperators, 'de 3 operadores', '')}${metricCard('Contactos asignados', assigned, `de ${total} en base`, '')}${metricCard('Gestiones realizadas', managed, 'llamadas registradas', '')}${metricCard('Encuestas en vivo', effective, 'efectivas Kobo', 'trend-up')}${metricCard('Reprogramadas', rescheduled, 'citas pendientes', '')}${metricCard('No contestan', noAnswer, 'reintentos 1 y 2', '')}${metricCard('Incontactables', discarded, '3 intentos completados', '')}</section><section class="supervisor-focus-grid"><article class="card operator-monitoring-card"><div class="card-header"><div><h2 class="card-title">Seguimiento por operador/a</h2><p class="card-subtitle">Detalle operativo actualizado con cada llamada</p></div><span class="status-pill on">● En vivo</span></div>${operatorMonitoringTable()}</article><article class="card operation-summary-card"><div class="card-header"><div><h2 class="card-title">Estado general</h2><p class="card-subtitle">Distribución actual de la base</p></div></div><div class="operation-summary-list"><div><span class="summary-dot assigned"></span><strong>Asignados</strong><b>${assigned}</b></div><div><span class="summary-dot managed"></span><strong>Gestionados</strong><b>${managed}</b></div><div><span class="summary-dot effective"></span><strong>Efectivas en vivo</strong><b>${effective}</b></div><div><span class="summary-dot pending"></span><strong>Reprogramadas</strong><b>${rescheduled}</b></div><div><span class="summary-dot no-answer"></span><strong>No contestan</strong><b>${noAnswer}</b></div><div><span class="summary-dot refused"></span><strong>Rechazaron</strong><b>${refused}</b></div></div></article><article class="card supervisor-activity-card"><div class="card-header"><div><h2 class="card-title">Última actividad</h2><p class="card-subtitle">Movimientos recientes del equipo</p></div><button class="button-secondary" data-view-action="history">Ver historial</button></div>${activityList()}</article></section>`;
 }
 
 function renderDashboard() {
@@ -536,14 +537,6 @@ function whatsappPhone(phone) {
   return digits.startsWith('0') ? `593${digits.slice(1)}` : digits;
 }
 
-function whatsappInviteUrl(contact) {
-  const name = contactGreetingName(contact);
-  const greeting = name ? `Hola ${name},` : `Hola,`;
-  const course = contact.organization && contact.organization !== 'No tiene información' ? contact.organization : 'el curso de capacitación';
-  const message = `${greeting}\n\n¡Tu opinión es muy importante para nosotros!\nSomos Clima Social y, en cooperación con la Corporación Alemana GIZ, te invitamos a completar una encuesta de satisfacción por tu participación en "${course}".\n\n👉 La encuesta es totalmente anónima y no te tomará más que unos minutos.\n\nAccede aquí: ${SURVEY_URL}\n\n¿Cómo completarla?\n1. Haz clic en el enlace.\n2. Responde las preguntas una a una.\n3. Revisa tus respuestas al final.\n4. Envía la encuesta con el botón "Finalizar".\n\n¡Gracias por tu tiempo y por contribuir a mejorar nuestros procesos!`;
-  return `https://api.whatsapp.com/send?phone=${whatsappPhone(contact.phone)}&text=${encodeURIComponent(message)}`;
-}
-
 function contactGreetingName(contact) {
   const name = String(contact.name || '').trim();
   if (!name || /^no registra$/i.test(name)) return '';
@@ -554,36 +547,135 @@ function waLink(phone, message) {
   return `https://api.whatsapp.com/send?phone=${whatsappPhone(phone)}&text=${encodeURIComponent(message)}`;
 }
 
-function whatsappCallUrl(contact) {
-  const name = contactGreetingName(contact);
-  const greeting = name ? `Hola ${name}, ${currentUser.name} de Clima Social le saluda.` : `Hola, ${currentUser.name} de Clima Social le saluda.`;
-  const course = contact.organization && contact.organization !== 'No tiene información' ? contact.organization : 'el curso';
-  const message = `${greeting}\n\nTal como conversamos por teléfono, en cooperación con la Corporación Alemana GIZ te compartimos el enlace para completar la encuesta de satisfacción sobre "${course}".\n\n👉 Accede a la encuesta aquí: ${SURVEY_URL}\n\nLa encuesta es totalmente anónima y tomará solo unos minutos. Al finalizar, por favor haz clic en "Finalizar".\n\n¡Muchas gracias por tu valioso tiempo y participación!`;
-  return waLink(contact.phone, message);
-}
-
 function whatsappNoAnswerUrl(contact) {
   const name = contactGreetingName(contact);
   const greeting = name ? `Hola ${name},` : `Hola,`;
-  const course = contact.organization && contact.organization !== 'No tiene información' ? contact.organization : 'el curso';
-  const message = `${greeting}\n\nTe saludamos desde Clima Social en cooperación con la Corporación Alemana GIZ. Intentamos llamarte hace unos minutos para invitarte a completar una breve encuesta de satisfacción sobre "${course}".\n\n👉 La encuesta es totalmente anónima y te tomará solo unos minutos.\n\nPuedes completarla aquí: ${SURVEY_URL}\n\n¡Agradecemos mucho tu valioso aporte!`;
+  const course = contact.organization && contact.organization !== 'No tiene información' ? contact.organization : 'el curso de formación';
+  const message = `${greeting} le saludamos de Clima Social en el marco del programa ProCohesión de la Cooperación Alemana GIZ.\n\nIntentamos comunicarnos telefónicamente para realizar una breve encuesta de seguimiento sobre "${course}".\n\nLe contactaremos nuevamente en otro horario. Si desea coordinar un horario específico para la llamada, por favor respóndanos a este mensaje.\n\n¡Muchas gracias por su colaboración!`;
   return waLink(contact.phone, message);
 }
 
-function whatsappReminderUrl(contact) {
+function whatsappRescheduleUrl(contact) {
   const name = contactGreetingName(contact);
-  const greeting = name ? `👋 Hola ${name}, ¡esperamos que estés muy bien!` : `👋 Hola, ¡esperamos que estés muy bien!`;
-  const course = contact.organization && contact.organization !== 'No tiene información' ? contact.organization : 'el curso';
-  const message = `${greeting}\n\nTe saludamos nuevamente desde Clima Social y GIZ para recordarte la invitación a completar la encuesta de satisfacción sobre "${course}".\n\n👉 Acceso directo: ${SURVEY_URL}\n\nCompletarla te tomará solo unos minutos y tus respuestas son 100% anónimas.\n\n¡Muchas gracias por tu tiempo y colaboración!`;
+  const greeting = name ? `Hola ${name},` : `Hola,`;
+  const course = contact.organization && contact.organization !== 'No tiene información' ? contact.organization : 'el curso de formación';
+  const message = `${greeting} le saludamos de Clima Social y GIZ.\n\nConfirmamos la coordinación para realizar la breve encuesta telefónica de 10 minutos sobre "${course}".\n\nEstaremos atentos para llamarle en el horario acordado.\n\n¡Muchas gracias por su compromiso!`;
+  return waLink(contact.phone, message);
+}
+
+function whatsappSelfFillUrl(contact) {
+  const name = contactGreetingName(contact);
+  const greeting = name ? `Hola ${name},` : `Hola,`;
+  const course = contact.organization && contact.organization !== 'No tiene información' ? contact.organization : 'el curso de formación';
+  const message = `${greeting} tal como nos solicitó, le compartimos el enlace para completar la encuesta sobre "${course}" en cooperación con GIZ:\n\n👉 Acceso a la encuesta: ${SURVEY_URL}\n\nLa encuesta toma solo unos minutos y sus respuestas son completamente confidenciales.\n\n¡Agradecemos mucho su valioso tiempo!`;
   return waLink(contact.phone, message);
 }
 
 function renderSelectedContact(contact) {
   if (!contact) return '<article class="card selected-contact-card"><div class="empty-state">Selecciona un contacto de las columnas para comenzar.</div></article>';
-  const callUrl = whatsappCallUrl(contact);
   const noAnswerUrl = whatsappNoAnswerUrl(contact);
-  const reminderUrl = whatsappReminderUrl(contact);
-  return `<article class="card selected-contact-card"><div class="selected-contact-header"><div><p class="eyebrow">Contacto seleccionado · ${escapeHtml(contact.id)}</p><h2>${escapeHtml(contact.name)}</h2><p>${escapeHtml(contact.parish)} · ${escapeHtml(contact.location)} · ${escapeHtml(contact.phone)}</p></div><span class="table-status ${contact.status}">${contactStatusLabel(contact)}</span></div><div class="selected-contact-body"><div class="info-grid"><div class="info-item"><label>Intento actual</label><strong>${contact.attempts + 1} de ${MAX_ATTEMPTS}</strong></div><div class="info-item"><label>Última gestión</label><strong>${escapeHtml(contact.last)}</strong></div><div class="info-item"><label>Operadora</label><strong>${escapeHtml(currentUser.name)}</strong></div><div class="info-item"><label>Identificador</label><strong>${escapeHtml(contact.id)}</strong></div><div class="info-item"><label>Provincia</label><strong>${escapeHtml(contact.location || 'No tiene información')}</strong></div><div class="info-item"><label>Institución</label><strong>${escapeHtml(contact.organization || 'No tiene información')}</strong></div><div class="info-item"><label>Sector</label><strong>${escapeHtml(contact.sector || 'No tiene información')}</strong></div><div class="info-item"><label>Cargo</label><strong>${escapeHtml(contact.cargo || 'No tiene información')}</strong></div><div class="info-item"><label>Ámbito del arte</label><strong>${escapeHtml(contact.artField || 'No tiene información')}</strong></div><div class="info-item"><label>Correo registrado</label><strong>${escapeHtml(contact.email || 'No tiene información')}</strong></div><div class="info-item"><label>Otros teléfonos</label><strong>${escapeHtml(contact.phoneOther || 'No tiene información')}</strong></div></div><div class="wa-actions"><div class="wa-actions-head"><h3>Enviar mensaje por WhatsApp</h3><span>Se personaliza con tu nombre</span></div><div class="wa-actions-grid"><a class="wa-action wa-call" href="${callUrl}" target="_blank" rel="noreferrer"><span class="wa-icon">✓</span><span><strong>Ya hablamos por teléfono</strong><small>Envía el enlace después de la llamada</small></span></a><a class="wa-action wa-no-answer" href="${noAnswerUrl}" target="_blank" rel="noreferrer"><span class="wa-icon">◌</span><span><strong>No contestó</strong><small>Invita a quien no respondió</small></span></a><a class="wa-action wa-reminder" href="${reminderUrl}" target="_blank" rel="noreferrer"><span class="wa-icon">◷</span><span><strong>Recordatorio</strong><small>Para quien espera enviar su captura</small></span></a></div><div class="wa-copy-row"><button class="contact-action copy-action" id="copy-phone" type="button">▣ Copiar número</button></div></div>${selectedOutcome === 'effective' ? `<div class="raffle-email-box"><label for="raffle-email">Correo para participar en el sorteo (opcional)</label><input id="raffle-email" type="email" value="${escapeHtml(contact.raffleEmail || '')}" placeholder="correo@ejemplo.com" /><small>La captura de pantalla es suficiente para marcar efectiva. El correo puede registrarse después.</small></div>` : ''}<div class="call-actions"><h3>Resultado de la gestión <small class="result-definition">Efectiva = captura recibida y encuesta verificada</small><small class="attempt-rule">Después del tercer intento no efectivo se descarta</small></h3><div class="outcome-grid"><button class="outcome-button green ${selectedOutcome === 'effective' ? 'selected' : ''}" data-outcome="effective">✓ Efectiva</button><button class="outcome-button ${selectedOutcome === 'pending' ? 'selected' : ''}" data-outcome="pending">◷ Pendiente / espera captura</button><button class="outcome-button ${selectedOutcome === 'no-answer' ? 'selected' : ''}" data-outcome="no-answer">◌ No contesta</button><button class="outcome-button red ${selectedOutcome === 'refused' ? 'selected' : ''}" data-outcome="refused">⊘ Rechaza la encuesta</button><button class="outcome-button red ${selectedOutcome === 'wrong' ? 'selected' : ''}" data-outcome="wrong">× Número incorrecto</button></div><label class="notes-label" for="notes">Observaciones</label><textarea class="notes-input" id="notes" placeholder="Escribe aquí cualquier detalle relevante..."></textarea><div class="save-row"><small>Se registra operador, fecha, hora e intento.</small><button class="button-primary" id="save-call" ${selectedOutcome ? '' : 'disabled'}>Guardar gestión <span>→</span></button></div></div></div></article>`;
+  const rescheduleUrl = whatsappRescheduleUrl(contact);
+  const selfFillUrl = whatsappSelfFillUrl(contact);
+
+  return `
+    <article class="card selected-contact-card">
+      <div class="selected-contact-header">
+        <div>
+          <p class="eyebrow">Contacto seleccionado &bull; ${escapeHtml(contact.id)}</p>
+          <h2>${escapeHtml(contact.name)}</h2>
+          <p>${escapeHtml(contact.parish)} &bull; ${escapeHtml(contact.location)} &bull; <strong>${escapeHtml(contact.phone)}</strong></p>
+        </div>
+        <span class="table-status ${contact.status}">${contactStatusLabel(contact)}</span>
+      </div>
+
+      <div class="selected-contact-body">
+        <!-- 1. Banner Kobo en Vivo -->
+        <div class="kobo-live-banner">
+          <div class="kobo-banner-content">
+            <div class="kobo-tag">ENCUESTA ASISTIDA EN VIVO (10 MIN)</div>
+            <h3>Aplicar Formulario GIZ &bull; KoboToolbox</h3>
+            <p>Abre la encuesta oficial para registrar las respuestas en tiempo real mientras conversas con el participante.</p>
+          </div>
+          <a class="kobo-open-btn" href="${SURVEY_URL}" target="_blank" rel="noreferrer">
+            <span>📋 Abrir Kobo en Vivo</span>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6M15 3h6v6M10 14L21 3"/></svg>
+          </a>
+        </div>
+
+        <!-- 2. Guion Oficial de Llamada Telefónica -->
+        <div class="call-script-card">
+          <div class="script-header">
+            <span class="script-icon">🗣️</span>
+            <strong>Guion de Llamada Asistida</strong>
+            <span class="script-badge">Protocolo GIZ</span>
+          </div>
+          <div class="script-body">
+            <p><strong>1. Saludo:</strong> "Buenos días/tardes ${contactGreetingName(contact) || 'estimado/a'}, le saluda ${currentUser.name} de Clima Social en el marco del programa ProCohesión de la Cooperación Alemana GIZ."</p>
+            <p><strong>2. Propósito:</strong> "Nos comunicamos para realizar una breve encuesta de seguimiento sobre su participación en <em>${escapeHtml(contact.organization || 'el curso de formación')}</em>."</p>
+            <p><strong>3. Consentimiento:</strong> "La encuesta toma aproximadamente 10 minutos y es confidencial. ¿Dispone de unos minutos para realizarla ahora?"</p>
+          </div>
+        </div>
+
+        <!-- 3. Información del participante -->
+        <div class="info-grid" style="margin-top: 18px;">
+          <div class="info-item"><label>Intento actual</label><strong>${contact.attempts + 1} de ${MAX_ATTEMPTS}</strong></div>
+          <div class="info-item"><label>Última gestión</label><strong>${escapeHtml(contact.last)}</strong></div>
+          <div class="info-item"><label>Operador/a</label><strong>${escapeHtml(currentUser.name)}</strong></div>
+          <div class="info-item"><label>Código / ID</label><strong>${escapeHtml(contact.id)}</strong></div>
+          <div class="info-item"><label>Provincia</label><strong>${escapeHtml(contact.location || 'No tiene información')}</strong></div>
+          <div class="info-item"><label>Parroquia / Ciudad</label><strong>${escapeHtml(contact.parish || 'No tiene información')}</strong></div>
+          <div class="info-item"><label>Organización / Institución</label><strong>${escapeHtml(contact.organization || 'No tiene información')}</strong></div>
+          <div class="info-item"><label>Actividad / Curso</label><strong>${escapeHtml(contact.artField || 'No tiene información')}</strong></div>
+          <div class="info-item"><label>Facilitador / Cargo</label><strong>${escapeHtml(contact.cargo || 'No tiene información')}</strong></div>
+          <div class="info-item"><label>Correo registrado</label><strong>${escapeHtml(contact.email || 'No tiene información')}</strong></div>
+          <div class="info-item"><label>Otros teléfonos</label><strong>${escapeHtml(contact.phoneOther || 'No tiene información')}</strong></div>
+        </div>
+
+        <!-- 4. Acciones de WhatsApp según el Plan GIZ -->
+        <div class="wa-actions">
+          <div class="wa-actions-head">
+            <h3>Mensajes de WhatsApp de Apoyo (GIZ)</h3>
+            <span>Se envía con tu nombre</span>
+          </div>
+          <div class="wa-actions-grid">
+            <a class="wa-action wa-no-answer" href="${noAnswerUrl}" target="_blank" rel="noreferrer">
+              <span class="wa-icon">◌</span>
+              <span><strong>Aviso de llamada (No contesta)</strong><small>Notificar que intentamos llamarle</small></span>
+            </a>
+            <a class="wa-action wa-call" href="${rescheduleUrl}" target="_blank" rel="noreferrer">
+              <span class="wa-icon">◷</span>
+              <span><strong>Coordinar horario</strong><small>Confirmar cita para llamada</small></span>
+            </a>
+            <a class="wa-action wa-reminder" href="${selfFillUrl}" target="_blank" rel="noreferrer">
+              <span class="wa-icon">✉️</span>
+              <span><strong>Autollenado (Excepcional)</strong><small>Solo si solicita llenar por su cuenta</small></span>
+            </a>
+          </div>
+          <div class="wa-copy-row">
+            <button class="contact-action copy-action" id="copy-phone" type="button">▣ Copiar número celular</button>
+          </div>
+        </div>
+
+        <!-- 5. Registro del Resultado -->
+        <div class="call-actions">
+          <h3>Resultado de la llamada <small class="result-definition">Canal principal: llamada asistida de 10 min</small><small class="attempt-rule">Al 3er intento sin respuesta pasa a revisión GIZ</small></h3>
+          <div class="outcome-grid">
+            <button class="outcome-button green ${selectedOutcome === 'effective' ? 'selected' : ''}" data-outcome="effective">✓ Encuesta completada en vivo</button>
+            <button class="outcome-button ${selectedOutcome === 'pending' ? 'selected' : ''}" data-outcome="pending">◷ Reprogramada / Por reintentar</button>
+            <button class="outcome-button ${selectedOutcome === 'no-answer' ? 'selected' : ''}" data-outcome="no-answer">◌ No contesta (Intento ${contact.attempts + 1})</button>
+            <button class="outcome-button red ${selectedOutcome === 'refused' ? 'selected' : ''}" data-outcome="refused">⊘ Rechaza participar</button>
+            <button class="outcome-button red ${selectedOutcome === 'wrong' ? 'selected' : ''}" data-outcome="wrong">× Número equivocado / inválido</button>
+          </div>
+          <label class="notes-label" for="notes">Observaciones / Novedades</label>
+          <textarea class="notes-input" id="notes" placeholder="Ej. Encuesta aplicada con éxito en llamada de 10 min, o reprogramada para la tarde..."></textarea>
+          <div class="save-row">
+            <small>Se registra operador, fecha, hora e intento actual.</small>
+            <button class="button-primary" id="save-call" ${selectedOutcome ? '' : 'disabled'}>Guardar gestión <span>→</span></button>
+          </div>
+        </div>
+      </div>
+    </article>
+  `;
 }
 
 function renderOperatorBoard() {
@@ -892,23 +984,18 @@ async function saveCall() {
       await saveRemoteCall();
     } else {
       const note = document.getElementById('notes')?.value.trim() || '';
-      const raffleEmail = document.getElementById('raffle-email')?.value.trim() || '';
-      if (selectedOutcome === 'effective' && raffleEmail && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(raffleEmail)) {
-        showToast('Revisa el formato del correo o déjalo vacío');
-        return;
-      }
-      contact.attempts += 1; contact.last = `Hoy, ${formatTime()}`; contact.operator = currentUser.initials;
+      contact.attempts += 1;
+      contact.last = `Hoy, ${formatTime()}`;
+      contact.operator = currentUser.initials;
       const shouldDiscard = contact.attempts >= MAX_ATTEMPTS && !['effective', 'wrong', 'refused'].includes(selectedOutcome);
       contact.status = shouldDiscard ? 'discarded' : selectedOutcome;
-      contact.pendingReason = selectedOutcome === 'pending' ? 'awaiting_screenshot' : selectedOutcome === 'no-answer' ? 'no_answer' : null;
-      if (selectedOutcome === 'effective') {
-        contact.raffleEmail = raffleEmail;
-        contact.proofReceivedAt = new Date().toISOString();
-        contact.proofType = 'whatsapp_screenshot';
-      }
-      state.history.unshift({ contact: contact.name, id: contact.id, result: selectedOutcome, operator: currentUser.name, attempt: contact.attempts, date: contact.last, notes: note, raffleEmail: selectedOutcome === 'effective' ? raffleEmail : '' });
+      contact.pendingReason = selectedOutcome === 'pending' ? 'rescheduled' : selectedOutcome === 'no-answer' ? 'no_answer' : null;
+      state.history.unshift({ contact: contact.name, id: contact.id, result: selectedOutcome, operator: currentUser.name, attempt: contact.attempts, date: contact.last, notes: note });
       selectedContactId = firstActionable(visibleContacts())?.id || null;
-      saveState(); selectedOutcome = ''; showToast(shouldDiscard ? `${contact.name} fue descartado después del tercer intento` : `Gestión guardada para ${contact.name}`); render();
+      saveState();
+      selectedOutcome = '';
+      showToast(shouldDiscard ? `${contact.name} pasa a revisión GIZ (3 intentos completados)` : `Gestión guardada para ${contact.name}`);
+      render();
     }
   } catch (error) {
     console.error(error);
@@ -923,11 +1010,9 @@ async function saveRemoteCall() {
   if (!contact) { showToast('No se encontró el contacto seleccionado'); return; }
   if (!selectedOutcome) { showToast('Selecciona un resultado antes de guardar'); return; }
   const note = document.getElementById('notes')?.value.trim() || '';
-  const raffleEmail = document.getElementById('raffle-email')?.value.trim() || '';
-  if (selectedOutcome === 'effective' && raffleEmail && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(raffleEmail)) { showToast('Revisa el formato del correo o déjalo vacío'); return; }
   const outcomeCode = { effective: 'effective', pending: 'callback', 'no-answer': 'no_answer', wrong: 'wrong_number', refused: 'refused' }[selectedOutcome] || 'callback';
   const outcomeId = outcomeCache.get(outcomeCode);
-  if (!outcomeId) { showToast('Los resultados no están configurados. Ejecuta el SQL de production_migration.sql en Supabase.'); return; }
+  if (!outcomeId) { showToast('Los resultados no están configurados en Supabase.'); return; }
   const nextAttempt = Number(contact.attempts || 0) + 1;
   const shouldDiscard = nextAttempt >= MAX_ATTEMPTS && !['effective', 'wrong', 'refused'].includes(selectedOutcome);
   const status = shouldDiscard ? 'discarded' : { effective: 'effective', pending: 'pending', 'no-answer': 'no_answer', wrong: 'wrong_number', refused: 'refused' }[selectedOutcome];
@@ -936,7 +1021,7 @@ async function saveRemoteCall() {
     const message = attemptError.code === '23503' ? 'El contacto no está asignado a esta operadora.' : attemptError.code === '42501' ? 'No tienes permiso para registrar esta gestión.' : attemptError.message;
     showToast(message); return;
   }
-  const update = { current_status: status, attempt_count: nextAttempt, last_attempt_at: new Date().toISOString(), last_attempt_by: currentUser.authId, last_outcome_id: outcomeId, raffle_email: selectedOutcome === 'effective' ? (raffleEmail || null) : null, proof_received_at: selectedOutcome === 'effective' ? new Date().toISOString() : null, proof_type: selectedOutcome === 'effective' ? 'whatsapp_screenshot' : null };
+  const update = { current_status: status, attempt_count: nextAttempt, last_attempt_at: new Date().toISOString(), last_attempt_by: currentUser.authId, last_outcome_id: outcomeId };
   const { error: contactError } = await supabaseClient.from('contacts').update(update).eq('id', contact.remoteId || contact.id).eq('assigned_operator_id', currentUser.authId);
   if (contactError) {
     const message = contactError.code === '42501' ? 'Solo puedes actualizar contactos que tienes asignados.' : contactError.message;
@@ -945,7 +1030,7 @@ async function saveRemoteCall() {
   selectedOutcome = '';
   await loadRemoteState();
   selectedContactId = firstActionable(state.contacts)?.id || null;
-  showToast(shouldDiscard ? `${contact.name} fue descartado después del tercer intento` : `Gestión guardada para ${contact.name}`);
+  showToast(shouldDiscard ? `${contact.name} pasa a revisión GIZ (3 intentos completados)` : `Gestión guardada para ${contact.name}`);
   render();
 }
 
