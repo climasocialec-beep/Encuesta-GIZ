@@ -1351,6 +1351,149 @@ h1 {
   margin-bottom: 20px;
 }
 
+/* Barra Superior Compacta Integrada del Operador */
+.operator-compact-topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  padding: 8px 16px;
+  margin-bottom: 14px;
+  box-shadow: var(--shadow-sm);
+  flex-wrap: wrap;
+}
+
+.topbar-user-block {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.topbar-greeting {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.topbar-greeting h2 {
+  font-size: 16px;
+  font-weight: 800;
+  color: var(--text-main);
+  margin: 0;
+  line-height: 1;
+}
+
+.topbar-live-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(34, 197, 94, 0.1);
+  color: #15803d;
+  font-size: 11.5px;
+  font-family: var(--font-mono);
+  padding: 3px 8px;
+  border-radius: 9999px;
+  border: 1px solid rgba(34, 197, 94, 0.25);
+}
+
+.topbar-live-tag .live-dot {
+  width: 7px;
+  height: 7px;
+  background: #22c55e;
+  border-radius: 50%;
+  box-shadow: 0 0 6px #22c55e;
+  animation: pulseLive 2s infinite;
+}
+
+.topbar-metrics-pills {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.metric-pill {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  background: var(--bg-canvas);
+  border: 1px solid var(--border-subtle);
+  padding: 3px 9px;
+  border-radius: 9999px;
+  font-size: 11.5px;
+}
+
+.metric-pill .pill-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+}
+
+.metric-pill.pill-new .pill-dot { background: var(--cs-teal); }
+.metric-pill.pill-pending .pill-dot { background: var(--cs-gold); }
+.metric-pill.pill-no-answer .pill-dot { background: var(--cs-coral); }
+
+.metric-pill .pill-lbl {
+  color: var(--text-muted);
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.metric-pill strong {
+  font-family: var(--font-mono);
+  font-size: 12.5px;
+  font-weight: 800;
+  color: var(--text-main);
+}
+
+.topbar-actions-block {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.topbar-date-filter-wrap {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.filter-select-compact {
+  padding: 4px 8px;
+  font-size: 11.5px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border-medium);
+  background: var(--bg-canvas);
+  color: var(--text-main);
+  outline: none;
+  font-weight: 600;
+  max-width: 170px;
+}
+
+.clear-filter-btn {
+  background: rgba(194, 59, 73, 0.1);
+  color: var(--cs-coral);
+  border: 1px solid rgba(194, 59, 73, 0.2);
+  border-radius: 50%;
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 10px;
+  cursor: pointer;
+  padding: 0;
+}
+
+.end-shift-compact-btn {
+  padding: 4px 10px !important;
+  font-size: 11.5px !important;
+  font-weight: 700 !important;
+}
+
 /* ==========================================================================
    OPERATOR WORKSPACE 2-ROW LAYOUT
    ========================================================================== */

@@ -1762,404 +1762,25 @@ function renderOperatorQueue(assigned, selectedContact) {
 
 function renderOperator() {
   const activeShift = getActiveShift();
-  if (!activeShift) return `${pageHeading('Jornada de trabajo', `Hola, ${escapeHtml(currentUser.name.split(' ')[0])}`, 'Antes de comenzar tus llamadas debes registrar el inicio de tu jornada.', '')}<article class="card shift-start-card"><div class="shift-icon">◷</div><h2>¿Lista para comenzar?</h2><p>Al iniciar la jornada registraremos la fecha y hora. Cuando termines, recuerda finalizarla para calcular tu tiempo de trabajo.</p><button class="button-primary" id="start-shift">Iniciar jornada <span>→</span></button></article>`;
-  const contact = getContact(selectedContactId) || firstActionable(visibleContacts());
-  if (!contact) return `${pageHeading('Jornada del operador', 'Sin contactos disponibles', 'Importa una base o solicita una asignación al supervisor.')}`;
-  const assigned = visibleContacts();
-  const managed = managedCount(assigned);
-  return `${pageHeading('Jornada de hoy', `Hola, ${escapeHtml(currentUser.name.split(' ')[0])}`, `${assigned.length} contactos asignados · ${managed} ya gestionados.`, '<button class="button-secondary" id="end-shift">Finalizar jornada</button>')}<div class="shift-live-note"><span class="live-dot"></span> Jornada iniciada ${formatDateTime(activeShift.startedAt)} · Tiempo transcurrido: ${formatDuration(activeShift.startedAt)}</div><div class="operator-summary"><div><span>Asignados</span><strong>${assigned.length}</strong></div><div><span>Gestionados</span><strong>${managed}</strong></div><div><span>Pendientes</span><strong>${assigned.filter(item => item.status === 'pending' || item.status === 'no-answer').length}</strong></div></div><section class="operator-layout"><article class="card operator-card"><div class="contact-top"><div><small>CONTACTO ${escapeHtml(contact.id)} · INTENTO ${contact.attempts + 1}</small><h2>${escapeHtml(contact.name)}</h2><p>${escapeHtml(contact.parish)} · ${escapeHtml(contact.location)}</p></div><div class="contact-number">${escapeHtml(contact.phone)}</div></div><div class="contact-body"><div class="info-grid"><div class="info-item"><label>Identificador</label><strong>${escapeHtml(contact.id)}</strong></div><div class="info-item"><label>Última gestión</label><strong>${escapeHtml(contact.last)}</strong></div><div class="info-item"><label>Estado actual</label><strong class="table-status ${contact.status}">${statusLabels[contact.status] || 'Pendiente'}</strong></div><div class="info-item"><label>Asignado a</label><strong>${escapeHtml(currentUser.name)}</strong></div></div><div class="call-actions"><h3>Resultado de la llamada</h3><div class="outcome-grid"><button class="outcome-button green ${selectedOutcome === 'effective' ? 'selected' : ''}" data-outcome="effective">✓ Efectiva</button><button class="outcome-button ${selectedOutcome === 'pending' ? 'selected' : ''}" data-outcome="pending">◷ Pendiente</button><button class="outcome-button ${selectedOutcome === 'no-answer' ? 'selected' : ''}" data-outcome="no-answer">◌ No contesta</button><button class="outcome-button red ${selectedOutcome === 'wrong' ? 'selected' : ''}" data-outcome="wrong">× Número incorrecto</button><button class="outcome-button ${selectedOutcome === 'pending' ? 'selected' : ''}" data-outcome="pending">↻ Reintentar</button></div><label class="notes-label" for="notes">Observaciones</label><textarea class="notes-input" id="notes" placeholder="Escribe aquí cualquier detalle relevante..."></textarea><div class="save-row"><small>Se registra operador, fecha, hora e intento.</small><button class="button-primary" id="save-call" ${selectedOutcome ? '' : 'disabled'}>Guardar gestión <span>→</span></button></div></div></div></article><article class="card queue-card"><div class="card-header"><div><h2 class="card-title">Mis contactos</h2><p class="card-subtitle">Reintentos y contactos por llamar</p></div><span class="status-pill on">${assigned.length} total</span></div>${renderOperatorQueue(assigned, contact)}</article></section>`;
-}
-
-function renderContactColumn(title, description, items, tone, selectedContact) {
-  return `<section class="contact-column ${tone}"><div class="contact-column-header"><div><h2>${title}</h2><p>${description}</p></div><strong>${items.length}</strong></div><div class="column-search-wrap"><input class="column-search" data-column-search="${tone}" type="search" placeholder="Buscar por nombre..." aria-label="Buscar en ${title}" /></div><div class="contact-column-list">${items.length ? items.map(item => `<button class="contact-board-card ${item.id === selectedContact.id ? 'selected' : ''}" data-contact-id="${item.id}"><div class="contact-board-card-top"><span class="contact-board-initials">${initials(item.name)}</span><span class="contact-board-status">${item.attempts ? `${item.attempts} intento${item.attempts === 1 ? '' : 's'}` : 'Nuevo'}</span></div><strong>${escapeHtml(item.name)}</strong><span style="font-family:var(--font-mono);font-size:11.5px;color:#10b981;font-weight:700;">📞 ${escapeHtml(item.phone)}</span><small style="color:var(--text-muted);">📍 ${escapeHtml(item.barrio || item.parish)} &bull; ${escapeHtml(item.courseName || 'GIZ')}</small></button>`).join('') : '<div class="column-empty">No hay contactos aquí.</div>'}</div></section>`;
-}
-
-function contactGreetingName(contact) {
-  const name = String(contact.name || '').trim();
-  if (!name || /^no registra$/i.test(name)) return '';
-  return firstName(name);
-}
-
-function renderSelectedContact(contact) {
-  if (!contact) return '<article class="card selected-contact-card"><div class="empty-state">Selecciona un contacto de las bandejas inferiores para comenzar.</div></article>';
-
-  const barrioStr = contact.barrio || contact.parish || 'Durán';
-  const cantonStr = contact.canton || 'Rioverde';
-  const provinciaStr = contact.provincia || 'Esmeraldas';
-  const courseStr = contact.courseName || 'Salud Sexual y Reproductiva';
-  const datesStr = contact.courseDates || 'Junio 2025 – Julio 2025';
-  const recencyStr = contact.courseRecency || 'Julio 2025 (Hace ~1 año)';
-  const orgStr = contact.organization || 'UNFPA, VME, FUDELA';
-  const refStr = contact.referencia || 'Mariana Oleas (Asesora local GIZ Esmeraldas)';
-
-  return `
-    <div class="active-call-grid">
-      <!-- 1. TARJETA DEL CONTACTO & REGISTRO DE LLAMADA (IZQUIERDA) -->
-      <article class="card selected-contact-card">
-        <!-- Cabecera del Contacto con Teléfono y Acciones -->
-        <div class="contact-hero-header">
-          <div class="contact-hero-info">
-            <div class="contact-meta-tags">
-              <span class="tag-code">COD: ${escapeHtml(contact.id)}</span>
-              <span class="tag-attempt">Intento ${contact.attempts + 1} de ${MAX_ATTEMPTS}</span>
-              <span class="table-status ${contact.status}">${contactStatusLabel(contact)}</span>
-              <span class="tag-recency">📅 Culminó: ${escapeHtml(contact.courseEndDate || 'Julio 2025')}</span>
-            </div>
-            <h2 class="contact-hero-name">${escapeHtml(contact.name)}</h2>
-            <div class="contact-location-line">
-              <span class="loc-pin">📍</span>
-              <span>Barrio ${escapeHtml(barrioStr)} &bull; ${escapeHtml(cantonStr)}, ${escapeHtml(provinciaStr)}</span>
-            </div>
-          </div>
-
-          <div class="contact-hero-phone-box">
-            <a class="phone-call-btn" href="tel:${escapeHtml(contact.phone)}" title="Llamar directamente">
-              <span class="phone-icon">📞</span>
-              <span class="phone-number">${escapeHtml(contact.phone)}</span>
-            </a>
-            <button class="contact-action copy-action" id="copy-phone" type="button" title="Copiar número">
-              <span>📋 Copiar</span>
-            </button>
-          </div>
-        </div>
-
-        <div class="selected-contact-body">
-          <!-- Banner de Acción Principal: KoboToolbox en Vivo -->
-          <div class="kobo-action-banner">
-            <div class="kobo-banner-text">
-              <span class="kobo-banner-badge">ENCUESTA EN VIVO &bull; 4 A 5 MIN</span>
-              <h3>Formulario Oficial de Evaluación KoboToolbox</h3>
-              <p>Abre la encuesta para registrar las respuestas en tiempo real durante la llamada.</p>
-            </div>
-            <a class="kobo-launch-btn" href="${SURVEY_URL}" target="_blank" rel="noreferrer">
-              <span>📋 Abrir Kobo en Vivo</span>
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6M15 3h6v6M10 14L21 3"/></svg>
-            </a>
-          </div>
-
-          <!-- Ficha de Datos en 2 Columnas (Curso y Contacto) -->
-          <div class="contact-details-panels">
-            <!-- Columna 1: Curso GIZ -->
-            <div class="detail-panel">
-              <div class="panel-title">
-                <span class="panel-icon">🎓</span>
-                <strong>Curso & Formación GIZ</strong>
-              </div>
-              <div class="detail-items-list">
-                <div class="detail-row">
-                  <span class="detail-lbl">Curso:</span>
-                  <span class="detail-val highlight">${escapeHtml(courseStr)}</span>
-                </div>
-                <div class="detail-row">
-                  <span class="detail-lbl">Ubicación:</span>
-                  <span class="detail-val"><strong>${escapeHtml(barrioStr)}</strong> &bull; ${escapeHtml(cantonStr)}</span>
-                </div>
-                <div class="detail-row">
-                  <span class="detail-lbl">Periodo:</span>
-                  <span class="detail-val">${escapeHtml(datesStr)}</span>
-                </div>
-                <div class="detail-row">
-                  <span class="detail-lbl">Antigüedad:</span>
-                  <span class="detail-val"><span class="recency-pill">${escapeHtml(recencyStr)}</span></span>
-                </div>
-                <div class="detail-row">
-                  <span class="detail-lbl">Entidad:</span>
-                  <span class="detail-val">${escapeHtml(orgStr)}</span>
-                </div>
-              </div>
-            </div>
-
-            <!-- Columna 2: Contacto & Referente GIZ -->
-            <div class="detail-panel">
-              <div class="panel-title">
-                <span class="panel-icon">👤</span>
-                <strong>Contacto & Referencia</strong>
-              </div>
-              <div class="detail-items-list">
-                <div class="detail-row">
-                  <span class="detail-lbl">Teléfono:</span>
-                  <span class="detail-val" style="font-family:var(--font-mono);font-weight:800;color:#10b981;font-size:14px;">📞 ${escapeHtml(contact.phone)}</span>
-                </div>
-                <div class="detail-row">
-                  <span class="detail-lbl">Otros Tel.:</span>
-                  <span class="detail-val">${escapeHtml(contact.phoneOther || 'Ninguno adicional')}</span>
-                </div>
-                <div class="detail-row">
-                  <span class="detail-lbl">Correo:</span>
-                  <span class="detail-val">${escapeHtml(contact.email || 'No registra correo')}</span>
-                </div>
-                <div class="detail-row">
-                  <span class="detail-lbl">Asesor GIZ:</span>
-                  <span class="detail-val" style="color:var(--text-main);font-weight:700;">${escapeHtml(refStr)}</span>
-                </div>
-                <div class="detail-row">
-                  <span class="detail-lbl">Última gest.:</span>
-                  <span class="detail-val">${escapeHtml(contact.last)}</span>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <!-- Registro de Resultado de la Llamada -->
-          <div class="call-actions-clean">
-            <div class="actions-header-clean">
-              <h3>Resultado de la llamada</h3>
-              <span>Selecciona el estado y guarda</span>
-            </div>
-
-            <div class="outcome-grid-clean">
-              <button type="button" class="outcome-btn-clean outcome-effective ${selectedOutcome === 'effective' ? 'active' : ''}" data-outcome="effective" title="Encuesta completada">
-                <span class="btn-indicator">✓</span>
-                <span class="btn-label">Completada</span>
-              </button>
-              <button type="button" class="outcome-btn-clean outcome-pending ${selectedOutcome === 'pending' ? 'active' : ''}" data-outcome="pending" title="Reprogramada / Volver a llamar">
-                <span class="btn-indicator">◷</span>
-                <span class="btn-label">Reprogramar</span>
-              </button>
-              <button type="button" class="outcome-btn-clean outcome-no-answer ${selectedOutcome === 'no-answer' ? 'active' : ''}" data-outcome="no-answer" title="No contesta">
-                <span class="btn-indicator">◌</span>
-                <span class="btn-label">No contesta</span>
-              </button>
-              <button type="button" class="outcome-btn-clean outcome-refused ${selectedOutcome === 'refused' ? 'active' : ''}" data-outcome="refused" title="Rechaza participar">
-                <span class="btn-indicator">⊘</span>
-                <span class="btn-label">Rechazó</span>
-              </button>
-              <button type="button" class="outcome-btn-clean outcome-wrong ${selectedOutcome === 'wrong' ? 'active' : ''}" data-outcome="wrong" title="Número incorrecto / equivocado">
-                <span class="btn-indicator">×</span>
-                <span class="btn-label">Incorrecto</span>
-              </button>
-            </div>
-
-            <div class="notes-block">
-              <label for="notes">Observaciones / Novedades de la llamada</label>
-              <textarea id="notes" class="notes-clean" placeholder="Escribe aquí cualquier detalle de la llamada (ej. acordó llamar a las 16h00, o encuesta completada)..."></textarea>
-            </div>
-
-            <div class="save-actions-bar">
-              <span class="save-hint">Se guardará con tu usuario e intento actual.</span>
-              <button class="button-primary save-btn-main" id="save-call" ${selectedOutcome ? '' : 'disabled'}>
-                <span>Guardar gestión</span>
-                <span>→</span>
-              </button>
-            </div>
-          </div>
-        </div>
+  if (!activeShift) {
+    return `
+      ${pageHeading('Jornada de trabajo', `Hola, ${escapeHtml(currentUser.name.split(' ')[0])}`, 'Antes de comenzar tus llamadas debes registrar el inicio de tu jornada.', '')}
+      <article class="card shift-start-card">
+        <div class="shift-icon">◷</div>
+        <h2>¿Lista para comenzar?</h2>
+        <p>Al iniciar la jornada registraremos la fecha y hora. Cuando termines, recuerda finalizarla para calcular tu tiempo de trabajo.</p>
+        <button class="button-primary" id="start-shift">Iniciar jornada <span>→</span></button>
       </article>
-
-      <!-- 2. TARJETA DEL GUION OFICIAL DE LLAMADA (DERECHA) -->
-      <article class="card script-side-card">
-        <div class="script-head-clean">
-          <div class="script-head-title">
-            <span>🗣️</span>
-            <strong>Guion Oficial de Llamadas &bull; ProCohesión GIZ</strong>
-          </div>
-          <span class="recency-pill">⏱️ Duración: 4 a 5 min</span>
-        </div>
-
-        <!-- Pasos Principales de la Conversación -->
-        <div class="script-steps-list">
-          <!-- Momento 1: Verificación de Identidad -->
-          <div class="script-step-item">
-            <span class="step-num-badge">1. Identidad</span>
-            <div class="script-step-text">
-              "Buenos días/tardes, ¿me comunico con <strong>${escapeHtml(contact.name)}</strong>?"
-            </div>
-          </div>
-
-          <!-- Momento 2: Presentación Institucional -->
-          <div class="script-step-item">
-            <span class="step-num-badge">2. Presentación</span>
-            <div class="script-step-text">
-              "Mi nombre es <strong>${escapeHtml(currentUser.name)}</strong>, le llamo de <strong>Clima Social</strong>. Estamos realizando un seguimiento para el <strong>Programa ProCohesión de la Cooperación Alemana - GIZ</strong>."
-            </div>
-          </div>
-
-          <!-- Momento 3: Motivo del Contacto -->
-          <div class="script-step-item">
-            <span class="step-num-badge">3. Motivo</span>
-            <div class="script-step-text">
-              "Queremos invitarle a responder una breve encuesta sobre cómo ha aplicado los conocimientos adquiridos en el curso en el que participó: <strong>${escapeHtml(courseStr)}</strong>. Esta información nos permitirá conocer la utilidad de los procesos de formación y contribuir a mejorar el trabajo que realiza la GIZ junto con sus socios en territorio."
-            </div>
-          </div>
-
-          <!-- Momento 4: Garantías Éticas y Duración -->
-          <div class="script-step-item">
-            <span class="step-num-badge">4. Ética y tiempo</span>
-            <div class="script-step-text">
-              "La encuesta es totalmente anónima y confidencial. No pediremos datos personales. Toma alrededor de <strong>4 a 5 minutos</strong>. ¿Me permite continuar?"
-            </div>
-          </div>
-        </div>
-
-        <!-- Respuestas y Situaciones (Momentos 5 a 8) -->
-        <div class="script-cases-accordion">
-          <div class="script-cases-header">
-            <span>📋</span>
-            <strong>Respuestas y manejo de situaciones</strong>
-          </div>
-          <div class="script-cases-grid">
-            <div class="case-box case-accept">
-              <strong>5. Si Acepta</strong>
-              <span>"Perfecto, muchas gracias. Empezamos."</span>
-            </div>
-            <div class="case-box case-reschedule">
-              <strong>5. Si Pospone / Reagenda</strong>
-              <span>"Sin problema. ¿Qué horario le queda más conveniente para llamarle nuevamente?"</span>
-            </div>
-            <div class="case-box case-doubts">
-              <strong>6. Si Manifiesta Dudas</strong>
-              <span>"No se preocupe, solo queremos conocer su experiencia aplicando lo aprendido. Su información está protegida y es solo para fines de investigación."</span>
-            </div>
-            <div class="case-box case-refuse">
-              <strong>7. Si Rechaza Participar</strong>
-              <span>"Gracias por su tiempo. Que tenga un buen día."</span>
-            </div>
-            <div class="case-box case-close">
-              <strong>8. Cierre de Encuesta</strong>
-              <span>"Le agradezco mucho por su colaboración. Sus respuestas son de gran apoyo para el programa. Que tenga un excelente día."</span>
-            </div>
-          </div>
-        </div>
-      </article>
-    </div>
-  `;
-}
-
-let operatorDateFilter = '';
-
-function isActionableContact(contact) {
-  if (!contact) return false;
-  return contact.status === 'pending' || contact.status === 'no-answer';
-}
-
-function extractDateStr(dateVal, rawDateVal) {
-  if (rawDateVal) {
-    try {
-      const d = new Date(rawDateVal);
-      if (!isNaN(d.getTime())) {
-        return new Intl.DateTimeFormat('es-EC', { timeZone: 'America/Guayaquil', day: '2-digit', month: '2-digit', year: 'numeric' }).format(d);
-      }
-    } catch {}
-  }
-  if (!dateVal) return '';
-  const s = String(dateVal).trim();
-  if (s.toLowerCase().startsWith('sin') || s.toLowerCase() === 'no' || s.toLowerCase() === '—') {
-    return '';
-  }
-  if (s.toLowerCase().startsWith('hoy')) {
-    return new Intl.DateTimeFormat('es-EC', { timeZone: 'America/Guayaquil', day: '2-digit', month: '2-digit', year: 'numeric' }).format(new Date());
-  }
-  if (s.toLowerCase().startsWith('ayer')) {
-    return new Intl.DateTimeFormat('es-EC', { timeZone: 'America/Guayaquil', day: '2-digit', month: '2-digit', year: 'numeric' }).format(new Date(Date.now() - 86400000));
-  }
-  const match = s.match(/\b\d{1,2}\/\d{1,2}\/\d{4}\b/);
-  if (match) return match[0];
-  return '';
-}
-
-function getContactLastDate(contact) {
-  if (!contact || (contact.attempts || 0) === 0) return '';
-  if (contact.lastAttemptAt) {
-    const d = extractDateStr('', contact.lastAttemptAt);
-    if (d && d !== 'Sin') return d;
-  }
-  if (contact.last) {
-    const d = extractDateStr(contact.last);
-    if (d && d !== 'Sin') return d;
-  }
-  return '';
-}
-
-function getOperatorActionableDates(contacts = []) {
-  const dates = new Set();
-  contacts.forEach(c => {
-    if (isActionableContact(c) && (c.attempts || 0) > 0) {
-      const d = getContactLastDate(c);
-      if (d && d !== 'Sin' && !d.toLowerCase().includes('sin')) {
-        dates.add(d);
-      }
-    }
-  });
-  return [...dates].filter(Boolean).sort().reverse();
-}
-
-function isContactInOperatorDate(contact, dateFilter) {
-  if (!contact) return false;
-  if (!dateFilter || dateFilter === 'all') return true;
-
-  if (dateFilter === 'uncalled') {
-    return (contact.attempts || 0) === 0 && contact.status === 'pending';
+    `;
   }
 
-  if ((contact.attempts || 0) === 0) return false;
+  const activeQueue = getOperatorActiveQueue();
+  const operatorDates = getOperatorDates();
+  const filteredQueue = getFilteredOperatorQueue();
 
-  const today = dayKey(new Date());
-  const yesterday = dayKey(new Date(Date.now() - 86400000));
-  const lastDate = getContactLastDate(contact);
-
-  if (dateFilter === 'today') {
-    if (contact.lastAttemptAt && dayKey(contact.lastAttemptAt) === today) return true;
-    const lastText = String(contact.last || '').toLowerCase();
-    if (lastText.startsWith('hoy')) return true;
-    return lastDate === today;
-  }
-
-  if (dateFilter === 'yesterday') {
-    if (contact.lastAttemptAt && dayKey(contact.lastAttemptAt) === yesterday) return true;
-    const lastText = String(contact.last || '').toLowerCase();
-    if (lastText.startsWith('ayer')) return true;
-    return lastDate === yesterday;
-  }
-
-  if (dateFilter === 'previous') {
-    return isPreviousDay(contact) && (contact.attempts || 0) > 0;
-  }
-
-  if (lastDate && lastDate === dateFilter) return true;
-
-  if (contact.lastAttemptAt) {
-    const d = extractDateStr('', contact.lastAttemptAt);
-    if (d === dateFilter) return true;
-  }
-
-  return false;
-}
-
-window.setOperatorDateFilter = function(val) {
-  operatorDateFilter = val;
-  const allAssigned = visibleContacts();
-  const activeActionable = allAssigned.filter(isActionableContact);
-  const filtered = val ? activeActionable.filter(item => isContactInOperatorDate(item, val)) : activeActionable;
-  const action = firstActionable(filtered) || filtered[0];
-  selectedContactId = action ? action.id : null;
-  render();
-};
-
-window.clearOperatorDateFilter = function() {
-  window.setOperatorDateFilter('');
-};
-
-function renderOperatorBoard() {
-  const activeShift = getActiveShift();
-  if (!activeShift) return `${pageHeading('Jornada de trabajo', `Hola, ${escapeHtml(currentUser.name.split(' ')[0])}`, 'Antes de comenzar tus llamadas debes registrar el inicio de tu jornada.', '')}<article class="card shift-start-card"><div class="shift-icon">◷</div><h2>¿Listo/a para comenzar?</h2><p>Al iniciar la jornada registraremos la fecha y hora. Cuando termines, recuerda finalizarla para calcular tu tiempo de trabajo.</p><button class="button-primary" id="start-shift">Iniciar jornada <span>→</span></button></article>`;
-
-  const allAssigned = visibleContacts();
-  const activeQueue = allAssigned.filter(isActionableContact);
-  const operatorDates = getOperatorActionableDates(activeQueue);
-
-  const filteredQueue = operatorDateFilter
-    ? activeQueue.filter(item => isContactInOperatorDate(item, operatorDateFilter))
-    : activeQueue;
-
-  const selected = getContact(selectedContactId);
-  const contact = (selected && filteredQueue.some(item => item.id === selected.id))
-    ? selected
-    : (firstActionable(filteredQueue) || filteredQueue[0] || null);
-
+  const contact = getContact(selectedContactId) || firstActionable(filteredQueue) || firstActionable(activeQueue) || filteredQueue[0] || activeQueue[0];
   if (contact && selectedContactId !== contact.id) {
     selectedContactId = contact.id;
-  } else if (!contact && filteredQueue.length === 0) {
-    selectedContactId = null;
   }
 
   const normal = filteredQueue.filter(item => item.status === 'pending' && (item.attempts || 0) === 0);
@@ -2177,39 +1798,61 @@ function renderOperatorBoard() {
   });
 
   return `
-    ${pageHeading('Jornada de hoy', `Hola, ${escapeHtml(currentUser.name.split(' ')[0])}`, `${activeQueue.length} contactos pendientes · ${uncalledCount} nuevos por llamar · ${previousDayCount} reintentos anteriores.`, '<button class="button-secondary" id="end-shift">Finalizar jornada</button>')}
-    <div class="shift-live-note"><span class="live-dot"></span> Jornada iniciada ${formatDateTime(activeShift.startedAt)} · Tiempo transcurrido: ${formatDuration(activeShift.startedAt)}</div>
-    
-    <div class="operator-summary">
-      <div><span>Por llamar</span><strong>${normal.length}</strong></div>
-      <div><span>Pendientes</span><strong>${pending.length}</strong></div>
-      <div><span>No contestan</span><strong>${noAnswer.length}</strong></div>
-      <div><span>Total en filtro</span><strong>${filteredQueue.length}</strong></div>
-    </div>
-
-    <div class="operator-filter-bar" style="display:flex;justify-content:space-between;align-items:center;margin:14px 0 16px 0;background:var(--bg-canvas);padding:10px 14px;border-radius:10px;border:1px solid var(--border-subtle);flex-wrap:wrap;gap:10px;">
-      <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
-        <span style="font-size:16px;">📅</span>
-        <strong style="font-size:13px;color:var(--text-main);">Filtrar pendientes por fecha:</strong>
-        <select id="operator-date-filter" class="filter-select" style="padding:6px 12px;font-size:12px;border-radius:8px;min-width:240px;" onchange="setOperatorDateFilter(this.value)">
-          <option value="" ${!operatorDateFilter ? 'selected' : ''}>📂 Todos los pendientes (${activeQueue.length} contactos)</option>
-          ${uncalledCount > 0 ? `<option value="uncalled" ${operatorDateFilter === 'uncalled' ? 'selected' : ''}>🆕 Nuevos por llamar (${uncalledCount})</option>` : ''}
-          ${todayPendingCount > 0 ? `<option value="today" ${operatorDateFilter === 'today' ? 'selected' : ''}>📅 Gestiones de Hoy (${todayPendingCount})</option>` : ''}
-          ${yesterdayPendingCount > 0 ? `<option value="yesterday" ${operatorDateFilter === 'yesterday' ? 'selected' : ''}>📅 Gestiones de Ayer (${yesterdayPendingCount})</option>` : ''}
-          ${previousDayCount > 0 ? `<option value="previous" ${operatorDateFilter === 'previous' ? 'selected' : ''}>⏳ Reintentos de días anteriores (${previousDayCount})</option>` : ''}
-          ${specificDates.map(d => {
-            const countOnDate = activeQueue.filter(c => isContactInOperatorDate(c, d)).length;
-            return `<option value="${escapeHtml(d)}" ${operatorDateFilter === d ? 'selected' : ''}>📆 Fecha: ${escapeHtml(d)} (${countOnDate} pendientes)</option>`;
-          }).join('')}
-        </select>
-      </div>
-      ${operatorDateFilter ? `
-        <div style="display:flex;align-items:center;gap:8px;">
-          <span style="font-size:12px;color:var(--cs-plum);font-weight:700;">Mostrando ${filteredQueue.length} de ${activeQueue.length} pendientes</span>
-          <button class="button-secondary" onclick="clearOperatorDateFilter()" style="padding:4px 10px;font-size:11px;" type="button">✕ Ver todos</button>
+    <!-- Barra Superior Compacta Integrada del Operador -->
+    <header class="operator-compact-topbar">
+      <!-- 1. Saludo & Live Shift Status -->
+      <div class="topbar-user-block">
+        <div class="topbar-greeting">
+          <h2>Hola, ${escapeHtml(currentUser.name.split(' ')[0])}</h2>
+          <div class="topbar-live-tag">
+            <span class="live-dot"></span>
+            <span>Jornada: <strong>${formatDuration(activeShift.startedAt)}</strong></span>
+          </div>
         </div>
-      ` : ''}
-    </div>
+      </div>
+
+      <!-- 2. Mini Métricas Integradas (Pills en Línea) -->
+      <div class="topbar-metrics-pills">
+        <div class="metric-pill pill-new" title="Contactos nuevos por llamar">
+          <span class="pill-dot"></span>
+          <span class="pill-lbl">Por llamar:</span>
+          <strong>${normal.length}</strong>
+        </div>
+        <div class="metric-pill pill-pending" title="Contactos pendientes o reprogramados">
+          <span class="pill-dot"></span>
+          <span class="pill-lbl">Pendientes:</span>
+          <strong>${pending.length}</strong>
+        </div>
+        <div class="metric-pill pill-no-answer" title="Contactos que no contestaron">
+          <span class="pill-dot"></span>
+          <span class="pill-lbl">No contestan:</span>
+          <strong>${noAnswer.length}</strong>
+        </div>
+        <div class="metric-pill pill-total" title="Total de contactos en este filtro">
+          <span class="pill-lbl">Total filtro:</span>
+          <strong>${filteredQueue.length}</strong>
+        </div>
+      </div>
+
+      <!-- 3. Selector de Filtro de Fecha & Finalizar Jornada -->
+      <div class="topbar-actions-block">
+        <div class="topbar-date-filter-wrap">
+          <select id="operator-date-filter" class="filter-select-compact" onchange="setOperatorDateFilter(this.value)" title="Filtrar contactos por fecha">
+            <option value="" ${!operatorDateFilter ? 'selected' : ''}>📂 Todos (${activeQueue.length})</option>
+            ${uncalledCount > 0 ? `<option value="uncalled" ${operatorDateFilter === 'uncalled' ? 'selected' : ''}>🆕 Nuevos (${uncalledCount})</option>` : ''}
+            ${todayPendingCount > 0 ? `<option value="today" ${operatorDateFilter === 'today' ? 'selected' : ''}>📅 Hoy (${todayPendingCount})</option>` : ''}
+            ${yesterdayPendingCount > 0 ? `<option value="yesterday" ${operatorDateFilter === 'yesterday' ? 'selected' : ''}>📅 Ayer (${yesterdayPendingCount})</option>` : ''}
+            ${previousDayCount > 0 ? `<option value="previous" ${operatorDateFilter === 'previous' ? 'selected' : ''}>⏳ Anteriores (${previousDayCount})</option>` : ''}
+            ${specificDates.map(d => {
+              const countOnDate = activeQueue.filter(c => isContactInOperatorDate(c, d)).length;
+              return `<option value="${escapeHtml(d)}" ${operatorDateFilter === d ? 'selected' : ''}>📆 ${escapeHtml(d)} (${countOnDate})</option>`;
+            }).join('')}
+          </select>
+          ${operatorDateFilter ? `<button class="clear-filter-btn" onclick="clearOperatorDateFilter()" type="button" title="Ver todos">✕</button>` : ''}
+        </div>
+        <button class="button-secondary end-shift-compact-btn" id="end-shift" type="button">Finalizar jornada</button>
+      </div>
+    </header>
 
     <section class="operator-workspace-vertical">
       <!-- 1. PRIMERA LÍNEA: TARJETA DEL CONTACTO (IZQ) Y GUION DE LLAMADA (DER) -->
