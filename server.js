@@ -56,41 +56,106 @@ app.post('/import/xlsx', upload.single('file'), async (req, res) => {
     let duplicateIds = 0;
     const seenIds = new Set();
     for (const sheet of operatorSheets) {
-      const headers = sheet.getRow(1).values.slice(1).map(value => normalizeImportHeader(value));
-      const hasCod = headers.includes('cod') || headers.includes('n') || headers.includes('id') || headers.includes('codigo') || headers.includes('codigo_de_encuestador');
-      const hasTelefono = headers.some(header => header === 'telefono' || header === 'contacto' || header === 'celular');
-      if (!hasCod || !hasTelefono) { sheetStats.push({ sheet: sheet.name, imported: 0, reason: 'encabezados no reconocidos' }); continue; }
+      let headerRowNumber = 1;
+      let headers = [];
+      let metaCourseName = '';
+      let metaEntidad = '';
+      let metaReferencia = '';
+      let metaStartDate = '';
+      let metaEndDate = '';
+      let metaProvincia = '';
+      let metaCanton = '';
+      let metaBarrio = '';
+
+      function getMetaValue(rowValues, keywordRegex) {
+        const matchIdx = rowValues.findIndex(v => keywordRegex.test(v));
+        if (matchIdx !== -1) {
+          for (let i = matchIdx + 1; i < rowValues.length; i++) {
+            const val = cleanImportText(rowValues[i]);
+            if (val) return val;
+          }
+        }
+        return '';
+      }
+
+      // 1. Scan first 20 rows for metadata and table header
+      for (let r = 1; r <= Math.min(sheet.rowCount, 20); r++) {
+        const rowValues = sheet.getRow(r).values.slice(1).map(getCellText);
+        const rowHeaders = rowValues.map(normalizeImportHeader);
+        const hasNameCol = rowHeaders.some(h => ['nombres_y_apellidos', 'nombres', 'nombre', 'entrevistado', 'id_nombre_entrevistado_a'].includes(h));
+        const hasPhoneCol = rowHeaders.some(h => ['numero_telefonico', 'telefono', 'celular', 'contacto'].includes(h));
+
+        if (hasNameCol && hasPhoneCol) {
+          headerRowNumber = r;
+          headers = rowHeaders;
+          break;
+        }
+
+        const courseVal = getMetaValue(rowValues, /nombre del curso/i);
+        if (courseVal) metaCourseName = courseVal;
+        const entidadVal = getMetaValue(rowValues, /entidad responsable/i);
+        if (entidadVal) metaEntidad = entidadVal;
+        const refVal = getMetaValue(rowValues, /persona de referencia/i);
+        if (refVal) metaReferencia = refVal;
+        const startVal = getMetaValue(rowValues, /fecha de inicio/i);
+        if (startVal) metaStartDate = startVal;
+        const endVal = getMetaValue(rowValues, /fecha de finalizaci/i);
+        if (endVal) metaEndDate = endVal;
+      }
+
+      if (!headers.length) {
+        headers = sheet.getRow(1).values.slice(1).map(normalizeImportHeader);
+      }
+
+      const hasCod = headers.includes('cod') || headers.includes('n') || headers.includes('id') || headers.includes('codigo') || headers.includes('codigo_de_encuestador') || headers.includes('no');
+      const hasTelefono = headers.some(header => ['numero_telefonico', 'telefono', 'celular', 'contacto'].includes(header) || header.includes('telefono'));
+      if (!hasTelefono) { sheetStats.push({ sheet: sheet.name, imported: 0, reason: 'encabezados no reconocidos' }); continue; }
+
       let sheetCount = 0;
-      for (let rowNumber = 2; rowNumber <= sheet.rowCount; rowNumber += 1) {
+      for (let rowNumber = headerRowNumber + 1; rowNumber <= sheet.rowCount; rowNumber += 1) {
         const values = sheet.getRow(rowNumber).values.slice(1).map(getCellText);
         if (values.every(value => !value.trim())) { skippedRows += 1; continue; }
         const row = Object.fromEntries(headers.map((header, index) => [header, values[index] || '']));
-        const phoneData = normalizePhones(row.telefono || row.contacto || row.celular);
+        const phoneData = normalizePhones(row.numero_telefonico || row.telefono || row.contacto || row.celular);
         if (!phoneData.primary) { missingPhone += 1; }
-        const rawId = cleanImportText(row.cod || row.n || row.id || row.codigo);
-        const id = rawId ? `GIZ-${rawId}` : `IMPORT-${Date.now()}-${rowNumber}`;
+        const rawId = cleanImportText(row.n || row.no || row.cod || row.id || row.codigo);
+        const id = rawId ? `GIZ-${String(rawId).padStart(3, '0')}` : `IMPORT-${Date.now()}-${rowNumber}`;
         if (seenIds.has(id)) duplicateIds += 1;
         seenIds.add(id);
-        const name = cleanImportText(row.id_nombre_entrevistado_a || row.nombres || row.nombre || row.entrevistado) || 'No registra';
-        const provinceRaw = cleanImportText(row.provincia || row.provincia_de_residencia || row.ubicacion) || 'No tiene información';
+        const name = cleanImportText(row.nombres_y_apellidos || row.id_nombre_entrevistado_a || row.nombres || row.nombre || row.entrevistado) || 'No registra';
+        const barrio = cleanImportText(row.barrio || row.parroquia) || metaBarrio || 'Durán';
+        const canton = cleanImportText(row.canton || row.canton_de_residencia) || metaCanton || 'Rioverde';
+        const provinceRaw = cleanImportText(row.provincia || row.provincia_de_residencia || row.ubicacion) || metaProvincia || 'Esmeraldas';
         const province = firstLocationValue(provinceRaw);
-        const course = cleanImportText(row.curso || row.nombre_del_curso || row.institucion || row.organizacion) || 'No tiene información';
+        const course = cleanImportText(row.nombre_del_curso || row.curso || row.institucion || row.organizacion) || metaCourseName || 'Salud Sexual y Reproductiva';
+        const startDate = cleanImportText(row.fecha_de_inicio_del_curso || row.fecha_de_inicio) || metaStartDate || 'Junio 2025';
+        const endDate = cleanImportText(row.fecha_de_finalizacion_del_curso || row.fecha_de_finalizacion) || metaEndDate || 'Julio 2025';
+
         allContacts.push({
           id,
           name,
           phone: phoneData.primary || 'No tiene teléfono celular',
-          phoneRaw: cleanImportText(row.telefono || row.contacto || row.celular),
+          phoneRaw: cleanImportText(row.numero_telefonico || row.telefono || row.contacto || row.celular),
           phoneOther: phoneData.others.join(' / '),
           email: cleanImportText(row.correo_electronico || row.correo || row.email),
-          parish: cleanImportText(row.parroquia || row.ciudad) || 'No tiene información',
-          location: province,
+          parish: barrio,
+          barrio,
+          canton,
+          provincia: province,
+          location: `${canton} · ${province}`,
           province,
           provinceRaw,
-          city: cleanImportText(row.ciudad) || 'No tiene información',
-          organization: course,
-          sector: cleanImportText(row.sector) || 'No tiene información',
-          cargo: cleanImportText(row.cargo) || 'No tiene información',
-          artField: cleanImportText(row.cargo || row.sector || row.curso) || 'No tiene información',
+          city: canton,
+          organization: metaEntidad || 'UNFPA, VME, FUDELA',
+          referencia: metaReferencia || 'Mariana Oleas (asesora local GIZ Esmeraldas)',
+          sector: barrio,
+          cargo: 'Participante',
+          artField: course,
+          courseName: course,
+          courseStartDate: startDate,
+          courseEndDate: endDate,
+          courseDates: `${startDate} – ${endDate}`,
+          courseRecency: `${endDate} (~1 año)`,
           facilitator: cleanImportText(row.facilitador || row.codigo_de_encuestador),
           sheetName: sheet.name.trim(),
           baseName,
@@ -261,11 +326,11 @@ app.post('/export/xlsx', async (req, res) => {
     summary.getRow(2).height = 34;
     summary.getRow(3).height = 22;
     summary.mergeCells('D2:G2');
-    summary.getCell('D2').value = '3era Encuesta de Condiciones Laborales en Trabajadores de las Artes y la Cultura';
+    summary.getCell('D2').value = 'Evaluación de Cursos y Capacitaciones · Clima Social GIZ';
     summary.getCell('D2').font = { name: 'Poppins', size: 14, bold: true, color: { argb: colors.indigo } };
     summary.getCell('D2').alignment = { vertical: 'middle', wrapText: false };
     summary.mergeCells('D3:G3');
-    summary.getCell('D3').value = 'Reporte de gestión de llamadas · Clima Social';
+    summary.getCell('D3').value = 'Reporte oficial de gestión y seguimiento de llamadas telefónicas';
     summary.getCell('D3').font = { name: 'Poppins', size: 10, italic: true, color: { argb: colors.muted } };
     summary.getCell('D3').alignment = { vertical: 'middle' };
     if (fs.existsSync(logoPath)) {

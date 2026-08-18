@@ -11,40 +11,1002 @@ const appUsers = [
 ];
 
 const seedContacts = [
-  { id: 'GIZ-001', name: 'Michael Pinsag', phone: '0985041991', parish: 'Quito', location: 'Pichincha', organization: 'Gestión Ambiental GIZ', status: 'pending', attempts: 0, last: 'Sin gestión', operator: 'TP' },
-  { id: 'GIZ-002', name: 'Diana Estévez', phone: '0992345678', parish: 'Cumbayá', location: 'Pichincha', organization: 'Capacitación Climática GIZ', status: 'pending', attempts: 1, last: 'Hoy, 09:30', operator: 'AY' },
-  { id: 'GIZ-003', name: 'Carlos Morales', phone: '0987654321', parish: 'Iñaquito', location: 'Pichincha', organization: 'Desarrollo Sostenible GIZ', status: 'effective', attempts: 1, last: 'Hoy, 09:15', operator: 'VC' },
-  { id: 'GIZ-004', name: 'Patricia Herrera', phone: '0971122334', parish: 'Conocoto', location: 'Pichincha', organization: 'Gestión Ambiental GIZ', status: 'pending', attempts: 0, last: 'Sin gestión', operator: 'TP' }
+  {
+    "id": "GIZ-001",
+    "name": "Juanito XXXX",
+    "phone": "098XXXXX",
+    "phoneRaw": "098XXXXX",
+    "parish": "Durán",
+    "barrio": "Durán",
+    "canton": "Rioverde",
+    "provincia": "Esmeraldas",
+    "location": "Rioverde · Esmeraldas",
+    "courseName": "Salud Sexual y Reproductiva",
+    "courseStartDate": "Junio 2025",
+    "courseEndDate": "Julio 2025",
+    "courseDates": "Junio 2025 – Julio 2025",
+    "courseRecency": "Julio 2025 (~1 año)",
+    "organization": "UNFPA, VME, FUDELA",
+    "referencia": "Mariana Oleas (asesora local GIZ Esmeraldas)",
+    "baseName": "GIZ · OE1 - Salud Sexual y Reproductiva (Esmeraldas)",
+    "status": "pending",
+    "attempts": 0,
+    "last": "Sin gestión",
+    "operator": "TP"
+  },
+  {
+    "id": "GIZ-002",
+    "name": "Tyron Arcos",
+    "phone": "0985436726",
+    "phoneRaw": "0985436726",
+    "parish": "Durán",
+    "barrio": "Durán",
+    "canton": "Rioverde",
+    "provincia": "Esmeraldas",
+    "location": "Rioverde · Esmeraldas",
+    "courseName": "Salud Sexual y Reproductiva",
+    "courseStartDate": "Junio 2025",
+    "courseEndDate": "Julio 2025",
+    "courseDates": "Junio 2025 – Julio 2025",
+    "courseRecency": "Julio 2025 (~1 año)",
+    "organization": "UNFPA, VME, FUDELA",
+    "referencia": "Mariana Oleas (asesora local GIZ Esmeraldas)",
+    "baseName": "GIZ · OE1 - Salud Sexual y Reproductiva (Esmeraldas)",
+    "status": "pending",
+    "attempts": 0,
+    "last": "Sin gestión",
+    "operator": "AY"
+  },
+  {
+    "id": "GIZ-003",
+    "name": "Yandel Rodriguez",
+    "phone": "0989917454",
+    "phoneRaw": "0989917454",
+    "parish": "Durán",
+    "barrio": "Durán",
+    "canton": "Rioverde",
+    "provincia": "Esmeraldas",
+    "location": "Rioverde · Esmeraldas",
+    "courseName": "Salud Sexual y Reproductiva",
+    "courseStartDate": "Junio 2025",
+    "courseEndDate": "Julio 2025",
+    "courseDates": "Junio 2025 – Julio 2025",
+    "courseRecency": "Julio 2025 (~1 año)",
+    "organization": "UNFPA, VME, FUDELA",
+    "referencia": "Mariana Oleas (asesora local GIZ Esmeraldas)",
+    "baseName": "GIZ · OE1 - Salud Sexual y Reproductiva (Esmeraldas)",
+    "status": "pending",
+    "attempts": 0,
+    "last": "Sin gestión",
+    "operator": "VC"
+  },
+  {
+    "id": "GIZ-004",
+    "name": "Yandel Montenegro",
+    "phone": "0965798643",
+    "phoneRaw": "0965798643",
+    "parish": "Durán",
+    "barrio": "Durán",
+    "canton": "Rioverde",
+    "provincia": "Esmeraldas",
+    "location": "Rioverde · Esmeraldas",
+    "courseName": "Salud Sexual y Reproductiva",
+    "courseStartDate": "Junio 2025",
+    "courseEndDate": "Julio 2025",
+    "courseDates": "Junio 2025 – Julio 2025",
+    "courseRecency": "Julio 2025 (~1 año)",
+    "organization": "UNFPA, VME, FUDELA",
+    "referencia": "Mariana Oleas (asesora local GIZ Esmeraldas)",
+    "baseName": "GIZ · OE1 - Salud Sexual y Reproductiva (Esmeraldas)",
+    "status": "pending",
+    "attempts": 0,
+    "last": "Sin gestión",
+    "operator": "TP"
+  }
 ];
 
-const demoContacts = [];
+const demoContacts = [
+  {
+    "id": "GIZ-001",
+    "name": "Juanito XXXX",
+    "phone": "098XXXXX",
+    "phoneRaw": "098XXXXX",
+    "parish": "Durán",
+    "barrio": "Durán",
+    "canton": "Rioverde",
+    "provincia": "Esmeraldas",
+    "location": "Rioverde · Esmeraldas",
+    "courseName": "Salud Sexual y Reproductiva",
+    "courseStartDate": "Junio 2025",
+    "courseEndDate": "Julio 2025",
+    "courseDates": "Junio 2025 – Julio 2025",
+    "courseRecency": "Julio 2025 (~1 año)",
+    "organization": "UNFPA, VME, FUDELA",
+    "referencia": "Mariana Oleas (asesora local GIZ Esmeraldas)",
+    "baseName": "GIZ · OE1 - Salud Sexual y Reproductiva (Esmeraldas)",
+    "status": "pending",
+    "attempts": 0,
+    "last": "Sin gestión",
+    "operator": "TP"
+  },
+  {
+    "id": "GIZ-002",
+    "name": "Tyron Arcos",
+    "phone": "0985436726",
+    "phoneRaw": "0985436726",
+    "parish": "Durán",
+    "barrio": "Durán",
+    "canton": "Rioverde",
+    "provincia": "Esmeraldas",
+    "location": "Rioverde · Esmeraldas",
+    "courseName": "Salud Sexual y Reproductiva",
+    "courseStartDate": "Junio 2025",
+    "courseEndDate": "Julio 2025",
+    "courseDates": "Junio 2025 – Julio 2025",
+    "courseRecency": "Julio 2025 (~1 año)",
+    "organization": "UNFPA, VME, FUDELA",
+    "referencia": "Mariana Oleas (asesora local GIZ Esmeraldas)",
+    "baseName": "GIZ · OE1 - Salud Sexual y Reproductiva (Esmeraldas)",
+    "status": "pending",
+    "attempts": 0,
+    "last": "Sin gestión",
+    "operator": "AY"
+  },
+  {
+    "id": "GIZ-003",
+    "name": "Yandel Rodriguez",
+    "phone": "0989917454",
+    "phoneRaw": "0989917454",
+    "parish": "Durán",
+    "barrio": "Durán",
+    "canton": "Rioverde",
+    "provincia": "Esmeraldas",
+    "location": "Rioverde · Esmeraldas",
+    "courseName": "Salud Sexual y Reproductiva",
+    "courseStartDate": "Junio 2025",
+    "courseEndDate": "Julio 2025",
+    "courseDates": "Junio 2025 – Julio 2025",
+    "courseRecency": "Julio 2025 (~1 año)",
+    "organization": "UNFPA, VME, FUDELA",
+    "referencia": "Mariana Oleas (asesora local GIZ Esmeraldas)",
+    "baseName": "GIZ · OE1 - Salud Sexual y Reproductiva (Esmeraldas)",
+    "status": "pending",
+    "attempts": 0,
+    "last": "Sin gestión",
+    "operator": "VC"
+  },
+  {
+    "id": "GIZ-004",
+    "name": "Yandel Montenegro",
+    "phone": "0965798643",
+    "phoneRaw": "0965798643",
+    "parish": "Durán",
+    "barrio": "Durán",
+    "canton": "Rioverde",
+    "provincia": "Esmeraldas",
+    "location": "Rioverde · Esmeraldas",
+    "courseName": "Salud Sexual y Reproductiva",
+    "courseStartDate": "Junio 2025",
+    "courseEndDate": "Julio 2025",
+    "courseDates": "Junio 2025 – Julio 2025",
+    "courseRecency": "Julio 2025 (~1 año)",
+    "organization": "UNFPA, VME, FUDELA",
+    "referencia": "Mariana Oleas (asesora local GIZ Esmeraldas)",
+    "baseName": "GIZ · OE1 - Salud Sexual y Reproductiva (Esmeraldas)",
+    "status": "pending",
+    "attempts": 0,
+    "last": "Sin gestión",
+    "operator": "TP"
+  },
+  {
+    "id": "GIZ-005",
+    "name": "Juan David Albán",
+    "phone": "0998966906",
+    "phoneRaw": "0998966906",
+    "parish": "09 de Octubre",
+    "barrio": "09 de Octubre",
+    "canton": "San Lorenzo",
+    "provincia": "Esmeraldas",
+    "location": "San Lorenzo · Esmeraldas",
+    "courseName": "Salud Sexual y Reproductiva",
+    "courseStartDate": "Junio 2025",
+    "courseEndDate": "Julio 2025",
+    "courseDates": "Junio 2025 – Julio 2025",
+    "courseRecency": "Julio 2025 (~1 año)",
+    "organization": "UNFPA, VME, FUDELA",
+    "referencia": "Mariana Oleas (asesora local GIZ Esmeraldas)",
+    "baseName": "GIZ · OE1 - Salud Sexual y Reproductiva (Esmeraldas)",
+    "status": "pending",
+    "attempts": 0,
+    "last": "Sin gestión",
+    "operator": "AY"
+  },
+  {
+    "id": "GIZ-006",
+    "name": "Erick Cortez",
+    "phone": "0992491646",
+    "phoneRaw": "0992491646",
+    "parish": "09 de Octubre",
+    "barrio": "09 de Octubre",
+    "canton": "San Lorenzo",
+    "provincia": "Esmeraldas",
+    "location": "San Lorenzo · Esmeraldas",
+    "courseName": "Salud Sexual y Reproductiva",
+    "courseStartDate": "Junio 2025",
+    "courseEndDate": "Julio 2025",
+    "courseDates": "Junio 2025 – Julio 2025",
+    "courseRecency": "Julio 2025 (~1 año)",
+    "organization": "UNFPA, VME, FUDELA",
+    "referencia": "Mariana Oleas (asesora local GIZ Esmeraldas)",
+    "baseName": "GIZ · OE1 - Salud Sexual y Reproductiva (Esmeraldas)",
+    "status": "pending",
+    "attempts": 0,
+    "last": "Sin gestión",
+    "operator": "VC"
+  },
+  {
+    "id": "GIZ-007",
+    "name": "Singit Arroyo",
+    "phone": "0954387240",
+    "phoneRaw": "0954387240",
+    "parish": "Durán",
+    "barrio": "Durán",
+    "canton": "Rioverde",
+    "provincia": "Esmeraldas",
+    "location": "Rioverde · Esmeraldas",
+    "courseName": "Salud Sexual y Reproductiva",
+    "courseStartDate": "Junio 2025",
+    "courseEndDate": "Julio 2025",
+    "courseDates": "Junio 2025 – Julio 2025",
+    "courseRecency": "Julio 2025 (~1 año)",
+    "organization": "UNFPA, VME, FUDELA",
+    "referencia": "Mariana Oleas (asesora local GIZ Esmeraldas)",
+    "baseName": "GIZ · OE1 - Salud Sexual y Reproductiva (Esmeraldas)",
+    "status": "pending",
+    "attempts": 0,
+    "last": "Sin gestión",
+    "operator": "TP"
+  },
+  {
+    "id": "GIZ-008",
+    "name": "Genesis Vaque",
+    "phone": "0985764391",
+    "phoneRaw": "0985764391",
+    "parish": "Durán",
+    "barrio": "Durán",
+    "canton": "Rioverde",
+    "provincia": "Esmeraldas",
+    "location": "Rioverde · Esmeraldas",
+    "courseName": "Salud Sexual y Reproductiva",
+    "courseStartDate": "Junio 2025",
+    "courseEndDate": "Julio 2025",
+    "courseDates": "Junio 2025 – Julio 2025",
+    "courseRecency": "Julio 2025 (~1 año)",
+    "organization": "UNFPA, VME, FUDELA",
+    "referencia": "Mariana Oleas (asesora local GIZ Esmeraldas)",
+    "baseName": "GIZ · OE1 - Salud Sexual y Reproductiva (Esmeraldas)",
+    "status": "pending",
+    "attempts": 0,
+    "last": "Sin gestión",
+    "operator": "AY"
+  },
+  {
+    "id": "GIZ-009",
+    "name": "Gilary Arroyo",
+    "phone": "0997486076",
+    "phoneRaw": "0997486076",
+    "parish": "Durán",
+    "barrio": "Durán",
+    "canton": "Rioverde",
+    "provincia": "Esmeraldas",
+    "location": "Rioverde · Esmeraldas",
+    "courseName": "Salud Sexual y Reproductiva",
+    "courseStartDate": "Junio 2025",
+    "courseEndDate": "Julio 2025",
+    "courseDates": "Junio 2025 – Julio 2025",
+    "courseRecency": "Julio 2025 (~1 año)",
+    "organization": "UNFPA, VME, FUDELA",
+    "referencia": "Mariana Oleas (asesora local GIZ Esmeraldas)",
+    "baseName": "GIZ · OE1 - Salud Sexual y Reproductiva (Esmeraldas)",
+    "status": "pending",
+    "attempts": 0,
+    "last": "Sin gestión",
+    "operator": "VC"
+  },
+  {
+    "id": "GIZ-010",
+    "name": "Waldisney Navarrete",
+    "phone": "0985674301",
+    "phoneRaw": "0985674301",
+    "parish": "Durán",
+    "barrio": "Durán",
+    "canton": "Rioverde",
+    "provincia": "Esmeraldas",
+    "location": "Rioverde · Esmeraldas",
+    "courseName": "Salud Sexual y Reproductiva",
+    "courseStartDate": "Junio 2025",
+    "courseEndDate": "Julio 2025",
+    "courseDates": "Junio 2025 – Julio 2025",
+    "courseRecency": "Julio 2025 (~1 año)",
+    "organization": "UNFPA, VME, FUDELA",
+    "referencia": "Mariana Oleas (asesora local GIZ Esmeraldas)",
+    "baseName": "GIZ · OE1 - Salud Sexual y Reproductiva (Esmeraldas)",
+    "status": "pending",
+    "attempts": 0,
+    "last": "Sin gestión",
+    "operator": "TP"
+  },
+  {
+    "id": "GIZ-011",
+    "name": "Freddy Bonaga",
+    "phone": "0967345672",
+    "phoneRaw": "0967345672",
+    "parish": "Durán",
+    "barrio": "Durán",
+    "canton": "Rioverde",
+    "provincia": "Esmeraldas",
+    "location": "Rioverde · Esmeraldas",
+    "courseName": "Salud Sexual y Reproductiva",
+    "courseStartDate": "Junio 2025",
+    "courseEndDate": "Julio 2025",
+    "courseDates": "Junio 2025 – Julio 2025",
+    "courseRecency": "Julio 2025 (~1 año)",
+    "organization": "UNFPA, VME, FUDELA",
+    "referencia": "Mariana Oleas (asesora local GIZ Esmeraldas)",
+    "baseName": "GIZ · OE1 - Salud Sexual y Reproductiva (Esmeraldas)",
+    "status": "pending",
+    "attempts": 0,
+    "last": "Sin gestión",
+    "operator": "AY"
+  },
+  {
+    "id": "GIZ-012",
+    "name": "Alison Baez",
+    "phone": "0998965736",
+    "phoneRaw": "0998965736",
+    "parish": "09 de Octubre",
+    "barrio": "09 de Octubre",
+    "canton": "San Lorenzo",
+    "provincia": "Esmeraldas",
+    "location": "San Lorenzo · Esmeraldas",
+    "courseName": "Salud Sexual y Reproductiva",
+    "courseStartDate": "Junio 2025",
+    "courseEndDate": "Julio 2025",
+    "courseDates": "Junio 2025 – Julio 2025",
+    "courseRecency": "Julio 2025 (~1 año)",
+    "organization": "UNFPA, VME, FUDELA",
+    "referencia": "Mariana Oleas (asesora local GIZ Esmeraldas)",
+    "baseName": "GIZ · OE1 - Salud Sexual y Reproductiva (Esmeraldas)",
+    "status": "pending",
+    "attempts": 0,
+    "last": "Sin gestión",
+    "operator": "VC"
+  },
+  {
+    "id": "GIZ-013",
+    "name": "Verónica Cuellar",
+    "phone": "0969136734",
+    "phoneRaw": "0969136734",
+    "parish": "09 de Octubre",
+    "barrio": "09 de Octubre",
+    "canton": "San Lorenzo",
+    "provincia": "Esmeraldas",
+    "location": "San Lorenzo · Esmeraldas",
+    "courseName": "Salud Sexual y Reproductiva",
+    "courseStartDate": "Junio 2025",
+    "courseEndDate": "Julio 2025",
+    "courseDates": "Junio 2025 – Julio 2025",
+    "courseRecency": "Julio 2025 (~1 año)",
+    "organization": "UNFPA, VME, FUDELA",
+    "referencia": "Mariana Oleas (asesora local GIZ Esmeraldas)",
+    "baseName": "GIZ · OE1 - Salud Sexual y Reproductiva (Esmeraldas)",
+    "status": "pending",
+    "attempts": 0,
+    "last": "Sin gestión",
+    "operator": "TP"
+  },
+  {
+    "id": "GIZ-014",
+    "name": "Karelys Plaza",
+    "phone": "0988113514",
+    "phoneRaw": "0988113514",
+    "parish": "La Cayapa",
+    "barrio": "La Cayapa",
+    "canton": "Eloy Alfaro",
+    "provincia": "Esmeraldas",
+    "location": "Eloy Alfaro · Esmeraldas",
+    "courseName": "Salud Sexual y Reproductiva",
+    "courseStartDate": "Junio 2025",
+    "courseEndDate": "Julio 2025",
+    "courseDates": "Junio 2025 – Julio 2025",
+    "courseRecency": "Julio 2025 (~1 año)",
+    "organization": "UNFPA, VME, FUDELA",
+    "referencia": "Mariana Oleas (asesora local GIZ Esmeraldas)",
+    "baseName": "GIZ · OE1 - Salud Sexual y Reproductiva (Esmeraldas)",
+    "status": "pending",
+    "attempts": 0,
+    "last": "Sin gestión",
+    "operator": "AY"
+  },
+  {
+    "id": "GIZ-015",
+    "name": "Victor Capena",
+    "phone": "0959794208",
+    "phoneRaw": "0959794208",
+    "parish": "La Cayapa",
+    "barrio": "La Cayapa",
+    "canton": "Eloy Alfaro",
+    "provincia": "Esmeraldas",
+    "location": "Eloy Alfaro · Esmeraldas",
+    "courseName": "Salud Sexual y Reproductiva",
+    "courseStartDate": "Junio 2025",
+    "courseEndDate": "Julio 2025",
+    "courseDates": "Junio 2025 – Julio 2025",
+    "courseRecency": "Julio 2025 (~1 año)",
+    "organization": "UNFPA, VME, FUDELA",
+    "referencia": "Mariana Oleas (asesora local GIZ Esmeraldas)",
+    "baseName": "GIZ · OE1 - Salud Sexual y Reproductiva (Esmeraldas)",
+    "status": "pending",
+    "attempts": 0,
+    "last": "Sin gestión",
+    "operator": "VC"
+  },
+  {
+    "id": "GIZ-016",
+    "name": "Yanara Valencia",
+    "phone": "0968093032",
+    "phoneRaw": "0968093032",
+    "parish": "La Cayapa",
+    "barrio": "La Cayapa",
+    "canton": "Eloy Alfaro",
+    "provincia": "Esmeraldas",
+    "location": "Eloy Alfaro · Esmeraldas",
+    "courseName": "Salud Sexual y Reproductiva",
+    "courseStartDate": "Junio 2025",
+    "courseEndDate": "Julio 2025",
+    "courseDates": "Junio 2025 – Julio 2025",
+    "courseRecency": "Julio 2025 (~1 año)",
+    "organization": "UNFPA, VME, FUDELA",
+    "referencia": "Mariana Oleas (asesora local GIZ Esmeraldas)",
+    "baseName": "GIZ · OE1 - Salud Sexual y Reproductiva (Esmeraldas)",
+    "status": "pending",
+    "attempts": 0,
+    "last": "Sin gestión",
+    "operator": "TP"
+  },
+  {
+    "id": "GIZ-017",
+    "name": "Brithany Borja",
+    "phone": "0988921367",
+    "phoneRaw": "0988921367",
+    "parish": "La Cayapa",
+    "barrio": "La Cayapa",
+    "canton": "Eloy Alfaro",
+    "provincia": "Esmeraldas",
+    "location": "Eloy Alfaro · Esmeraldas",
+    "courseName": "Salud Sexual y Reproductiva",
+    "courseStartDate": "Junio 2025",
+    "courseEndDate": "Julio 2025",
+    "courseDates": "Junio 2025 – Julio 2025",
+    "courseRecency": "Julio 2025 (~1 año)",
+    "organization": "UNFPA, VME, FUDELA",
+    "referencia": "Mariana Oleas (asesora local GIZ Esmeraldas)",
+    "baseName": "GIZ · OE1 - Salud Sexual y Reproductiva (Esmeraldas)",
+    "status": "pending",
+    "attempts": 0,
+    "last": "Sin gestión",
+    "operator": "AY"
+  },
+  {
+    "id": "GIZ-018",
+    "name": "Miriem Chila",
+    "phone": "0997609904",
+    "phoneRaw": "0997609904",
+    "parish": "La Cayapa",
+    "barrio": "La Cayapa",
+    "canton": "Eloy Alfaro",
+    "provincia": "Esmeraldas",
+    "location": "Eloy Alfaro · Esmeraldas",
+    "courseName": "Salud Sexual y Reproductiva",
+    "courseStartDate": "Junio 2025",
+    "courseEndDate": "Julio 2025",
+    "courseDates": "Junio 2025 – Julio 2025",
+    "courseRecency": "Julio 2025 (~1 año)",
+    "organization": "UNFPA, VME, FUDELA",
+    "referencia": "Mariana Oleas (asesora local GIZ Esmeraldas)",
+    "baseName": "GIZ · OE1 - Salud Sexual y Reproductiva (Esmeraldas)",
+    "status": "pending",
+    "attempts": 0,
+    "last": "Sin gestión",
+    "operator": "VC"
+  },
+  {
+    "id": "GIZ-019",
+    "name": "Kanara Mosquera",
+    "phone": "0991125298",
+    "phoneRaw": "0991125298",
+    "parish": "La Cayapa",
+    "barrio": "La Cayapa",
+    "canton": "Eloy Alfaro",
+    "provincia": "Esmeraldas",
+    "location": "Eloy Alfaro · Esmeraldas",
+    "courseName": "Salud Sexual y Reproductiva",
+    "courseStartDate": "Junio 2025",
+    "courseEndDate": "Julio 2025",
+    "courseDates": "Junio 2025 – Julio 2025",
+    "courseRecency": "Julio 2025 (~1 año)",
+    "organization": "UNFPA, VME, FUDELA",
+    "referencia": "Mariana Oleas (asesora local GIZ Esmeraldas)",
+    "baseName": "GIZ · OE1 - Salud Sexual y Reproductiva (Esmeraldas)",
+    "status": "pending",
+    "attempts": 0,
+    "last": "Sin gestión",
+    "operator": "TP"
+  },
+  {
+    "id": "GIZ-020",
+    "name": "Karla Chuquizala",
+    "phone": "0959153231",
+    "phoneRaw": "0959153231",
+    "parish": "09 de Octubre",
+    "barrio": "09 de Octubre",
+    "canton": "San Lorenzo",
+    "provincia": "Esmeraldas",
+    "location": "San Lorenzo · Esmeraldas",
+    "courseName": "Salud Sexual y Reproductiva",
+    "courseStartDate": "Junio 2025",
+    "courseEndDate": "Julio 2025",
+    "courseDates": "Junio 2025 – Julio 2025",
+    "courseRecency": "Julio 2025 (~1 año)",
+    "organization": "UNFPA, VME, FUDELA",
+    "referencia": "Mariana Oleas (asesora local GIZ Esmeraldas)",
+    "baseName": "GIZ · OE1 - Salud Sexual y Reproductiva (Esmeraldas)",
+    "status": "pending",
+    "attempts": 0,
+    "last": "Sin gestión",
+    "operator": "AY"
+  },
+  {
+    "id": "GIZ-021",
+    "name": "Hillary Landázuri",
+    "phone": "0945632457",
+    "phoneRaw": "0945632457",
+    "parish": "09 de Octubre",
+    "barrio": "09 de Octubre",
+    "canton": "San Lorenzo",
+    "provincia": "Esmeraldas",
+    "location": "San Lorenzo · Esmeraldas",
+    "courseName": "Salud Sexual y Reproductiva",
+    "courseStartDate": "Junio 2025",
+    "courseEndDate": "Julio 2025",
+    "courseDates": "Junio 2025 – Julio 2025",
+    "courseRecency": "Julio 2025 (~1 año)",
+    "organization": "UNFPA, VME, FUDELA",
+    "referencia": "Mariana Oleas (asesora local GIZ Esmeraldas)",
+    "baseName": "GIZ · OE1 - Salud Sexual y Reproductiva (Esmeraldas)",
+    "status": "pending",
+    "attempts": 0,
+    "last": "Sin gestión",
+    "operator": "VC"
+  },
+  {
+    "id": "GIZ-022",
+    "name": "Anthony Rodríguez",
+    "phone": "0976548962",
+    "phoneRaw": "0976548962",
+    "parish": "09 de Octubre",
+    "barrio": "09 de Octubre",
+    "canton": "San Lorenzo",
+    "provincia": "Esmeraldas",
+    "location": "San Lorenzo · Esmeraldas",
+    "courseName": "Salud Sexual y Reproductiva",
+    "courseStartDate": "Junio 2025",
+    "courseEndDate": "Julio 2025",
+    "courseDates": "Junio 2025 – Julio 2025",
+    "courseRecency": "Julio 2025 (~1 año)",
+    "organization": "UNFPA, VME, FUDELA",
+    "referencia": "Mariana Oleas (asesora local GIZ Esmeraldas)",
+    "baseName": "GIZ · OE1 - Salud Sexual y Reproductiva (Esmeraldas)",
+    "status": "pending",
+    "attempts": 0,
+    "last": "Sin gestión",
+    "operator": "TP"
+  },
+  {
+    "id": "GIZ-023",
+    "name": "Alexander Rosero",
+    "phone": "0998746592",
+    "phoneRaw": "0998746592",
+    "parish": "09 de Octubre",
+    "barrio": "09 de Octubre",
+    "canton": "San Lorenzo",
+    "provincia": "Esmeraldas",
+    "location": "San Lorenzo · Esmeraldas",
+    "courseName": "Salud Sexual y Reproductiva",
+    "courseStartDate": "Junio 2025",
+    "courseEndDate": "Julio 2025",
+    "courseDates": "Junio 2025 – Julio 2025",
+    "courseRecency": "Julio 2025 (~1 año)",
+    "organization": "UNFPA, VME, FUDELA",
+    "referencia": "Mariana Oleas (asesora local GIZ Esmeraldas)",
+    "baseName": "GIZ · OE1 - Salud Sexual y Reproductiva (Esmeraldas)",
+    "status": "pending",
+    "attempts": 0,
+    "last": "Sin gestión",
+    "operator": "AY"
+  },
+  {
+    "id": "GIZ-024",
+    "name": "Robert Requené",
+    "phone": "0994578436",
+    "phoneRaw": "0994578436",
+    "parish": "09 de Octubre",
+    "barrio": "09 de Octubre",
+    "canton": "San Lorenzo",
+    "provincia": "Esmeraldas",
+    "location": "San Lorenzo · Esmeraldas",
+    "courseName": "Salud Sexual y Reproductiva",
+    "courseStartDate": "Junio 2025",
+    "courseEndDate": "Julio 2025",
+    "courseDates": "Junio 2025 – Julio 2025",
+    "courseRecency": "Julio 2025 (~1 año)",
+    "organization": "UNFPA, VME, FUDELA",
+    "referencia": "Mariana Oleas (asesora local GIZ Esmeraldas)",
+    "baseName": "GIZ · OE1 - Salud Sexual y Reproductiva (Esmeraldas)",
+    "status": "pending",
+    "attempts": 0,
+    "last": "Sin gestión",
+    "operator": "VC"
+  },
+  {
+    "id": "GIZ-025",
+    "name": "Vanessa Gonzalez",
+    "phone": "0996827465",
+    "phoneRaw": "0996827465",
+    "parish": "09 de Octubre",
+    "barrio": "09 de Octubre",
+    "canton": "San Lorenzo",
+    "provincia": "Esmeraldas",
+    "location": "San Lorenzo · Esmeraldas",
+    "courseName": "Salud Sexual y Reproductiva",
+    "courseStartDate": "Junio 2025",
+    "courseEndDate": "Julio 2025",
+    "courseDates": "Junio 2025 – Julio 2025",
+    "courseRecency": "Julio 2025 (~1 año)",
+    "organization": "UNFPA, VME, FUDELA",
+    "referencia": "Mariana Oleas (asesora local GIZ Esmeraldas)",
+    "baseName": "GIZ · OE1 - Salud Sexual y Reproductiva (Esmeraldas)",
+    "status": "pending",
+    "attempts": 0,
+    "last": "Sin gestión",
+    "operator": "TP"
+  },
+  {
+    "id": "GIZ-026",
+    "name": "Amelis Rodríguez",
+    "phone": "0987642810",
+    "phoneRaw": "0987642810",
+    "parish": "09 de Octubre",
+    "barrio": "09 de Octubre",
+    "canton": "San Lorenzo",
+    "provincia": "Esmeraldas",
+    "location": "San Lorenzo · Esmeraldas",
+    "courseName": "Salud Sexual y Reproductiva",
+    "courseStartDate": "Junio 2025",
+    "courseEndDate": "Julio 2025",
+    "courseDates": "Junio 2025 – Julio 2025",
+    "courseRecency": "Julio 2025 (~1 año)",
+    "organization": "UNFPA, VME, FUDELA",
+    "referencia": "Mariana Oleas (asesora local GIZ Esmeraldas)",
+    "baseName": "GIZ · OE1 - Salud Sexual y Reproductiva (Esmeraldas)",
+    "status": "pending",
+    "attempts": 0,
+    "last": "Sin gestión",
+    "operator": "AY"
+  },
+  {
+    "id": "GIZ-027",
+    "name": "Lira Pata",
+    "phone": "0993503415",
+    "phoneRaw": "0993503415",
+    "parish": "Durán",
+    "barrio": "Durán",
+    "canton": "Rioverde",
+    "provincia": "Esmeraldas",
+    "location": "Rioverde · Esmeraldas",
+    "courseName": "Salud Sexual y Reproductiva",
+    "courseStartDate": "Junio 2025",
+    "courseEndDate": "Julio 2025",
+    "courseDates": "Junio 2025 – Julio 2025",
+    "courseRecency": "Julio 2025 (~1 año)",
+    "organization": "UNFPA, VME, FUDELA",
+    "referencia": "Mariana Oleas (asesora local GIZ Esmeraldas)",
+    "baseName": "GIZ · OE1 - Salud Sexual y Reproductiva (Esmeraldas)",
+    "status": "pending",
+    "attempts": 0,
+    "last": "Sin gestión",
+    "operator": "VC"
+  },
+  {
+    "id": "GIZ-028",
+    "name": "Yuletzy Arboleda",
+    "phone": "0939820852",
+    "phoneRaw": "0939820852",
+    "parish": "Durán",
+    "barrio": "Durán",
+    "canton": "Rioverde",
+    "provincia": "Esmeraldas",
+    "location": "Rioverde · Esmeraldas",
+    "courseName": "Salud Sexual y Reproductiva",
+    "courseStartDate": "Junio 2025",
+    "courseEndDate": "Julio 2025",
+    "courseDates": "Junio 2025 – Julio 2025",
+    "courseRecency": "Julio 2025 (~1 año)",
+    "organization": "UNFPA, VME, FUDELA",
+    "referencia": "Mariana Oleas (asesora local GIZ Esmeraldas)",
+    "baseName": "GIZ · OE1 - Salud Sexual y Reproductiva (Esmeraldas)",
+    "status": "pending",
+    "attempts": 0,
+    "last": "Sin gestión",
+    "operator": "TP"
+  },
+  {
+    "id": "GIZ-029",
+    "name": "Mayerly Chalar",
+    "phone": "0987643578",
+    "phoneRaw": "0987643578",
+    "parish": "09 de Octubre",
+    "barrio": "09 de Octubre",
+    "canton": "San Lorenzo",
+    "provincia": "Esmeraldas",
+    "location": "San Lorenzo · Esmeraldas",
+    "courseName": "Salud Sexual y Reproductiva",
+    "courseStartDate": "Junio 2025",
+    "courseEndDate": "Julio 2025",
+    "courseDates": "Junio 2025 – Julio 2025",
+    "courseRecency": "Julio 2025 (~1 año)",
+    "organization": "UNFPA, VME, FUDELA",
+    "referencia": "Mariana Oleas (asesora local GIZ Esmeraldas)",
+    "baseName": "GIZ · OE1 - Salud Sexual y Reproductiva (Esmeraldas)",
+    "status": "pending",
+    "attempts": 0,
+    "last": "Sin gestión",
+    "operator": "AY"
+  },
+  {
+    "id": "GIZ-030",
+    "name": "Jessica Chila",
+    "phone": "0965184219",
+    "phoneRaw": "0965184219",
+    "parish": "Durán",
+    "barrio": "Durán",
+    "canton": "Rioverde",
+    "provincia": "Esmeraldas",
+    "location": "Rioverde · Esmeraldas",
+    "courseName": "Salud Sexual y Reproductiva",
+    "courseStartDate": "Junio 2025",
+    "courseEndDate": "Julio 2025",
+    "courseDates": "Junio 2025 – Julio 2025",
+    "courseRecency": "Julio 2025 (~1 año)",
+    "organization": "UNFPA, VME, FUDELA",
+    "referencia": "Mariana Oleas (asesora local GIZ Esmeraldas)",
+    "baseName": "GIZ · OE1 - Salud Sexual y Reproductiva (Esmeraldas)",
+    "status": "pending",
+    "attempts": 0,
+    "last": "Sin gestión",
+    "operator": "VC"
+  },
+  {
+    "id": "GIZ-031",
+    "name": "Jhon Cañola",
+    "phone": "0785746528",
+    "phoneRaw": "0785746528",
+    "parish": "Durán",
+    "barrio": "Durán",
+    "canton": "Rioverde",
+    "provincia": "Esmeraldas",
+    "location": "Rioverde · Esmeraldas",
+    "courseName": "Salud Sexual y Reproductiva",
+    "courseStartDate": "Junio 2025",
+    "courseEndDate": "Julio 2025",
+    "courseDates": "Junio 2025 – Julio 2025",
+    "courseRecency": "Julio 2025 (~1 año)",
+    "organization": "UNFPA, VME, FUDELA",
+    "referencia": "Mariana Oleas (asesora local GIZ Esmeraldas)",
+    "baseName": "GIZ · OE1 - Salud Sexual y Reproductiva (Esmeraldas)",
+    "status": "pending",
+    "attempts": 0,
+    "last": "Sin gestión",
+    "operator": "TP"
+  },
+  {
+    "id": "GIZ-032",
+    "name": "Isbaña Borja",
+    "phone": "0968872018",
+    "phoneRaw": "0968872018",
+    "parish": "09 de Octubre",
+    "barrio": "09 de Octubre",
+    "canton": "San Lorenzo",
+    "provincia": "Esmeraldas",
+    "location": "San Lorenzo · Esmeraldas",
+    "courseName": "Salud Sexual y Reproductiva",
+    "courseStartDate": "Junio 2025",
+    "courseEndDate": "Julio 2025",
+    "courseDates": "Junio 2025 – Julio 2025",
+    "courseRecency": "Julio 2025 (~1 año)",
+    "organization": "UNFPA, VME, FUDELA",
+    "referencia": "Mariana Oleas (asesora local GIZ Esmeraldas)",
+    "baseName": "GIZ · OE1 - Salud Sexual y Reproductiva (Esmeraldas)",
+    "status": "pending",
+    "attempts": 0,
+    "last": "Sin gestión",
+    "operator": "AY"
+  },
+  {
+    "id": "GIZ-033",
+    "name": "José Segura",
+    "phone": "0996478239",
+    "phoneRaw": "0996478239",
+    "parish": "09 de Octubre",
+    "barrio": "09 de Octubre",
+    "canton": "San Lorenzo",
+    "provincia": "Esmeraldas",
+    "location": "San Lorenzo · Esmeraldas",
+    "courseName": "Salud Sexual y Reproductiva",
+    "courseStartDate": "Junio 2025",
+    "courseEndDate": "Julio 2025",
+    "courseDates": "Junio 2025 – Julio 2025",
+    "courseRecency": "Julio 2025 (~1 año)",
+    "organization": "UNFPA, VME, FUDELA",
+    "referencia": "Mariana Oleas (asesora local GIZ Esmeraldas)",
+    "baseName": "GIZ · OE1 - Salud Sexual y Reproductiva (Esmeraldas)",
+    "status": "pending",
+    "attempts": 0,
+    "last": "Sin gestión",
+    "operator": "VC"
+  },
+  {
+    "id": "GIZ-034",
+    "name": "Seleny Mina",
+    "phone": "0985284735",
+    "phoneRaw": "0985284735",
+    "parish": "09 de Octubre",
+    "barrio": "09 de Octubre",
+    "canton": "San Lorenzo",
+    "provincia": "Esmeraldas",
+    "location": "San Lorenzo · Esmeraldas",
+    "courseName": "Salud Sexual y Reproductiva",
+    "courseStartDate": "Junio 2025",
+    "courseEndDate": "Julio 2025",
+    "courseDates": "Junio 2025 – Julio 2025",
+    "courseRecency": "Julio 2025 (~1 año)",
+    "organization": "UNFPA, VME, FUDELA",
+    "referencia": "Mariana Oleas (asesora local GIZ Esmeraldas)",
+    "baseName": "GIZ · OE1 - Salud Sexual y Reproductiva (Esmeraldas)",
+    "status": "pending",
+    "attempts": 0,
+    "last": "Sin gestión",
+    "operator": "TP"
+  },
+  {
+    "id": "GIZ-035",
+    "name": "Judith Morán",
+    "phone": "0964572345",
+    "phoneRaw": "0964572345",
+    "parish": "09 de Octubre",
+    "barrio": "09 de Octubre",
+    "canton": "San Lorenzo",
+    "provincia": "Esmeraldas",
+    "location": "San Lorenzo · Esmeraldas",
+    "courseName": "Salud Sexual y Reproductiva",
+    "courseStartDate": "Junio 2025",
+    "courseEndDate": "Julio 2025",
+    "courseDates": "Junio 2025 – Julio 2025",
+    "courseRecency": "Julio 2025 (~1 año)",
+    "organization": "UNFPA, VME, FUDELA",
+    "referencia": "Mariana Oleas (asesora local GIZ Esmeraldas)",
+    "baseName": "GIZ · OE1 - Salud Sexual y Reproductiva (Esmeraldas)",
+    "status": "pending",
+    "attempts": 0,
+    "last": "Sin gestión",
+    "operator": "AY"
+  },
+  {
+    "id": "GIZ-036",
+    "name": "Derian Ayala",
+    "phone": "0997569436",
+    "phoneRaw": "0997569436",
+    "parish": "09 de Octubre",
+    "barrio": "09 de Octubre",
+    "canton": "San Lorenzo",
+    "provincia": "Esmeraldas",
+    "location": "San Lorenzo · Esmeraldas",
+    "courseName": "Salud Sexual y Reproductiva",
+    "courseStartDate": "Junio 2025",
+    "courseEndDate": "Julio 2025",
+    "courseDates": "Junio 2025 – Julio 2025",
+    "courseRecency": "Julio 2025 (~1 año)",
+    "organization": "UNFPA, VME, FUDELA",
+    "referencia": "Mariana Oleas (asesora local GIZ Esmeraldas)",
+    "baseName": "GIZ · OE1 - Salud Sexual y Reproductiva (Esmeraldas)",
+    "status": "pending",
+    "attempts": 0,
+    "last": "Sin gestión",
+    "operator": "VC"
+  },
+  {
+    "id": "GIZ-037",
+    "name": "Daniel Quiñónez",
+    "phone": "0996725461",
+    "phoneRaw": "0996725461",
+    "parish": "09 de Octubre",
+    "barrio": "09 de Octubre",
+    "canton": "San Lorenzo",
+    "provincia": "Esmeraldas",
+    "location": "San Lorenzo · Esmeraldas",
+    "courseName": "Salud Sexual y Reproductiva",
+    "courseStartDate": "Junio 2025",
+    "courseEndDate": "Julio 2025",
+    "courseDates": "Junio 2025 – Julio 2025",
+    "courseRecency": "Julio 2025 (~1 año)",
+    "organization": "UNFPA, VME, FUDELA",
+    "referencia": "Mariana Oleas (asesora local GIZ Esmeraldas)",
+    "baseName": "GIZ · OE1 - Salud Sexual y Reproductiva (Esmeraldas)",
+    "status": "pending",
+    "attempts": 0,
+    "last": "Sin gestión",
+    "operator": "TP"
+  },
+  {
+    "id": "GIZ-038",
+    "name": "Daniela Borja",
+    "phone": "0997032002",
+    "phoneRaw": "0997032002",
+    "parish": "La Cayapa",
+    "barrio": "La Cayapa",
+    "canton": "Eloy Alfaro",
+    "provincia": "Esmeraldas",
+    "location": "Eloy Alfaro · Esmeraldas",
+    "courseName": "Salud Sexual y Reproductiva",
+    "courseStartDate": "Junio 2025",
+    "courseEndDate": "Julio 2025",
+    "courseDates": "Junio 2025 – Julio 2025",
+    "courseRecency": "Julio 2025 (~1 año)",
+    "organization": "UNFPA, VME, FUDELA",
+    "referencia": "Mariana Oleas (asesora local GIZ Esmeraldas)",
+    "baseName": "GIZ · OE1 - Salud Sexual y Reproductiva (Esmeraldas)",
+    "status": "pending",
+    "attempts": 0,
+    "last": "Sin gestión",
+    "operator": "AY"
+  },
+  {
+    "id": "GIZ-039",
+    "name": "Ainé Loor",
+    "phone": "0986573421",
+    "phoneRaw": "0986573421",
+    "parish": "Durán",
+    "barrio": "Durán",
+    "canton": "Rioverde",
+    "provincia": "Esmeraldas",
+    "location": "Rioverde · Esmeraldas",
+    "courseName": "Salud Sexual y Reproductiva",
+    "courseStartDate": "Junio 2025",
+    "courseEndDate": "Julio 2025",
+    "courseDates": "Junio 2025 – Julio 2025",
+    "courseRecency": "Julio 2025 (~1 año)",
+    "organization": "UNFPA, VME, FUDELA",
+    "referencia": "Mariana Oleas (asesora local GIZ Esmeraldas)",
+    "baseName": "GIZ · OE1 - Salud Sexual y Reproductiva (Esmeraldas)",
+    "status": "pending",
+    "attempts": 0,
+    "last": "Sin gestión",
+    "operator": "VC"
+  }
+];
 
 function buildDemoContacts() {
-  const operators = ['TP', 'AY', 'VC'];
-  const names = ['Michael', 'Diana', 'Carlos', 'Patricia', 'Jorge', 'Sofía', 'Daniela', 'Esteban', 'Gabriela', 'Mateo', 'Valeria', 'Nicolás'];
-  const surnames = ['Pinsag', 'Estévez', 'Morales', 'Herrera', 'Vera', 'León', 'Torres', 'Cárdenas', 'Salazar', 'Mena', 'Paz', 'Castro'];
-  const courses = ['Gestión Ambiental y Climática', 'Adaptación al Cambio Climático GIZ', 'Desarrollo Sostenible y Gobernanza', 'Eficiencia Energética GIZ'];
-  const parishes = ['La Floresta', 'Cumbayá', 'Centro Histórico', 'Conocoto', 'Iñaquito', 'Ponceano', 'Tumbaco', 'Calderón'];
-  return Array.from({ length: 60 }, (_, index) => {
-    const operator = operators[index % operators.length];
-    const status = 'pending';
-    const attempts = 0;
-    const number = String(index + 1).padStart(3, '0');
-    return {
-      id: `GIZ-${number}`,
-      name: `${names[index % names.length]} ${surnames[(index + Math.floor(index / names.length)) % surnames.length]}`,
-      phone: `09${String(90000000 + index * 137).slice(0, 8)}`,
-      parish: parishes[index % parishes.length],
-      location: 'Quito · Pichincha',
-      organization: courses[index % courses.length],
-      baseName: 'Base de campo · Clima Social GIZ',
-      status,
-      attempts,
-      last: 'Sin gestión',
-      pendingReason: 'not_called',
-      operator
-    };
-  });
+  return JSON.parse(JSON.stringify(demoContacts));
 }
 
 const operators = [
@@ -261,7 +1223,46 @@ async function loadRemoteState() {
     state.contacts = (contacts || []).map(contact => {
       const operator = remoteProfiles.get(contact.assigned_operator_id);
       const extra = contact.extra_data || {};
-      return { ...contact, id: contact.external_id || contact.id, remoteId: contact.id, name: contact.name, phone: contact.phone_normalized || contact.phone_raw || 'No tiene teléfono', phoneRaw: contact.phone_raw || '', phoneOther: extra.phone_other || '', email: extra.email || '', parish: contact.parish || 'No tiene información', location: contact.location || 'No tiene información', baseName: extra.base_name || 'Base sin nombre', organization: extra.organization || 'No tiene información', sector: extra.sector || 'No tiene información', cargo: extra.cargo || 'No tiene información', artField: extra.art_field || 'No tiene información', status: remoteStatus(contact.current_status), attempts: contact.attempt_count || 0, last: contact.last_attempt_at ? formatDateTime(contact.last_attempt_at) : 'Sin gestión', lastAttemptAt: contact.last_attempt_at || null, operator: operator?.initials || '', raffleEmail: contact.raffle_email || '' };
+      const barrio = extra.barrio || contact.parish || 'Durán';
+      const canton = extra.canton || 'Rioverde';
+      const provincia = extra.provincia || 'Esmeraldas';
+      const courseName = extra.course_name || extra.organization || 'Salud Sexual y Reproductiva';
+      const courseStartDate = extra.course_start_date || 'Junio 2025';
+      const courseEndDate = extra.course_end_date || 'Julio 2025';
+      const courseDates = extra.course_dates || (courseStartDate + ' – ' + courseEndDate);
+      const courseRecency = extra.course_recency || 'Julio 2025 (Hace ~1 año)';
+      const org = extra.organization || 'UNFPA, VME, FUDELA';
+      const ref = extra.referencia || 'Mariana Oleas (asesora local GIZ Esmeraldas)';
+      const base = extra.base_name || 'GIZ · OE1 - Salud Sexual y Reproductiva (Esmeraldas)';
+
+      return {
+        ...contact,
+        id: contact.external_id || contact.id,
+        remoteId: contact.id,
+        name: contact.name,
+        phone: contact.phone_normalized || contact.phone_raw || 'No tiene teléfono',
+        phoneRaw: contact.phone_raw || '',
+        phoneOther: extra.phone_other || '',
+        email: extra.email || '',
+        parish: barrio,
+        barrio: barrio,
+        canton: canton,
+        provincia: provincia,
+        location: canton + ' · ' + provincia,
+        courseName: courseName,
+        courseStartDate: courseStartDate,
+        courseEndDate: courseEndDate,
+        courseDates: courseDates,
+        courseRecency: courseRecency,
+        organization: org,
+        referencia: ref,
+        baseName: base,
+        status: remoteStatus(contact.current_status),
+        attempts: contact.attempt_count || 0,
+        last: contact.last_attempt_at ? formatDateTime(contact.last_attempt_at) : 'Sin gestión',
+        lastAttemptAt: contact.last_attempt_at || null,
+        operator: operator?.initials || ''
+      };
     });
   } catch (error) { console.error('Error loading contacts:', error); }
   try {
@@ -770,7 +1771,7 @@ function renderOperator() {
 }
 
 function renderContactColumn(title, description, items, tone, selectedContact) {
-  return `<section class="contact-column ${tone}"><div class="contact-column-header"><div><h2>${title}</h2><p>${description}</p></div><strong>${items.length}</strong></div><div class="column-search-wrap"><input class="column-search" data-column-search="${tone}" type="search" placeholder="Buscar por nombre..." aria-label="Buscar en ${title}" /></div><div class="contact-column-list">${items.length ? items.map(item => `<button class="contact-board-card ${item.id === selectedContact.id ? 'selected' : ''}" data-contact-id="${item.id}"><div class="contact-board-card-top"><span class="contact-board-initials">${initials(item.name)}</span><span class="contact-board-status">${item.attempts ? `${item.attempts} intento${item.attempts === 1 ? '' : 's'}` : 'Nuevo'}</span></div><strong>${escapeHtml(item.name)}</strong><span>${escapeHtml(item.phone)}</span><small>${escapeHtml(item.parish)} · ${escapeHtml(item.id)}</small></button>`).join('') : '<div class="column-empty">No hay contactos aquí.</div>'}</div></section>`;
+  return `<section class="contact-column ${tone}"><div class="contact-column-header"><div><h2>${title}</h2><p>${description}</p></div><strong>${items.length}</strong></div><div class="column-search-wrap"><input class="column-search" data-column-search="${tone}" type="search" placeholder="Buscar por nombre..." aria-label="Buscar en ${title}" /></div><div class="contact-column-list">${items.length ? items.map(item => `<button class="contact-board-card ${item.id === selectedContact.id ? 'selected' : ''}" data-contact-id="${item.id}"><div class="contact-board-card-top"><span class="contact-board-initials">${initials(item.name)}</span><span class="contact-board-status">${item.attempts ? `${item.attempts} intento${item.attempts === 1 ? '' : 's'}` : 'Nuevo'}</span></div><strong>${escapeHtml(item.name)}</strong><span style="font-family:var(--font-mono);font-size:11.5px;color:#10b981;font-weight:700;">📞 ${escapeHtml(item.phone)}</span><small style="color:var(--text-muted);">📍 ${escapeHtml(item.barrio || item.parish)} &bull; ${escapeHtml(item.courseName || 'GIZ')}</small></button>`).join('') : '<div class="column-empty">No hay contactos aquí.</div>'}</div></section>`;
 }
 
 function contactGreetingName(contact) {
@@ -782,6 +1783,15 @@ function contactGreetingName(contact) {
 function renderSelectedContact(contact) {
   if (!contact) return '<article class="card selected-contact-card"><div class="empty-state">Selecciona un contacto de las columnas para comenzar.</div></article>';
 
+  const barrioStr = contact.barrio || contact.parish || 'Durán';
+  const cantonStr = contact.canton || 'Rioverde';
+  const provinciaStr = contact.provincia || 'Esmeraldas';
+  const courseStr = contact.courseName || 'Salud Sexual y Reproductiva';
+  const datesStr = contact.courseDates || 'Junio 2025 – Julio 2025';
+  const recencyStr = contact.courseRecency || 'Julio 2025 (Hace ~1 año)';
+  const orgStr = contact.organization || 'UNFPA, VME, FUDELA';
+  const refStr = contact.referencia || 'Mariana Oleas (asesora local GIZ Esmeraldas)';
+
   return `
     <article class="card selected-contact-card">
       <!-- 1. Cabecera del Contacto con Teléfono y Acciones -->
@@ -791,11 +1801,12 @@ function renderSelectedContact(contact) {
             <span class="tag-code">COD: ${escapeHtml(contact.id)}</span>
             <span class="tag-attempt">Intento ${contact.attempts + 1} de ${MAX_ATTEMPTS}</span>
             <span class="table-status ${contact.status}">${contactStatusLabel(contact)}</span>
+            <span class="tag-recency">📅 Culminó: ${escapeHtml(contact.courseEndDate || 'Julio 2025')}</span>
           </div>
           <h2 class="contact-hero-name">${escapeHtml(contact.name)}</h2>
           <div class="contact-location-line">
             <span class="loc-pin">📍</span>
-            <span>${escapeHtml(contact.parish)} &bull; ${escapeHtml(contact.location)}</span>
+            <span>Barrio ${escapeHtml(barrioStr)} &bull; ${escapeHtml(cantonStr)}, ${escapeHtml(provinciaStr)}</span>
           </div>
         </div>
 
@@ -824,26 +1835,42 @@ function renderSelectedContact(contact) {
           </a>
         </div>
 
-        <!-- 3. Ficha de Datos Reorganizada (2 Paneles Modulares) -->
+        <!-- 3. Ficha de Datos del Curso y Contacto (2 Paneles Modulares) -->
         <div class="contact-details-panels">
-          <!-- Panel 1: Datos de Formación -->
+          <!-- Panel 1: Datos del Curso GIZ -->
           <div class="detail-panel">
             <div class="panel-title">
               <span class="panel-icon">🎓</span>
-              <strong>Información de Formación</strong>
+              <strong>Información del Curso GIZ</strong>
             </div>
             <div class="detail-items-list">
               <div class="detail-row">
-                <span class="detail-lbl">Curso / Actividad:</span>
-                <span class="detail-val highlight">${escapeHtml(contact.artField || contact.organization || 'No especificado')}</span>
+                <span class="detail-lbl">Nombre del Curso:</span>
+                <span class="detail-val highlight" style="color:var(--primary);font-weight:700;">${escapeHtml(courseStr)}</span>
               </div>
               <div class="detail-row">
-                <span class="detail-lbl">Organización:</span>
-                <span class="detail-val">${escapeHtml(contact.organization || 'No especificado')}</span>
+                <span class="detail-lbl">Barrio / Parroquia:</span>
+                <span class="detail-val"><strong>${escapeHtml(barrioStr)}</strong></span>
               </div>
               <div class="detail-row">
-                <span class="detail-lbl">Facilitador / Cargo:</span>
-                <span class="detail-val">${escapeHtml(contact.cargo || 'No especificado')}</span>
+                <span class="detail-lbl">Cantón y Provincia:</span>
+                <span class="detail-val">${escapeHtml(cantonStr)} &bull; ${escapeHtml(provinciaStr)}</span>
+              </div>
+              <div class="detail-row">
+                <span class="detail-lbl">Fechas del Curso:</span>
+                <span class="detail-val">${escapeHtml(datesStr)}</span>
+              </div>
+              <div class="detail-row">
+                <span class="detail-lbl">Antigüedad:</span>
+                <span class="detail-val"><span class="recency-pill">${escapeHtml(recencyStr)}</span></span>
+              </div>
+              <div class="detail-row">
+                <span class="detail-lbl">Entidad Responsable:</span>
+                <span class="detail-val">${escapeHtml(orgStr)}</span>
+              </div>
+              <div class="detail-row">
+                <span class="detail-lbl">Referente Local GIZ:</span>
+                <span class="detail-val" style="font-size:11.5px;color:var(--text-muted);">${escapeHtml(refStr)}</span>
               </div>
             </div>
           </div>
@@ -856,12 +1883,20 @@ function renderSelectedContact(contact) {
             </div>
             <div class="detail-items-list">
               <div class="detail-row">
-                <span class="detail-lbl">Correo electrónico:</span>
-                <span class="detail-val">${escapeHtml(contact.email || 'No registra correo')}</span>
+                <span class="detail-lbl">Teléfono Principal:</span>
+                <span class="detail-val" style="font-family:var(--font-mono);font-weight:700;color:#10b981;">📞 ${escapeHtml(contact.phone)}</span>
               </div>
               <div class="detail-row">
                 <span class="detail-lbl">Otros teléfonos:</span>
                 <span class="detail-val">${escapeHtml(contact.phoneOther || 'Ninguno adicional')}</span>
+              </div>
+              <div class="detail-row">
+                <span class="detail-lbl">Correo electrónico:</span>
+                <span class="detail-val">${escapeHtml(contact.email || 'No registra correo')}</span>
+              </div>
+              <div class="detail-row">
+                <span class="detail-lbl">Lote / Base:</span>
+                <span class="detail-val" style="font-size:11px;">${escapeHtml(contact.baseName || 'GIZ Esmeraldas')}</span>
               </div>
               <div class="detail-row">
                 <span class="detail-lbl">Última gestión:</span>
@@ -878,7 +1913,7 @@ function renderSelectedContact(contact) {
             <strong>Guion sugerido de llamada</strong>
           </div>
           <p class="script-text">
-            "Buenos días/tardes <strong>${contactGreetingName(contact) || 'estimado/a'}</strong>, le saluda <strong>${currentUser.name}</strong> de Clima Social en el marco del programa ProCohesión de GIZ. Le contactamos para una breve encuesta de seguimiento de 10 minutos sobre su participación en <em>${escapeHtml(contact.artField || contact.organization || 'el curso')}</em>. ¿Dispone de unos minutos para realizarla?"
+            "Buenos días/tardes <strong>${contactGreetingName(contact) || 'estimado/a'}</strong>, le saluda <strong>${currentUser.name}</strong> de Clima Social en el marco del programa ProCohesión de GIZ. Le contactamos para una breve encuesta de seguimiento de 10 minutos sobre su participación en el curso de <strong>${escapeHtml(courseStr)}</strong> que culminó en <strong>${escapeHtml(contact.courseEndDate || 'Julio de 2025')}</strong> en <strong>Barrio ${escapeHtml(barrioStr)}</strong>. ¿Dispone de unos minutos para realizarla?"
           </p>
         </div>
 
@@ -1277,10 +2312,10 @@ function renderContacts() {
       <div class="page-card-header">
         <div>
           <h2 class="card-title">${contacts.length.toLocaleString('es-EC')} registros</h2>
-          <p class="card-subtitle">Actualizado en tiempo real</p>
+          <p class="card-subtitle">Seguimiento de llamadas del programa GIZ</p>
         </div>
         <div class="filters">
-          <input class="search-input" id="contact-search" placeholder="Buscar nombre, teléfono o ID..." />
+          <input class="search-input" id="contact-search" placeholder="Buscar nombre, teléfono, barrio o ID..." />
           <select class="filter-select" id="base-filter"><option value="">Todas las bases</option>${baseOptions}</select>
           <select class="filter-select" id="status-filter">
             <option value="">Todos los estados</option>
@@ -1297,10 +2332,11 @@ function renderContacts() {
         <table class="data-table" id="contacts-table">
           <thead>
             <tr>
-              <th>Contacto</th>
+              <th>Participante</th>
               <th>Identificador</th>
-              <th>Provincia</th>
-              <th>Base</th>
+              <th>Barrio y Cantón</th>
+              <th>Curso GIZ</th>
+              <th>Antigüedad</th>
               <th>Estado</th>
               <th>Intentos</th>
               <th>Última gestión</th>
@@ -1325,16 +2361,27 @@ function contactRows(contacts, showAssignment = false) {
           <div class="small-avatar">${initials(contact.name)}</div>
           <div>
             <strong>${escapeHtml(contact.name)}</strong>
-            <span>${escapeHtml(contact.phone)}</span>
+            <span style="font-family:var(--font-mono);font-size:11.5px;color:#10b981;font-weight:700;">📞 ${escapeHtml(contact.phone)}</span>
           </div>
         </div>
       </td>
       <td><span class="mono">${escapeHtml(contact.id)}</span></td>
-      <td>${escapeHtml(contact.location || 'No tiene información')}</td>
-      <td><span class="base-tag">${escapeHtml(contact.baseName || 'Sin especificar')}</span></td>
+      <td>
+        <div style="display:flex;flex-direction:column;gap:2px;">
+          <strong>📍 Barrio ${escapeHtml(contact.barrio || contact.parish || '—')}</strong>
+          <span style="font-size:11px;color:var(--text-muted);">${escapeHtml(contact.canton || contact.location || 'Esmeraldas')}</span>
+        </div>
+      </td>
+      <td>
+        <div style="display:flex;flex-direction:column;gap:2px;">
+          <strong style="color:var(--primary);font-size:12px;">${escapeHtml(contact.courseName || 'Salud Sexual y Reproductiva')}</strong>
+          <span style="font-size:10.5px;color:var(--text-muted);font-family:var(--font-mono);">${escapeHtml(contact.courseDates || 'Jun 2025 – Jul 2025')}</span>
+        </div>
+      </td>
+      <td><span class="recency-pill">${escapeHtml(contact.courseEndDate || 'Julio 2025')}</span></td>
       <td><span class="table-status ${contact.status}">${contactStatusLabel(contact)}</span></td>
-      <td>${contact.attempts}</td>
-      <td>${escapeHtml(contact.last)}</td>
+      <td><span style="font-family:var(--font-mono);font-size:11px;font-weight:700;">${contact.attempts} / ${MAX_ATTEMPTS}</span></td>
+      <td><span style="font-size:11px;color:var(--text-muted);">${escapeHtml(contact.last)}</span></td>
       ${showAssignment ? `
         <td>
           <select class="assign-select" data-assign-contact="${contact.id}">
