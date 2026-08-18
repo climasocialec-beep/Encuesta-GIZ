@@ -1781,7 +1781,7 @@ function contactGreetingName(contact) {
 }
 
 function renderSelectedContact(contact) {
-  if (!contact) return '<article class="card selected-contact-card"><div class="empty-state">Selecciona un contacto de las columnas para comenzar.</div></article>';
+  if (!contact) return '<article class="card selected-contact-card"><div class="empty-state">Selecciona un contacto de las bandejas inferiores para comenzar.</div></article>';
 
   const barrioStr = contact.barrio || contact.parish || 'Durán';
   const cantonStr = contact.canton || 'Rioverde';
@@ -1793,240 +1793,239 @@ function renderSelectedContact(contact) {
   const refStr = contact.referencia || 'Mariana Oleas (asesora local GIZ Esmeraldas)';
 
   return `
-    <article class="card selected-contact-card">
-      <!-- 1. Cabecera del Contacto con Teléfono y Acciones -->
-      <div class="contact-hero-header">
-        <div class="contact-hero-info">
-          <div class="contact-meta-tags">
-            <span class="tag-code">COD: ${escapeHtml(contact.id)}</span>
-            <span class="tag-attempt">Intento ${contact.attempts + 1} de ${MAX_ATTEMPTS}</span>
-            <span class="table-status ${contact.status}">${contactStatusLabel(contact)}</span>
-            <span class="tag-recency">📅 Culminó: ${escapeHtml(contact.courseEndDate || 'Julio 2025')}</span>
-          </div>
-          <h2 class="contact-hero-name">${escapeHtml(contact.name)}</h2>
-          <div class="contact-location-line">
-            <span class="loc-pin">📍</span>
-            <span>Barrio ${escapeHtml(barrioStr)} &bull; ${escapeHtml(cantonStr)}, ${escapeHtml(provinciaStr)}</span>
-          </div>
-        </div>
-
-        <div class="contact-hero-phone-box">
-          <a class="phone-call-btn" href="tel:${escapeHtml(contact.phone)}" title="Llamar directamente">
-            <span class="phone-icon">📞</span>
-            <span class="phone-number">${escapeHtml(contact.phone)}</span>
-          </a>
-          <button class="contact-action copy-action" id="copy-phone" type="button" title="Copiar número">
-            <span>📋 Copiar</span>
-          </button>
-        </div>
-      </div>
-
-      <div class="selected-contact-body">
-        <!-- 2. Banner de Acción Principal: KoboToolbox en Vivo -->
-        <div class="kobo-action-banner">
-          <div class="kobo-banner-text">
-            <div class="kobo-banner-badge">ENCUESTA EN VIVO &bull; ~4 A 5 MIN</div>
-            <h3>Formulario Oficial de Evaluación</h3>
-            <p>Abre la encuesta para registrar las respuestas en tiempo real durante la llamada telefónica.</p>
-          </div>
-          <a class="kobo-launch-btn" href="${SURVEY_URL}" target="_blank" rel="noreferrer">
-            <span>📋 Abrir Kobo en Vivo</span>
-            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6M15 3h6v6M10 14L21 3"/></svg>
-          </a>
-        </div>
-
-        <!-- 3. Ficha de Datos del Curso y Contacto (2 Paneles Modulares) -->
-        <div class="contact-details-panels">
-          <!-- Panel 1: Datos del Curso GIZ -->
-          <div class="detail-panel">
-            <div class="panel-title">
-              <span class="panel-icon">🎓</span>
-              <strong>Información del Curso GIZ</strong>
+    <div class="active-call-grid">
+      <!-- 1. TARJETA DEL CONTACTO & REGISTRO DE LLAMADA (IZQUIERDA) -->
+      <article class="card selected-contact-card">
+        <!-- Cabecera del Contacto con Teléfono y Acciones -->
+        <div class="contact-hero-header">
+          <div class="contact-hero-info">
+            <div class="contact-meta-tags">
+              <span class="tag-code">COD: ${escapeHtml(contact.id)}</span>
+              <span class="tag-attempt">Intento ${contact.attempts + 1} de ${MAX_ATTEMPTS}</span>
+              <span class="table-status ${contact.status}">${contactStatusLabel(contact)}</span>
+              <span class="tag-recency">📅 Culminó: ${escapeHtml(contact.courseEndDate || 'Julio 2025')}</span>
             </div>
-            <div class="detail-items-list">
-              <div class="detail-row">
-                <span class="detail-lbl">Nombre del Curso:</span>
-                <span class="detail-val highlight" style="color:var(--primary);font-weight:700;">${escapeHtml(courseStr)}</span>
-              </div>
-              <div class="detail-row">
-                <span class="detail-lbl">Barrio / Parroquia:</span>
-                <span class="detail-val"><strong>${escapeHtml(barrioStr)}</strong></span>
-              </div>
-              <div class="detail-row">
-                <span class="detail-lbl">Cantón y Provincia:</span>
-                <span class="detail-val">${escapeHtml(cantonStr)} &bull; ${escapeHtml(provinciaStr)}</span>
-              </div>
-              <div class="detail-row">
-                <span class="detail-lbl">Fechas del Curso:</span>
-                <span class="detail-val">${escapeHtml(datesStr)}</span>
-              </div>
-              <div class="detail-row">
-                <span class="detail-lbl">Antigüedad:</span>
-                <span class="detail-val"><span class="recency-pill">${escapeHtml(recencyStr)}</span></span>
-              </div>
-              <div class="detail-row">
-                <span class="detail-lbl">Entidad Responsable:</span>
-                <span class="detail-val">${escapeHtml(orgStr)}</span>
-              </div>
-              <div class="detail-row">
-                <span class="detail-lbl">Referente Local GIZ:</span>
-                <span class="detail-val" style="font-size:11.5px;color:var(--text-muted);">${escapeHtml(refStr)}</span>
-              </div>
+            <h2 class="contact-hero-name">${escapeHtml(contact.name)}</h2>
+            <div class="contact-location-line">
+              <span class="loc-pin">📍</span>
+              <span>Barrio ${escapeHtml(barrioStr)} &bull; ${escapeHtml(cantonStr)}, ${escapeHtml(provinciaStr)}</span>
             </div>
           </div>
 
-          <!-- Panel 2: Datos de Contacto & Trazabilidad -->
-          <div class="detail-panel">
-            <div class="panel-title">
-              <span class="panel-icon">👤</span>
-              <strong>Datos de Contacto</strong>
-            </div>
-            <div class="detail-items-list">
-              <div class="detail-row">
-                <span class="detail-lbl">Teléfono Principal:</span>
-                <span class="detail-val" style="font-family:var(--font-mono);font-weight:700;color:#10b981;">📞 ${escapeHtml(contact.phone)}</span>
-              </div>
-              <div class="detail-row">
-                <span class="detail-lbl">Otros teléfonos:</span>
-                <span class="detail-val">${escapeHtml(contact.phoneOther || 'Ninguno adicional')}</span>
-              </div>
-              <div class="detail-row">
-                <span class="detail-lbl">Correo electrónico:</span>
-                <span class="detail-val">${escapeHtml(contact.email || 'No registra correo')}</span>
-              </div>
-              <div class="detail-row">
-                <span class="detail-lbl">Lote / Base:</span>
-                <span class="detail-val" style="font-size:11px;">${escapeHtml(contact.baseName || 'GIZ Esmeraldas')}</span>
-              </div>
-              <div class="detail-row">
-                <span class="detail-lbl">Última gestión:</span>
-                <span class="detail-val">${escapeHtml(contact.last)}</span>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- 4. Guion Oficial de Llamadas (Protocolo Clima Social - GIZ) -->
-        <div class="call-script-clean">
-          <div class="script-head-clean">
-            <div class="script-head-title">
-              <span>🗣️</span>
-              <strong>Guion Oficial de Llamadas &bull; Programa ProCohesión GIZ</strong>
-            </div>
-            <span class="recency-pill">Duración: 4 a 5 min</span>
-          </div>
-
-          <!-- Pasos Principales de la Conversación -->
-          <div class="script-steps-list">
-            <!-- Momento 1: Verificación de Identidad -->
-            <div class="script-step-item">
-              <span class="step-num-badge">1. Identidad</span>
-              <div class="script-step-text">
-                "Buenos días/tardes, ¿me comunico con <strong>${escapeHtml(contact.name)}</strong>?"
-              </div>
-            </div>
-
-            <!-- Momento 2: Presentación Institucional -->
-            <div class="script-step-item">
-              <span class="step-num-badge">2. Presentación</span>
-              <div class="script-step-text">
-                "Mi nombre es <strong>${escapeHtml(currentUser.name)}</strong>, le llamo de <strong>Clima Social</strong>. Estamos realizando un seguimiento para el <strong>Programa ProCohesión de la Cooperación Alemana - GIZ</strong>."
-              </div>
-            </div>
-
-            <!-- Momento 3: Motivo del Contacto -->
-            <div class="script-step-item">
-              <span class="step-num-badge">3. Motivo</span>
-              <div class="script-step-text">
-                "Queremos invitarle a responder una breve encuesta sobre cómo ha aplicado los conocimientos adquiridos en el curso en el que participó: <strong>${escapeHtml(courseStr)}</strong>. Esta información nos permitirá conocer la utilidad de los procesos de formación y contribuir a mejorar el trabajo que realiza la GIZ junto con sus socios en territorio."
-              </div>
-            </div>
-
-            <!-- Momento 4: Garantías Éticas y Duración -->
-            <div class="script-step-item">
-              <span class="step-num-badge">4. Ética y tiempo</span>
-              <div class="script-step-text">
-                "La encuesta es totalmente anónima y confidencial. No pediremos datos personales. Toma alrededor de <strong>4 a 5 minutos</strong>. ¿Me permite continuar?"
-              </div>
-            </div>
-          </div>
-
-          <!-- Respuestas y Situaciones (Momentos 5 a 8) -->
-          <div class="script-cases-accordion">
-            <div class="script-cases-header">
-              <span>📋</span>
-              <strong>Respuestas y manejo de situaciones</strong>
-            </div>
-            <div class="script-cases-grid">
-              <div class="case-box case-accept">
-                <strong>5. Si Acepta</strong>
-                <span>"Perfecto, muchas gracias. Empezamos."</span>
-              </div>
-              <div class="case-box case-reschedule">
-                <strong>5. Si Pospone / Reagenda</strong>
-                <span>"Sin problema. ¿Qué horario le queda más conveniente para llamarle nuevamente?"</span>
-              </div>
-              <div class="case-box case-doubts">
-                <strong>6. Si Manifiesta Dudas</strong>
-                <span>"No se preocupe, solo queremos conocer su experiencia aplicando lo aprendido. Su información está protegida y es solo para fines de investigación."</span>
-              </div>
-              <div class="case-box case-refuse">
-                <strong>7. Si Rechaza Participar</strong>
-                <span>"Gracias por su tiempo. Que tenga un buen día."</span>
-              </div>
-              <div class="case-box case-close">
-                <strong>8. Cierre de Encuesta</strong>
-                <span>"Le agradezco mucho por su colaboración. Sus respuestas son de gran apoyo para el programa. Que tenga un excelente día."</span>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- 5. Registro de Resultado de la Llamada -->
-        <div class="call-actions-clean">
-          <div class="actions-header-clean">
-            <h3>Resultado de la llamada</h3>
-            <span>Selecciona el estado y guarda</span>
-          </div>
-
-          <div class="outcome-grid-clean">
-            <button type="button" class="outcome-btn-clean outcome-effective ${selectedOutcome === 'effective' ? 'active' : ''}" data-outcome="effective">
-              <span class="btn-indicator">✓</span>
-              <span class="btn-label">Encuesta completada</span>
-            </button>
-            <button type="button" class="outcome-btn-clean outcome-pending ${selectedOutcome === 'pending' ? 'active' : ''}" data-outcome="pending">
-              <span class="btn-indicator">◷</span>
-              <span class="btn-label">Reprogramada / Reintentar</span>
-            </button>
-            <button type="button" class="outcome-btn-clean outcome-no-answer ${selectedOutcome === 'no-answer' ? 'active' : ''}" data-outcome="no-answer">
-              <span class="btn-indicator">◌</span>
-              <span class="btn-label">No contesta</span>
-            </button>
-            <button type="button" class="outcome-btn-clean outcome-refused ${selectedOutcome === 'refused' ? 'active' : ''}" data-outcome="refused">
-              <span class="btn-indicator">⊘</span>
-              <span class="btn-label">Rechaza participar</span>
-            </button>
-            <button type="button" class="outcome-btn-clean outcome-wrong ${selectedOutcome === 'wrong' ? 'active' : ''}" data-outcome="wrong">
-              <span class="btn-indicator">×</span>
-              <span class="btn-label">Número incorrecto</span>
-            </button>
-          </div>
-
-          <div class="notes-block">
-            <label for="notes">Observaciones / Novedades de la llamada</label>
-            <textarea id="notes" class="notes-clean" placeholder="Escribe aquí cualquier detalle de la llamada (ej. acordó llamar a las 16h00, o encuesta completada)..."></textarea>
-          </div>
-
-          <div class="save-actions-bar">
-            <span class="save-hint">Se guardará con tu usuario e intento actual.</span>
-            <button class="button-primary save-btn-main" id="save-call" ${selectedOutcome ? '' : 'disabled'}>
-              <span>Guardar gestión</span>
-              <span>→</span>
+          <div class="contact-hero-phone-box">
+            <a class="phone-call-btn" href="tel:${escapeHtml(contact.phone)}" title="Llamar directamente">
+              <span class="phone-icon">📞</span>
+              <span class="phone-number">${escapeHtml(contact.phone)}</span>
+            </a>
+            <button class="contact-action copy-action" id="copy-phone" type="button" title="Copiar número">
+              <span>📋 Copiar</span>
             </button>
           </div>
         </div>
-      </div>
-    </article>
+
+        <div class="selected-contact-body">
+          <!-- Banner de Acción Principal: KoboToolbox en Vivo -->
+          <div class="kobo-action-banner">
+            <div class="kobo-banner-text">
+              <div class="kobo-banner-badge">ENCUESTA EN VIVO &bull; ~4 A 5 MIN</div>
+              <h3>Formulario Oficial de Evaluación</h3>
+              <p>Abre la encuesta para registrar las respuestas en tiempo real durante la llamada telefónica.</p>
+            </div>
+            <a class="kobo-launch-btn" href="${SURVEY_URL}" target="_blank" rel="noreferrer">
+              <span>📋 Abrir Kobo en Vivo</span>
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6M15 3h6v6M10 14L21 3"/></svg>
+            </a>
+          </div>
+
+          <!-- Ficha de Datos del Curso y Contacto (2 Paneles Modulares) -->
+          <div class="contact-details-panels">
+            <!-- Panel 1: Datos del Curso GIZ -->
+            <div class="detail-panel">
+              <div class="panel-title">
+                <span class="panel-icon">🎓</span>
+                <strong>Información del Curso GIZ</strong>
+              </div>
+              <div class="detail-items-list">
+                <div class="detail-row">
+                  <span class="detail-lbl">Curso:</span>
+                  <span class="detail-val highlight" style="color:var(--primary);font-weight:700;">${escapeHtml(courseStr)}</span>
+                </div>
+                <div class="detail-row">
+                  <span class="detail-lbl">Barrio / Parroquia:</span>
+                  <span class="detail-val"><strong>${escapeHtml(barrioStr)}</strong></span>
+                </div>
+                <div class="detail-row">
+                  <span class="detail-lbl">Cantón y Provincia:</span>
+                  <span class="detail-val">${escapeHtml(cantonStr)} &bull; ${escapeHtml(provinciaStr)}</span>
+                </div>
+                <div class="detail-row">
+                  <span class="detail-lbl">Fechas del Curso:</span>
+                  <span class="detail-val">${escapeHtml(datesStr)}</span>
+                </div>
+                <div class="detail-row">
+                  <span class="detail-lbl">Antigüedad:</span>
+                  <span class="detail-val"><span class="recency-pill">${escapeHtml(recencyStr)}</span></span>
+                </div>
+                <div class="detail-row">
+                  <span class="detail-lbl">Entidad Responsable:</span>
+                  <span class="detail-val">${escapeHtml(orgStr)}</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Panel 2: Datos de Contacto & Trazabilidad -->
+            <div class="detail-panel">
+              <div class="panel-title">
+                <span class="panel-icon">👤</span>
+                <strong>Datos de Contacto</strong>
+              </div>
+              <div class="detail-items-list">
+                <div class="detail-row">
+                  <span class="detail-lbl">Teléfono Principal:</span>
+                  <span class="detail-val" style="font-family:var(--font-mono);font-weight:700;color:#10b981;">📞 ${escapeHtml(contact.phone)}</span>
+                </div>
+                <div class="detail-row">
+                  <span class="detail-lbl">Otros teléfonos:</span>
+                  <span class="detail-val">${escapeHtml(contact.phoneOther || 'Ninguno adicional')}</span>
+                </div>
+                <div class="detail-row">
+                  <span class="detail-lbl">Correo electrónico:</span>
+                  <span class="detail-val">${escapeHtml(contact.email || 'No registra correo')}</span>
+                </div>
+                <div class="detail-row">
+                  <span class="detail-lbl">Referente Local GIZ:</span>
+                  <span class="detail-val" style="font-size:11.5px;color:var(--text-muted);">${escapeHtml(refStr)}</span>
+                </div>
+                <div class="detail-row">
+                  <span class="detail-lbl">Última gestión:</span>
+                  <span class="detail-val">${escapeHtml(contact.last)}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Registro de Resultado de la Llamada -->
+          <div class="call-actions-clean">
+            <div class="actions-header-clean">
+              <h3>Resultado de la llamada</h3>
+              <span>Selecciona el estado y guarda</span>
+            </div>
+
+            <div class="outcome-grid-clean">
+              <button type="button" class="outcome-btn-clean outcome-effective ${selectedOutcome === 'effective' ? 'active' : ''}" data-outcome="effective">
+                <span class="btn-indicator">✓</span>
+                <span class="btn-label">Encuesta completada</span>
+              </button>
+              <button type="button" class="outcome-btn-clean outcome-pending ${selectedOutcome === 'pending' ? 'active' : ''}" data-outcome="pending">
+                <span class="btn-indicator">◷</span>
+                <span class="btn-label">Reprogramada / Reintentar</span>
+              </button>
+              <button type="button" class="outcome-btn-clean outcome-no-answer ${selectedOutcome === 'no-answer' ? 'active' : ''}" data-outcome="no-answer">
+                <span class="btn-indicator">◌</span>
+                <span class="btn-label">No contesta</span>
+              </button>
+              <button type="button" class="outcome-btn-clean outcome-refused ${selectedOutcome === 'refused' ? 'active' : ''}" data-outcome="refused">
+                <span class="btn-indicator">⊘</span>
+                <span class="btn-label">Rechaza participar</span>
+              </button>
+              <button type="button" class="outcome-btn-clean outcome-wrong ${selectedOutcome === 'wrong' ? 'active' : ''}" data-outcome="wrong">
+                <span class="btn-indicator">×</span>
+                <span class="btn-label">Número incorrecto</span>
+              </button>
+            </div>
+
+            <div class="notes-block">
+              <label for="notes">Observaciones / Novedades de la llamada</label>
+              <textarea id="notes" class="notes-clean" placeholder="Escribe aquí cualquier detalle de la llamada (ej. acordó llamar a las 16h00, o encuesta completada)..."></textarea>
+            </div>
+
+            <div class="save-actions-bar">
+              <span class="save-hint">Se guardará con tu usuario e intento actual.</span>
+              <button class="button-primary save-btn-main" id="save-call" ${selectedOutcome ? '' : 'disabled'}>
+                <span>Guardar gestión</span>
+                <span>→</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </article>
+
+      <!-- 2. TARJETA DEL GUION OFICIAL DE LLAMADA (DERECHA) -->
+      <article class="card script-side-card">
+        <div class="script-head-clean">
+          <div class="script-head-title">
+            <span>🗣️</span>
+            <strong>Guion Oficial de Llamadas &bull; Programa ProCohesión GIZ</strong>
+          </div>
+          <span class="recency-pill">⏱️ 4 a 5 min</span>
+        </div>
+
+        <!-- Pasos Principales de la Conversación -->
+        <div class="script-steps-list">
+          <!-- Momento 1: Verificación de Identidad -->
+          <div class="script-step-item">
+            <span class="step-num-badge">1. Identidad</span>
+            <div class="script-step-text">
+              "Buenos días/tardes, ¿me comunico con <strong>${escapeHtml(contact.name)}</strong>?"
+            </div>
+          </div>
+
+          <!-- Momento 2: Presentación Institucional -->
+          <div class="script-step-item">
+            <span class="step-num-badge">2. Presentación</span>
+            <div class="script-step-text">
+              "Mi nombre es <strong>${escapeHtml(currentUser.name)}</strong>, le llamo de <strong>Clima Social</strong>. Estamos realizando un seguimiento para el <strong>Programa ProCohesión de la Cooperación Alemana - GIZ</strong>."
+            </div>
+          </div>
+
+          <!-- Momento 3: Motivo del Contacto -->
+          <div class="script-step-item">
+            <span class="step-num-badge">3. Motivo</span>
+            <div class="script-step-text">
+              "Queremos invitarle a responder una breve encuesta sobre cómo ha aplicado los conocimientos adquiridos en el curso en el que participó: <strong>${escapeHtml(courseStr)}</strong>. Esta información nos permitirá conocer la utilidad de los procesos de formación y contribuir a mejorar el trabajo que realiza la GIZ junto con sus socios en territorio."
+            </div>
+          </div>
+
+          <!-- Momento 4: Garantías Éticas y Duración -->
+          <div class="script-step-item">
+            <span class="step-num-badge">4. Ética y tiempo</span>
+            <div class="script-step-text">
+              "La encuesta es totalmente anónima y confidencial. No pediremos datos personales. Toma alrededor de <strong>4 a 5 minutos</strong>. ¿Me permite continuar?"
+            </div>
+          </div>
+        </div>
+
+        <!-- Respuestas y Situaciones (Momentos 5 a 8) -->
+        <div class="script-cases-accordion">
+          <div class="script-cases-header">
+            <span>📋</span>
+            <strong>Respuestas y manejo de situaciones</strong>
+          </div>
+          <div class="script-cases-grid">
+            <div class="case-box case-accept">
+              <strong>5. Si Acepta</strong>
+              <span>"Perfecto, muchas gracias. Empezamos."</span>
+            </div>
+            <div class="case-box case-reschedule">
+              <strong>5. Si Pospone / Reagenda</strong>
+              <span>"Sin problema. ¿Qué horario le queda más conveniente para llamarle nuevamente?"</span>
+            </div>
+            <div class="case-box case-doubts">
+              <strong>6. Si Manifiesta Dudas</strong>
+              <span>"No se preocupe, solo queremos conocer su experiencia aplicando lo aprendido. Su información está protegida y es solo para fines de investigación."</span>
+            </div>
+            <div class="case-box case-refuse">
+              <strong>7. Si Rechaza Participar</strong>
+              <span>"Gracias por su tiempo. Que tenga un buen día."</span>
+            </div>
+            <div class="case-box case-close">
+              <strong>8. Cierre de Encuesta</strong>
+              <span>"Le agradezco mucho por su colaboración. Sus respuestas son de gran apoyo para el programa. Que tenga un excelente día."</span>
+            </div>
+          </div>
+        </div>
+      </article>
+    </div>
   `;
 }
 
@@ -2216,10 +2215,11 @@ function renderOperatorBoard() {
       ` : ''}
     </div>
 
-    <section class="operator-workspace">
-      <div class="selected-workspace">
+    <section class="operator-workspace-vertical">
+      <!-- 1. PRIMERA LÍNEA: TARJETA DEL CONTACTO (IZQ) Y GUION DE LLAMADA (DER) -->
+      <div class="active-call-row">
         ${contact ? renderSelectedContact(contact) : `
-          <article class="card selected-contact-card">
+          <article class="card selected-contact-card" style="width:100%;">
             <div class="empty-state" style="padding:40px 20px;text-align:center;">
               <div style="font-size:32px;margin-bottom:12px;">✓</div>
               <h3>No hay contactos pendientes en este filtro</h3>
@@ -2229,11 +2229,13 @@ function renderOperatorBoard() {
           </article>
         `}
       </div>
-      <aside class="contact-board-side">
-        ${renderContactColumn('Por llamar', 'Contactos nuevos', normal, 'column-normal', contact)}
+
+      <!-- 2. SEGUNDA LÍNEA: LLAMADAS POR HACER, PENDIENTES Y NO CONTESTA -->
+      <div class="contact-board-bottom-grid">
+        ${renderContactColumn('Por llamar', 'Llamadas por hacer / Nuevos', normal, 'column-normal', contact)}
         ${renderContactColumn('Pendientes', 'Por reintentar / Reprogramados', pending, 'column-pending', contact)}
         ${renderContactColumn('No contestan', 'Volver a llamar', noAnswer, 'column-no-answer', contact)}
-      </aside>
+      </div>
     </section>
   `;
 }

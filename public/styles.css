@@ -1351,18 +1351,48 @@ h1 {
   margin-bottom: 20px;
 }
 
-/* Split Workspace */
-.operator-workspace {
+/* ==========================================================================
+   OPERATOR WORKSPACE 2-ROW LAYOUT
+   ========================================================================== */
+.operator-workspace-vertical {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  width: 100%;
+}
+
+.active-call-row {
+  width: 100%;
+}
+
+.active-call-grid {
   display: grid;
+  grid-template-columns: minmax(0, 1.15fr) minmax(0, 0.85fr);
   gap: 20px;
-  grid-template-columns: minmax(0, 1.45fr) minmax(340px, 0.75fr);
+  align-items: stretch;
+  width: 100%;
+}
+
+.script-side-card {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-lg);
+  padding: 24px 26px;
+  box-shadow: var(--shadow-sm);
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+/* Fila 2: 3 Columnas Horizontales de Bandejas */
+.contact-board-bottom-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 20px;
+  width: 100%;
   align-items: start;
 }
 
-.selected-workspace .selected-contact-card {
-  position: sticky;
-  top: 90px;
-}
 
 /* Contact Card Header Hero */
 .contact-hero-header {
@@ -2610,11 +2640,11 @@ h1 {
   .dashboard-grid, .bottom-grid, .supervisor-focus-grid {
     grid-template-columns: 1fr;
   }
-  .operator-workspace {
+  .active-call-grid {
     grid-template-columns: 1fr;
   }
-  .selected-workspace .selected-contact-card {
-    position: static;
+  .contact-board-bottom-grid {
+    grid-template-columns: 1fr;
   }
 }
 
