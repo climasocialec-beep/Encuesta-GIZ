@@ -1825,7 +1825,7 @@ function renderSelectedContact(contact) {
         <!-- 2. Banner de Acción Principal: KoboToolbox en Vivo -->
         <div class="kobo-action-banner">
           <div class="kobo-banner-text">
-            <div class="kobo-banner-badge">ENCUESTA EN VIVO &bull; ~10 MIN</div>
+            <div class="kobo-banner-badge">ENCUESTA EN VIVO &bull; ~4 A 5 MIN</div>
             <h3>Formulario Oficial de Evaluación</h3>
             <p>Abre la encuesta para registrar las respuestas en tiempo real durante la llamada telefónica.</p>
           </div>
@@ -1906,15 +1906,80 @@ function renderSelectedContact(contact) {
           </div>
         </div>
 
-        <!-- 4. Guion Sugerido de Llamada -->
+        <!-- 4. Guion Oficial de Llamadas (Protocolo Clima Social - GIZ) -->
         <div class="call-script-clean">
           <div class="script-head-clean">
-            <span>🗣️</span>
-            <strong>Guion sugerido de llamada</strong>
+            <div class="script-head-title">
+              <span>🗣️</span>
+              <strong>Guion Oficial de Llamadas &bull; Programa ProCohesión GIZ</strong>
+            </div>
+            <span class="recency-pill">Duración: 4 a 5 min</span>
           </div>
-          <p class="script-text">
-            "Buenos días/tardes <strong>${contactGreetingName(contact) || 'estimado/a'}</strong>, le saluda <strong>${currentUser.name}</strong> de Clima Social en el marco del programa ProCohesión de GIZ. Le contactamos para una breve encuesta de seguimiento de 10 minutos sobre su participación en el curso de <strong>${escapeHtml(courseStr)}</strong> que culminó en <strong>${escapeHtml(contact.courseEndDate || 'Julio de 2025')}</strong> en <strong>Barrio ${escapeHtml(barrioStr)}</strong>. ¿Dispone de unos minutos para realizarla?"
-          </p>
+
+          <!-- Pasos Principales de la Conversación -->
+          <div class="script-steps-list">
+            <!-- Momento 1: Verificación de Identidad -->
+            <div class="script-step-item">
+              <span class="step-num-badge">1. Identidad</span>
+              <div class="script-step-text">
+                "Buenos días/tardes, ¿me comunico con <strong>${escapeHtml(contact.name)}</strong>?"
+              </div>
+            </div>
+
+            <!-- Momento 2: Presentación Institucional -->
+            <div class="script-step-item">
+              <span class="step-num-badge">2. Presentación</span>
+              <div class="script-step-text">
+                "Mi nombre es <strong>${escapeHtml(currentUser.name)}</strong>, le llamo de <strong>Clima Social</strong>. Estamos realizando un seguimiento para el <strong>Programa ProCohesión de la Cooperación Alemana - GIZ</strong>."
+              </div>
+            </div>
+
+            <!-- Momento 3: Motivo del Contacto -->
+            <div class="script-step-item">
+              <span class="step-num-badge">3. Motivo</span>
+              <div class="script-step-text">
+                "Queremos invitarle a responder una breve encuesta sobre cómo ha aplicado los conocimientos adquiridos en el curso en el que participó: <strong>${escapeHtml(courseStr)}</strong>. Esta información nos permitirá conocer la utilidad de los procesos de formación y contribuir a mejorar el trabajo que realiza la GIZ junto con sus socios en territorio."
+              </div>
+            </div>
+
+            <!-- Momento 4: Garantías Éticas y Duración -->
+            <div class="script-step-item">
+              <span class="step-num-badge">4. Ética y tiempo</span>
+              <div class="script-step-text">
+                "La encuesta es totalmente anónima y confidencial. No pediremos datos personales. Toma alrededor de <strong>4 a 5 minutos</strong>. ¿Me permite continuar?"
+              </div>
+            </div>
+          </div>
+
+          <!-- Respuestas y Situaciones (Momentos 5 a 8) -->
+          <div class="script-cases-accordion">
+            <div class="script-cases-header">
+              <span>📋</span>
+              <strong>Respuestas y manejo de situaciones</strong>
+            </div>
+            <div class="script-cases-grid">
+              <div class="case-box case-accept">
+                <strong>5. Si Acepta</strong>
+                <span>"Perfecto, muchas gracias. Empezamos."</span>
+              </div>
+              <div class="case-box case-reschedule">
+                <strong>5. Si Pospone / Reagenda</strong>
+                <span>"Sin problema. ¿Qué horario le queda más conveniente para llamarle nuevamente?"</span>
+              </div>
+              <div class="case-box case-doubts">
+                <strong>6. Si Manifiesta Dudas</strong>
+                <span>"No se preocupe, solo queremos conocer su experiencia aplicando lo aprendido. Su información está protegida y es solo para fines de investigación."</span>
+              </div>
+              <div class="case-box case-refuse">
+                <strong>7. Si Rechaza Participar</strong>
+                <span>"Gracias por su tiempo. Que tenga un buen día."</span>
+              </div>
+              <div class="case-box case-close">
+                <strong>8. Cierre de Encuesta</strong>
+                <span>"Le agradezco mucho por su colaboración. Sus respuestas son de gran apoyo para el programa. Que tenga un excelente día."</span>
+              </div>
+            </div>
+          </div>
         </div>
 
         <!-- 5. Registro de Resultado de la Llamada -->
