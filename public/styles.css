@@ -1394,7 +1394,13 @@ h1 {
 }
 
 
-/* Contact Card Header Hero Legible */
+/* Contact Card Header Hero Legible & Balanced */
+.selected-contact-card {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
 .contact-hero-header {
   background: linear-gradient(135deg, #1e112a 0%, #3e0f49 55%, #1b4965 100%);
   color: #ffffff;
@@ -1512,7 +1518,12 @@ h1 {
 }
 
 .selected-contact-body {
-  padding: 14px 18px;
+  padding: 16px 20px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  flex: 1;
+  gap: 14px;
 }
 
 /* Banner de Acción Principal: Encuesta KoboToolbox en Vivo */
@@ -1524,8 +1535,7 @@ h1 {
   background: linear-gradient(135deg, #2b0b38 0%, #4a0e5c 100%);
   border: 1px solid rgba(240, 162, 0, 0.25);
   border-radius: var(--radius-sm);
-  padding: 10px 16px;
-  margin-bottom: 12px;
+  padding: 12px 18px;
   color: #ffffff;
 }
 
@@ -1540,11 +1550,19 @@ h1 {
 }
 
 .kobo-banner-text h3 {
-  font-size: 13.5px;
+  font-size: 14px;
   font-weight: 800;
   color: #ffffff;
   margin: 0;
   line-height: 1.25;
+}
+
+.kobo-banner-text p {
+  display: block;
+  font-size: 12px;
+  color: #ded6e8;
+  margin: 3px 0 0 0;
+  line-height: 1.35;
 }
 
 .kobo-launch-btn {
@@ -1573,8 +1591,7 @@ h1 {
 .contact-details-panels {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 12px;
-  margin-bottom: 12px;
+  gap: 14px;
 }
 
 @media (max-width: 768px) {
@@ -1587,7 +1604,7 @@ h1 {
   background: var(--bg-canvas);
   border: 1px solid var(--border-subtle);
   border-radius: var(--radius-sm);
-  padding: 12px 14px;
+  padding: 14px 16px;
   display: flex;
   flex-direction: column;
   gap: 8px;
@@ -1602,7 +1619,7 @@ h1 {
 }
 
 .panel-title strong {
-  font-size: 12.5px;
+  font-size: 13px;
   font-weight: 800;
   color: var(--text-main);
 }
@@ -1610,7 +1627,7 @@ h1 {
 .detail-items-list {
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 7px;
 }
 
 .detail-row {
@@ -1672,7 +1689,9 @@ h1 {
   box-shadow: var(--shadow-sm);
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  justify-content: space-between;
+  gap: 12px;
+  height: 100%;
 }
 
 .call-script-clean {
@@ -1725,12 +1744,12 @@ h1 {
 }
 
 .step-num-badge {
-  width: 110px;
-  min-width: 110px;
-  max-width: 110px;
+  width: 115px;
+  min-width: 115px;
+  max-width: 115px;
   flex-shrink: 0;
   text-align: center;
-  font-size: 11px;
+  font-size: 11.5px;
   font-weight: 800;
   font-family: var(--font-mono);
   background: rgba(69, 74, 145, 0.12);
@@ -1804,13 +1823,12 @@ h1 {
 .case-box.case-refuse { border-left: 3px solid #ef4444; }
 .case-box.case-close { border-left: 3px solid #8b5cf6; grid-column: 1 / -1; }
 
-/* Registro de Resultado Legible */
+/* Registro de Resultado Legible & Sin Desborde */
 .call-actions-clean {
   background: var(--bg-surface);
   border: 1px solid var(--border-subtle);
   border-radius: var(--radius-sm);
-  padding: 12px 14px;
-  margin-top: 10px;
+  padding: 14px 16px;
 }
 
 .actions-header-clean {
@@ -1834,8 +1852,8 @@ h1 {
 
 .outcome-grid-clean {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(118px, 1fr));
-  gap: 6px;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 8px;
   margin-bottom: 10px;
 }
 
@@ -1844,27 +1862,31 @@ h1 {
   flex-direction: row;
   align-items: center;
   justify-content: center;
-  gap: 5px;
-  padding: 7px 10px;
+  gap: 6px;
+  padding: 8px 6px;
   border-radius: var(--radius-sm);
   border: 1px solid var(--border-medium);
   background: var(--bg-canvas);
   color: var(--text-soft);
   cursor: pointer;
   transition: all 0.15s ease;
+  min-width: 0;
 }
 
 .outcome-btn-clean .btn-indicator {
-  font-size: 13px;
+  font-size: 13.5px;
   font-weight: 800;
+  flex-shrink: 0;
 }
 
 .outcome-btn-clean .btn-label {
   font-size: 11.5px;
   font-weight: 700;
   text-align: center;
-  line-height: 1.15;
+  line-height: 1;
   white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .outcome-btn-clean:hover {
@@ -1920,12 +1942,12 @@ h1 {
 
 .notes-clean {
   width: 100%;
-  min-height: 44px;
-  height: 44px;
+  min-height: 65px;
+  height: 65px;
   background: var(--bg-canvas);
   border: 1px solid var(--border-medium);
   border-radius: var(--radius-sm);
-  padding: 8px 10px;
+  padding: 8px 12px;
   font-size: 12px;
   color: var(--text-main);
   outline: none;

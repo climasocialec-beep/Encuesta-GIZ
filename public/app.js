@@ -1796,7 +1796,7 @@ function renderSelectedContact(contact) {
     <div class="active-call-grid">
       <!-- 1. TARJETA DEL CONTACTO & REGISTRO DE LLAMADA (IZQUIERDA) -->
       <article class="card selected-contact-card">
-        <!-- Cabecera del Contacto con Tipografía Clara -->
+        <!-- Cabecera del Contacto con Teléfono y Acciones -->
         <div class="contact-hero-header">
           <div class="contact-hero-info">
             <div class="contact-meta-tags">
@@ -1824,11 +1824,12 @@ function renderSelectedContact(contact) {
         </div>
 
         <div class="selected-contact-body">
-          <!-- Banner de Acción Rápida KoboToolbox -->
+          <!-- Banner de Acción Principal: KoboToolbox en Vivo -->
           <div class="kobo-action-banner">
             <div class="kobo-banner-text">
               <span class="kobo-banner-badge">ENCUESTA EN VIVO &bull; 4 A 5 MIN</span>
               <h3>Formulario Oficial de Evaluación KoboToolbox</h3>
+              <p>Abre la encuesta para registrar las respuestas en tiempo real durante la llamada.</p>
             </div>
             <a class="kobo-launch-btn" href="${SURVEY_URL}" target="_blank" rel="noreferrer">
               <span>📋 Abrir Kobo en Vivo</span>
@@ -1877,7 +1878,7 @@ function renderSelectedContact(contact) {
               <div class="detail-items-list">
                 <div class="detail-row">
                   <span class="detail-lbl">Teléfono:</span>
-                  <span class="detail-val" style="font-family:var(--font-mono);font-weight:800;color:#10b981;font-size:13.5px;">📞 ${escapeHtml(contact.phone)}</span>
+                  <span class="detail-val" style="font-family:var(--font-mono);font-weight:800;color:#10b981;font-size:14px;">📞 ${escapeHtml(contact.phone)}</span>
                 </div>
                 <div class="detail-row">
                   <span class="detail-lbl">Otros Tel.:</span>
@@ -1907,31 +1908,31 @@ function renderSelectedContact(contact) {
             </div>
 
             <div class="outcome-grid-clean">
-              <button type="button" class="outcome-btn-clean outcome-effective ${selectedOutcome === 'effective' ? 'active' : ''}" data-outcome="effective">
+              <button type="button" class="outcome-btn-clean outcome-effective ${selectedOutcome === 'effective' ? 'active' : ''}" data-outcome="effective" title="Encuesta completada">
                 <span class="btn-indicator">✓</span>
-                <span class="btn-label">Encuesta completada</span>
+                <span class="btn-label">Completada</span>
               </button>
-              <button type="button" class="outcome-btn-clean outcome-pending ${selectedOutcome === 'pending' ? 'active' : ''}" data-outcome="pending">
+              <button type="button" class="outcome-btn-clean outcome-pending ${selectedOutcome === 'pending' ? 'active' : ''}" data-outcome="pending" title="Reprogramada / Volver a llamar">
                 <span class="btn-indicator">◷</span>
-                <span class="btn-label">Reprogramada / Reintentar</span>
+                <span class="btn-label">Reprogramar</span>
               </button>
-              <button type="button" class="outcome-btn-clean outcome-no-answer ${selectedOutcome === 'no-answer' ? 'active' : ''}" data-outcome="no-answer">
+              <button type="button" class="outcome-btn-clean outcome-no-answer ${selectedOutcome === 'no-answer' ? 'active' : ''}" data-outcome="no-answer" title="No contesta">
                 <span class="btn-indicator">◌</span>
                 <span class="btn-label">No contesta</span>
               </button>
-              <button type="button" class="outcome-btn-clean outcome-refused ${selectedOutcome === 'refused' ? 'active' : ''}" data-outcome="refused">
+              <button type="button" class="outcome-btn-clean outcome-refused ${selectedOutcome === 'refused' ? 'active' : ''}" data-outcome="refused" title="Rechaza participar">
                 <span class="btn-indicator">⊘</span>
-                <span class="btn-label">Rechaza participar</span>
+                <span class="btn-label">Rechazó</span>
               </button>
-              <button type="button" class="outcome-btn-clean outcome-wrong ${selectedOutcome === 'wrong' ? 'active' : ''}" data-outcome="wrong">
+              <button type="button" class="outcome-btn-clean outcome-wrong ${selectedOutcome === 'wrong' ? 'active' : ''}" data-outcome="wrong" title="Número incorrecto / equivocado">
                 <span class="btn-indicator">×</span>
-                <span class="btn-label">Número incorrecto</span>
+                <span class="btn-label">Incorrecto</span>
               </button>
             </div>
 
             <div class="notes-block">
               <label for="notes">Observaciones / Novedades de la llamada</label>
-              <textarea id="notes" class="notes-clean" placeholder="Escribe aquí cualquier detalle relevante de la llamada..."></textarea>
+              <textarea id="notes" class="notes-clean" placeholder="Escribe aquí cualquier detalle de la llamada (ej. acordó llamar a las 16h00, o encuesta completada)..."></textarea>
             </div>
 
             <div class="save-actions-bar">
@@ -1955,7 +1956,7 @@ function renderSelectedContact(contact) {
           <span class="recency-pill">⏱️ Duración: 4 a 5 min</span>
         </div>
 
-        <!-- Pasos Principales de la Conversación (Alineación Perfecta) -->
+        <!-- Pasos Principales de la Conversación -->
         <div class="script-steps-list">
           <!-- Momento 1: Verificación de Identidad -->
           <div class="script-step-item">
