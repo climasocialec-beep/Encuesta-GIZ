@@ -1504,58 +1504,210 @@ async function deleteShift(shiftId) {
   render();
 }
 
+function getShiftGestionesMetrics(shift) {
+  if (!shift || !shift.startedAt) return { total: 0, effective: 0, pending: 0, noAnswer: 0, other: 0, ratePerHour: '0' };
+  
+  const startTime = new Date(shift.startedAt).getTime();
+  const endTime = shift.endedAt ? new Date(shift.endedAt).getTime() : Date.now();
+  const shiftOperatorId = shift.operatorId;
+  const shiftOperatorName = (shift.operator || shift.username || '').toLowerCase();
+  
+  const targetUser = appUsers.find(u => u.username === shift.username || u.name === shift.operator);
+  const targetAuthId = targetUser?.authId;
+
+  const matchingHistory = state.history.filter(item => {
+    const opMatches = (shiftOperatorId && item.operatorId === shiftOperatorId) ||
+                      (targetAuthId && item.operatorId === targetAuthId) ||
+                      (item.operator && item.operator.toLowerCase() === shiftOperatorName) ||
+                      (targetUser && item.operator === targetUser.name);
+    if (!opMatches) return false;
+
+    if (item.completedAt || item.rawDate) {
+      const itemTime = new Date(item.completedAt || item.rawDate).getTime();
+      return itemTime >= (startTime - 60000) && itemTime <= (endTime + 60000);
+    }
+    
+    const shiftDay = dayKey(shift.startedAt);
+    const itemDay = dayKey(item.date);
+    return shiftDay && itemDay && shiftDay === itemDay;
+  });
+
+  const total = matchingHistory.length;
+  const effective = matchingHistory.filter(h => h.result === 'effective').length;
+  const pending = matchingHistory.filter(h => h.result === 'pending' || h.result === 'rescheduled' || h.result === 'callback').length;
+  const noAnswer = matchingHistory.filter(h => h.result === 'no-answer' || h.result === 'no_answer').length;
+  const other = total - effective - pending - noAnswer;
+  
+  const durationHours = Math.max(0.1, (endTime - startTime) / 3600000);
+  const ratePerHour = total > 0 ? (total / durationHours).toFixed(1) : '0';
+
+  return { total, effective, pending, noAnswer, other, ratePerHour };
+}
+
+let shiftSearchQuery = '';
+
+function filterShiftsRealtime(query) {
+  shiftSearchQuery = query;
+  const q = query.trim().toLowerCase();
+  document.querySelectorAll('[data-shift-row]').forEach(row => {
+    const text = row.dataset.shiftRow || '';
+    row.hidden = q ? !text.includes(q) : false;
+  });
+}
+
 function renderShifts() {
   const operatorUsers = appUsers.filter(user => user.role === 'operator');
+  const allShifts = state.shifts || [];
+  const sortedShifts = allShifts.slice().sort((a, b) => new Date(b.startedAt || 0) - new Date(a.startedAt || 0));
   const isSupervisor = currentUser.role === 'supervisor';
 
   return `
-    ${pageHeading('Control de equipo', 'Registro de jornadas', 'Consulta el tiempo de trabajo e inicio/fin de cada operador.', backendMode === 'supabase' ? '<span class="status-pill on">● Sincronizado con Supabase</span>' : '<span class="status-pill on">● Actualizado localmente</span>')}
+    ${pageHeading('Control de equipo', 'Registro diario de jornadas', 'Consulta el historial de turnos de cada operador/a, las gestiones realizadas en cada turno y su rendimiento.', backendMode === 'supabase' ? '<span class="status-pill on">● Sincronizado con Supabase</span>' : '<span class="status-pill on">● Actualizado localmente</span>')}
+    
+    <!-- 1. RESUMEN EN VIVO DE HOY -->
+    <section class="supervisor-focus-grid" style="margin-bottom: 24px;">
+      <article class="card operator-monitoring-card">
+        <div class="card-header">
+          <div>
+            <h2 class="card-title">Estado de la jornada de hoy</h2>
+            <p class="card-subtitle">Seguimiento en vivo del equipo de operadores</p>
+          </div>
+          <span class="status-pill on">● En vivo</span>
+        </div>
+        <div class="table-wrap">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Operador/a</th>
+                <th>Estado actual</th>
+                <th>Inicio</th>
+                <th>Fin</th>
+                <th>Tiempo laborado</th>
+                <th>Gestiones en el turno</th>
+                ${isSupervisor ? '<th>Acción rápida</th>' : ''}
+              </tr>
+            </thead>
+            <tbody>
+              ${operatorUsers.map(user => {
+                const shift = latestShiftFor(user);
+                const active = Boolean(getActiveShift(user));
+                const metrics = shift ? getShiftGestionesMetrics(shift) : { total: 0, effective: 0, ratePerHour: '0' };
+                return `
+                  <tr>
+                    <td>
+                      <div class="operator-cell">
+                        <div class="small-avatar">${user.initials}</div>
+                        <div><strong>${user.name}</strong><span>${user.username}</span></div>
+                      </div>
+                    </td>
+                    <td><span class="status-pill ${active ? 'on' : shift ? 'pause' : 'off'}">${active ? 'En jornada' : shift ? 'Finalizada' : 'Sin iniciar'}</span></td>
+                    <td>${shift ? formatDateTime(shift.startedAt) : '—'}</td>
+                    <td>${shift?.endedAt ? formatDateTime(shift.endedAt) : active ? '<span style="color:#10b981;font-weight:700;">● En curso</span>' : '—'}</td>
+                    <td>${shift ? formatDuration(shift.startedAt, shift.endedAt || undefined) : '—'}</td>
+                    <td>
+                      ${shift ? `
+                        <div class="shift-gestiones-badge">
+                          <div class="gestiones-main-line">
+                            <strong>${metrics.total} ${metrics.total === 1 ? 'gestión' : 'gestiones'}</strong>
+                            ${metrics.effective > 0 ? `<span class="shift-eff-pill">✓ ${metrics.effective} ${metrics.effective === 1 ? 'efectiva' : 'efectivas'}</span>` : ''}
+                          </div>
+                          ${metrics.total > 0 ? `
+                            <div class="gestiones-sub-line">
+                              <span>⚡ ${metrics.ratePerHour}/hora</span>
+                              ${metrics.pending > 0 ? `<span>· ◷ ${metrics.pending}</span>` : ''}
+                              ${metrics.noAnswer > 0 ? `<span>· ◌ ${metrics.noAnswer}</span>` : ''}
+                            </div>
+                          ` : `<div class="gestiones-sub-line">Sin llamadas aún</div>`}
+                        </div>
+                      ` : '<span style="color:var(--text-muted);">—</span>'}
+                    </td>
+                    ${isSupervisor ? `
+                      <td>
+                        ${active ? `<button class="button-secondary" onclick="forceCloseShift('${shift?.id || ''}', '${user.initials}')" type="button" style="padding:4px 8px;font-size:10px;background:rgba(239,68,68,0.1);color:#ef4444;border-color:#ef4444;">Cerrar jornada</button>` : '—'}
+                      </td>
+                    ` : ''}
+                  </tr>
+                `;
+              }).join('')}
+            </tbody>
+          </table>
+        </div>
+      </article>
+    </section>
+
+    <!-- 2. HISTORIAL DIARIO COMPLETO POR OPERADORA -->
     <article class="card history-card">
       <div class="page-card-header">
         <div>
-          <h2 class="card-title">Jornadas del equipo</h2>
-          <p class="card-subtitle">Seguimiento en vivo de horas laboradas</p>
+          <h2 class="card-title">Historial diario de jornadas por operadora</h2>
+          <p class="card-subtitle">${sortedShifts.length} registros de turnos guardados</p>
+        </div>
+        <div class="filters">
+          <input class="search-input" id="shift-search" placeholder="Buscar operadora o fecha..." value="${escapeHtml(shiftSearchQuery)}" oninput="filterShiftsRealtime(this.value)" />
         </div>
       </div>
       <div class="table-wrap">
-        <table class="data-table shifts-table">
+        <table class="data-table shifts-table" id="shifts-data-table">
           <thead>
             <tr>
+              <th>Fecha</th>
               <th>Operador/a</th>
-              <th>Estado actual</th>
-              <th>Inicio</th>
-              <th>Fin</th>
-              <th>Duración</th>
+              <th>Hora de inicio</th>
+              <th>Hora de fin</th>
+              <th>Duración total</th>
+              <th>Gestiones en el turno</th>
+              <th>Estado</th>
               ${isSupervisor ? '<th>Acciones</th>' : ''}
             </tr>
           </thead>
           <tbody>
-            ${operatorUsers.map(user => {
-              const shift = latestShiftFor(user);
-              const active = Boolean(getActiveShift(user));
+            ${sortedShifts.length ? sortedShifts.map(shift => {
+              const isEnded = Boolean(shift.endedAt && String(shift.endedAt).trim() !== '' && shift.endedAt !== 'null');
+              const dateLabel = shift.startedAt ? dayKey(shift.startedAt) : '—';
+              const operatorName = shift.operator || shift.username || 'Operador/a';
+              const metrics = getShiftGestionesMetrics(shift);
+
               return `
-                <tr>
+                <tr data-shift-row="${escapeHtml(`${operatorName} ${shift.username || ''} ${dateLabel}`.toLowerCase())}">
+                  <td><strong style="font-family:var(--font-mono);font-size:12px;">${escapeHtml(dateLabel)}</strong></td>
                   <td>
                     <div class="operator-cell">
-                      <div class="small-avatar">${user.initials}</div>
-                      <div><strong>${user.name}</strong><span>${user.username}</span></div>
+                      <div class="small-avatar">${initials(operatorName)}</div>
+                      <div><strong>${escapeHtml(operatorName)}</strong></div>
                     </div>
                   </td>
-                  <td><span class="status-pill ${active ? 'on' : shift ? 'pause' : 'off'}">${active ? 'En jornada' : shift ? 'Finalizada' : 'Sin iniciar'}</span></td>
-                  <td>${shift ? formatDateTime(shift.startedAt) : '—'}</td>
-                  <td>${shift?.endedAt ? formatDateTime(shift.endedAt) : active ? 'En curso' : '—'}</td>
-                  <td>${shift ? formatDuration(shift.startedAt, shift.endedAt || undefined) : '—'}</td>
+                  <td>${shift.startedAt ? formatDateTime(shift.startedAt) : '—'}</td>
+                  <td>${isEnded ? formatDateTime(shift.endedAt) : '<span style="color:#10b981;font-weight:700;">● En curso</span>'}</td>
+                  <td>${shift.startedAt ? formatDuration(shift.startedAt, shift.endedAt || undefined) : '—'}</td>
+                  <td>
+                    <div class="shift-gestiones-badge">
+                      <div class="gestiones-main-line">
+                        <strong>${metrics.total} ${metrics.total === 1 ? 'llamada' : 'llamadas'}</strong>
+                        ${metrics.effective > 0 ? `<span class="shift-eff-pill">✓ ${metrics.effective} ${metrics.effective === 1 ? 'efectiva' : 'efectivas'}</span>` : ''}
+                      </div>
+                      ${metrics.total > 0 ? `
+                        <div class="gestiones-sub-line">
+                          <span>⚡ ${metrics.ratePerHour}/hora</span>
+                          ${metrics.pending > 0 ? `<span>· ◷ ${metrics.pending}</span>` : ''}
+                          ${metrics.noAnswer > 0 ? `<span>· ◌ ${metrics.noAnswer}</span>` : ''}
+                        </div>
+                      ` : `<div class="gestiones-sub-line">Sin llamadas registradas</div>`}
+                    </div>
+                  </td>
+                  <td>
+                    <span class="status-pill ${isEnded ? 'pause' : 'on'}">${isEnded ? 'Finalizada' : 'En curso'}</span>
+                  </td>
                   ${isSupervisor ? `
                     <td>
                       <div style="display:flex;gap:6px;">
-                        ${active ? `<button class="button-secondary" onclick="forceCloseShift('${shift?.id || ''}', '${user.initials}')" type="button" style="padding:4px 8px;font-size:10px;background:rgba(239,68,68,0.1);color:#ef4444;border-color:#ef4444;">Cerrar jornada</button>` : ''}
-                        ${shift ? `<button class="delete-history" onclick="deleteShift('${shift.id}')" type="button" style="padding:4px 8px;font-size:10px;">Eliminar</button>` : '—'}
+                        ${!isEnded ? `<button class="button-secondary" onclick="forceCloseShift('${shift.id}')" type="button" style="padding:4px 8px;font-size:10px;background:rgba(239,68,68,0.1);color:#ef4444;border-color:#ef4444;">Cerrar turno</button>` : ''}
+                        <button class="delete-history" onclick="deleteShift('${shift.id}')" type="button" style="padding:4px 8px;font-size:10px;">Eliminar jornada</button>
                       </div>
                     </td>
                   ` : ''}
                 </tr>
               `;
-            }).join('')}
+            }).join('') : `<tr><td colspan="${isSupervisor ? 8 : 7}"><div class="empty-state">No hay jornadas registradas.</div></td></tr>`}
           </tbody>
         </table>
       </div>
