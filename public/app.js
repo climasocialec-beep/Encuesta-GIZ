@@ -1790,20 +1790,20 @@ function renderSelectedContact(contact) {
   const datesStr = contact.courseDates || 'Junio 2025 – Julio 2025';
   const recencyStr = contact.courseRecency || 'Julio 2025 (Hace ~1 año)';
   const orgStr = contact.organization || 'UNFPA, VME, FUDELA';
-  const refStr = contact.referencia || 'Mariana Oleas (asesora local GIZ Esmeraldas)';
+  const refStr = contact.referencia || 'Mariana Oleas (Asesora local GIZ Esmeraldas)';
 
   return `
     <div class="active-call-grid">
       <!-- 1. TARJETA DEL CONTACTO & REGISTRO DE LLAMADA (IZQUIERDA) -->
       <article class="card selected-contact-card">
-        <!-- Cabecera Compacta del Contacto -->
+        <!-- Cabecera del Contacto con Tipografía Clara -->
         <div class="contact-hero-header">
           <div class="contact-hero-info">
             <div class="contact-meta-tags">
               <span class="tag-code">COD: ${escapeHtml(contact.id)}</span>
-              <span class="tag-attempt">Intento ${contact.attempts + 1}/${MAX_ATTEMPTS}</span>
+              <span class="tag-attempt">Intento ${contact.attempts + 1} de ${MAX_ATTEMPTS}</span>
               <span class="table-status ${contact.status}">${contactStatusLabel(contact)}</span>
-              <span class="tag-recency">📅 ${escapeHtml(contact.courseEndDate || 'Julio 2025')}</span>
+              <span class="tag-recency">📅 Culminó: ${escapeHtml(contact.courseEndDate || 'Julio 2025')}</span>
             </div>
             <h2 class="contact-hero-name">${escapeHtml(contact.name)}</h2>
             <div class="contact-location-line">
@@ -1824,34 +1824,34 @@ function renderSelectedContact(contact) {
         </div>
 
         <div class="selected-contact-body">
-          <!-- Banner de Acción Rápida KoboToolbox (Inline Compacto) -->
+          <!-- Banner de Acción Rápida KoboToolbox -->
           <div class="kobo-action-banner">
             <div class="kobo-banner-text">
-              <span class="kobo-banner-badge">ENCUESTA EN VIVO &bull; ~4 A 5 MIN</span>
+              <span class="kobo-banner-badge">ENCUESTA EN VIVO &bull; 4 A 5 MIN</span>
               <h3>Formulario Oficial de Evaluación KoboToolbox</h3>
             </div>
             <a class="kobo-launch-btn" href="${SURVEY_URL}" target="_blank" rel="noreferrer">
               <span>📋 Abrir Kobo en Vivo</span>
-              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6M15 3h6v6M10 14L21 3"/></svg>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6M15 3h6v6M10 14L21 3"/></svg>
             </a>
           </div>
 
-          <!-- Ficha de Datos en 2 Columnas Compactas (Curso y Contacto) -->
+          <!-- Ficha de Datos en 2 Columnas (Curso y Contacto) -->
           <div class="contact-details-panels">
             <!-- Columna 1: Curso GIZ -->
             <div class="detail-panel">
               <div class="panel-title">
                 <span class="panel-icon">🎓</span>
-                <strong>Curso & Capacitación GIZ</strong>
+                <strong>Curso & Formación GIZ</strong>
               </div>
               <div class="detail-items-list">
                 <div class="detail-row">
                   <span class="detail-lbl">Curso:</span>
-                  <span class="detail-val highlight" title="${escapeHtml(courseStr)}">${escapeHtml(courseStr)}</span>
+                  <span class="detail-val highlight">${escapeHtml(courseStr)}</span>
                 </div>
                 <div class="detail-row">
                   <span class="detail-lbl">Ubicación:</span>
-                  <span class="detail-val" title="Barrio ${escapeHtml(barrioStr)} · ${escapeHtml(cantonStr)}"><strong>${escapeHtml(barrioStr)}</strong> · ${escapeHtml(cantonStr)}</span>
+                  <span class="detail-val"><strong>${escapeHtml(barrioStr)}</strong> &bull; ${escapeHtml(cantonStr)}</span>
                 </div>
                 <div class="detail-row">
                   <span class="detail-lbl">Periodo:</span>
@@ -1863,33 +1863,33 @@ function renderSelectedContact(contact) {
                 </div>
                 <div class="detail-row">
                   <span class="detail-lbl">Entidad:</span>
-                  <span class="detail-val" title="${escapeHtml(orgStr)}">${escapeHtml(orgStr)}</span>
+                  <span class="detail-val">${escapeHtml(orgStr)}</span>
                 </div>
               </div>
             </div>
 
-            <!-- Columna 2: Contacto & Trazabilidad -->
+            <!-- Columna 2: Contacto & Referente GIZ -->
             <div class="detail-panel">
               <div class="panel-title">
                 <span class="panel-icon">👤</span>
-                <strong>Contacto & Trazabilidad</strong>
+                <strong>Contacto & Referencia</strong>
               </div>
               <div class="detail-items-list">
                 <div class="detail-row">
                   <span class="detail-lbl">Teléfono:</span>
-                  <span class="detail-val" style="font-family:var(--font-mono);font-weight:700;color:#10b981;">📞 ${escapeHtml(contact.phone)}</span>
+                  <span class="detail-val" style="font-family:var(--font-mono);font-weight:800;color:#10b981;font-size:13.5px;">📞 ${escapeHtml(contact.phone)}</span>
                 </div>
                 <div class="detail-row">
                   <span class="detail-lbl">Otros Tel.:</span>
-                  <span class="detail-val">${escapeHtml(contact.phoneOther || 'Ninguno')}</span>
+                  <span class="detail-val">${escapeHtml(contact.phoneOther || 'Ninguno adicional')}</span>
                 </div>
                 <div class="detail-row">
                   <span class="detail-lbl">Correo:</span>
-                  <span class="detail-val">${escapeHtml(contact.email || 'No registra')}</span>
+                  <span class="detail-val">${escapeHtml(contact.email || 'No registra correo')}</span>
                 </div>
                 <div class="detail-row">
-                  <span class="detail-lbl">Ref. GIZ:</span>
-                  <span class="detail-val" title="${escapeHtml(refStr)}">${escapeHtml(refStr)}</span>
+                  <span class="detail-lbl">Asesor GIZ:</span>
+                  <span class="detail-val" style="color:var(--text-main);font-weight:700;">${escapeHtml(refStr)}</span>
                 </div>
                 <div class="detail-row">
                   <span class="detail-lbl">Última gest.:</span>
@@ -1931,7 +1931,7 @@ function renderSelectedContact(contact) {
 
             <div class="notes-block">
               <label for="notes">Observaciones / Novedades de la llamada</label>
-              <textarea id="notes" class="notes-clean" placeholder="Escribe aquí cualquier detalle de la llamada (ej. acordó llamar a las 16h00, o encuesta completada)..."></textarea>
+              <textarea id="notes" class="notes-clean" placeholder="Escribe aquí cualquier detalle relevante de la llamada..."></textarea>
             </div>
 
             <div class="save-actions-bar">
@@ -1952,11 +1952,12 @@ function renderSelectedContact(contact) {
             <span>🗣️</span>
             <strong>Guion Oficial de Llamadas &bull; ProCohesión GIZ</strong>
           </div>
-          <span class="recency-pill">⏱️ 4 a 5 min</span>
+          <span class="recency-pill">⏱️ Duración: 4 a 5 min</span>
         </div>
 
-        <!-- Pasos Principales de la Conversación -->
+        <!-- Pasos Principales de la Conversación (Alineación Perfecta) -->
         <div class="script-steps-list">
+          <!-- Momento 1: Verificación de Identidad -->
           <div class="script-step-item">
             <span class="step-num-badge">1. Identidad</span>
             <div class="script-step-text">
@@ -1964,6 +1965,7 @@ function renderSelectedContact(contact) {
             </div>
           </div>
 
+          <!-- Momento 2: Presentación Institucional -->
           <div class="script-step-item">
             <span class="step-num-badge">2. Presentación</span>
             <div class="script-step-text">
@@ -1971,6 +1973,7 @@ function renderSelectedContact(contact) {
             </div>
           </div>
 
+          <!-- Momento 3: Motivo del Contacto -->
           <div class="script-step-item">
             <span class="step-num-badge">3. Motivo</span>
             <div class="script-step-text">
@@ -1978,6 +1981,7 @@ function renderSelectedContact(contact) {
             </div>
           </div>
 
+          <!-- Momento 4: Garantías Éticas y Duración -->
           <div class="script-step-item">
             <span class="step-num-badge">4. Ética y tiempo</span>
             <div class="script-step-text">
