@@ -1110,9 +1110,9 @@ function loginScreen() {
     <div class="login-page-clean">
       <div class="login-card-simple">
         <div class="login-header-simple">
-          <img class="login-logo-round" src="/logo-icon.svg" alt="Clima Social" />
-          <h1>Clima Social</h1>
-          <p class="login-sub-text">Centro de Gestión &bull; Encuesta GIZ</p>
+          <img class="login-brand-logo" src="/logo-clima-social-official.png" alt="Clima Social" />
+          <h1 class="login-tool-title">Sistema de Gestión Call Center</h1>
+          <p class="login-sub-text">Monitoreo Telefónico &bull; Encuesta GIZ ProCohesión</p>
         </div>
 
         <form id="login-form" class="login-form-simple">
@@ -1335,10 +1335,10 @@ function operatorSidebar() {
   return `
     <div class="brand">
       <div class="brand-header-simple">
-        <img class="brand-logo-round" src="/logo-icon.svg" alt="Clima Social" />
+        <img class="brand-logo-round" src="/logo-icon-official.png" alt="Clima Social" />
         <div class="brand-text-simple">
           <strong>Clima Social</strong>
-          <span class="brand-sub-discreet">Encuesta GIZ</span>
+          <span class="brand-sub-discreet">Call Center GIZ</span>
         </div>
       </div>
     </div>
@@ -1391,10 +1391,10 @@ function supervisorSidebar() {
   return `
     <div class="brand">
       <div class="brand-header-simple">
-        <img class="brand-logo-round" src="/logo-icon.svg" alt="Clima Social" />
+        <img class="brand-logo-round" src="/logo-icon-official.png" alt="Clima Social" />
         <div class="brand-text-simple">
           <strong>Clima Social</strong>
-          <span class="brand-sub-discreet">Encuesta GIZ</span>
+          <span class="brand-sub-discreet">Call Center GIZ</span>
         </div>
       </div>
     </div>
