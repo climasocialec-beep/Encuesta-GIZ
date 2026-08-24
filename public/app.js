@@ -1135,6 +1135,11 @@ function loginScreen() {
           <span class="live-dot"></span>
           <span>${isSupabase ? 'Conectado a Supabase' : 'Modo demo local'}</span>
         </div>
+
+        <div class="login-tech-signature">
+          <img src="/logo-equipo-tecnico-horizontal.svg" alt="Clima Social · Equipo Técnico" class="login-tech-logo" />
+          <p>Desarrollo & Soporte por el <strong>Equipo Técnico de Clima Social</strong></p>
+        </div>
       </div>
     </div>
   `;
@@ -1374,6 +1379,10 @@ function operatorSidebar() {
         <span class="user-menu-symbol">•••</span>
       </div>
       <div class="secure-note"><span>🛡️</span> Sistema protegido</div>
+      <div class="tech-signature-sidebar">
+        <img src="/logo-equipo-tecnico-dark.png" alt="Clima Social · Equipo Técnico" class="tech-signature-sidebar-logo" />
+        <span class="tech-signature-sidebar-caption">Desarrollo & Cartografía</span>
+      </div>
     </div>
   `;
 }
@@ -1409,13 +1418,13 @@ function supervisorSidebar() {
         <span class="nav-icon">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
         </span>
-        <span>Jornadas</span>
+        <span>Control de jornadas</span>
       </button>
       <button class="nav-item ${activeView === 'history' ? 'active' : ''}" data-view="history">
         <span class="nav-icon">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/><path d="M12 7v5l4 2"/></svg>
         </span>
-        <span>Historial</span>
+        <span>Historial global</span>
       </button>
       <button class="nav-item ${activeView === 'import' ? 'active' : ''}" id="import-nav" data-view="import" onclick="event.stopPropagation(); openImportView()">
         <span class="nav-icon">
@@ -1444,6 +1453,10 @@ function supervisorSidebar() {
         <span class="user-menu-symbol">•••</span>
       </div>
       <div class="secure-note"><span>🛡️</span> Datos protegidos y auditados</div>
+      <div class="tech-signature-sidebar">
+        <img src="/logo-equipo-tecnico-dark.png" alt="Clima Social · Equipo Técnico" class="tech-signature-sidebar-logo" />
+        <span class="tech-signature-sidebar-caption">Desarrollo & Cartografía</span>
+      </div>
     </div>
   `;
 }
@@ -1673,6 +1686,19 @@ function renderSupervisorDashboard() {
       ${renderFunnelChart()}
       ${renderHourlyChart()}
     </section>
+
+    <footer class="system-footer-signature">
+      <div class="system-footer-content">
+        <img src="/logo-equipo-tecnico-horizontal.svg" alt="Clima Social · Equipo Técnico" class="system-footer-logo" />
+        <div class="system-footer-text">
+          <strong>Sistema de Monitoreo Telefónico & Evaluación de Campo</strong>
+          <span>Desarrollo de Software, Procesamiento de Datos & Cartografía por el <strong>Equipo Técnico de Clima Social</strong> &bull; Programa ProCohesión GIZ</span>
+        </div>
+      </div>
+      <div class="system-footer-meta">
+        <span class="footer-badge">v2.4 &bull; 2026</span>
+      </div>
+    </footer>
   `;
 }
 

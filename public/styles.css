@@ -3283,3 +3283,127 @@ h1 {
 
 
 
+
+
+/* --------------------------------------------------------------------------
+   TECHNICAL TEAM SIGNATURES & BRANDING
+   -------------------------------------------------------------------------- */
+
+/* 1. Sidebar Signature */
+.tech-signature-sidebar {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 10px 8px 6px;
+  margin-top: 4px;
+  background: rgba(0, 0, 0, 0.25);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: var(--radius-sm);
+  text-align: center;
+}
+
+.tech-signature-sidebar-logo {
+  max-width: 135px;
+  height: auto;
+  object-fit: contain;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
+}
+
+.tech-signature-sidebar-caption {
+  font-family: var(--font-mono);
+  font-size: 9.5px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #a79bb5;
+}
+
+/* 2. Login Screen Signature */
+.login-tech-signature {
+  margin-top: 24px;
+  padding-top: 18px;
+  border-top: 1px solid var(--border-subtle);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.login-tech-logo {
+  max-width: 170px;
+  height: auto;
+  object-fit: contain;
+}
+
+.login-tech-signature p {
+  font-size: 11px;
+  color: var(--text-muted);
+  margin: 0;
+  line-height: 1.35;
+}
+
+.login-tech-signature strong {
+  color: var(--cs-plum);
+}
+
+/* 3. System Footer Signature (Dashboard / Reports) */
+.system-footer-signature {
+  margin-top: 32px;
+  padding: 16px 20px;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-sm);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.system-footer-content {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+
+.system-footer-logo {
+  max-width: 150px;
+  height: auto;
+  object-fit: contain;
+}
+
+.system-footer-text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.system-footer-text strong {
+  font-size: 12.5px;
+  font-weight: 800;
+  color: var(--text-main);
+}
+
+.system-footer-text span {
+  font-size: 11.5px;
+  color: var(--text-muted);
+}
+
+.system-footer-meta {
+  display: flex;
+  align-items: center;
+}
+
+.footer-badge {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 700;
+  background: var(--bg-canvas);
+  color: var(--text-soft);
+  padding: 4px 10px;
+  border-radius: 9999px;
+  border: 1px solid var(--border-medium);
+}
