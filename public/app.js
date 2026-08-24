@@ -1138,7 +1138,6 @@ function loginScreen() {
 
         <div class="login-tech-signature">
           <img src="/logo-equipo-tecnico-horizontal.svg" alt="Clima Social · Equipo Técnico" class="login-tech-logo" />
-          <p>Procesamiento de datos & cartografía por el <strong>Equipo Técnico de Clima Social</strong></p>
         </div>
       </div>
     </div>
