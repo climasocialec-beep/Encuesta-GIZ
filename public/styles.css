@@ -2627,24 +2627,50 @@ h1 {
 }
 
 .login-header-simple {
-  margin-bottom: 24px;
+  margin-bottom: 28px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
 }
 
-.login-brand-logo {
-  max-width: 210px;
-  height: auto;
-  object-fit: contain;
-  margin: 0 auto 14px;
-  display: block;
+.login-badge-pill {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--cs-plum);
+  background: rgba(64, 0, 79, 0.08);
+  border: 1px solid rgba(64, 0, 79, 0.15);
+  padding: 3px 10px;
+  border-radius: 9999px;
+  display: inline-block;
 }
 
 .login-tool-title {
-  font-size: 20px;
-  font-weight: 800;
-  color: var(--text-main);
+  font-size: 23px;
+  font-weight: 900;
+  letter-spacing: -0.03em;
+  margin: 0;
+  line-height: 1.2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.title-gradient {
+  color: #1e112a;
+}
+
+.title-sub-gradient {
+  background: linear-gradient(135deg, var(--cs-coral) 0%, var(--cs-plum) 50%, #1b4965 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  font-size: 26px;
+  font-weight: 900;
   letter-spacing: -0.02em;
-  margin: 0 0 6px;
-  line-height: 1.25;
 }
 
 .login-sub-text {
@@ -2652,6 +2678,7 @@ h1 {
   color: var(--text-muted);
   font-weight: 600;
   line-height: 1.35;
+  margin: 0;
 }
 
 .login-form-simple {

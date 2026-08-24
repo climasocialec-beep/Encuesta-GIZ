@@ -1110,8 +1110,11 @@ function loginScreen() {
     <div class="login-page-clean">
       <div class="login-card-simple">
         <div class="login-header-simple">
-          <img class="login-brand-logo" src="/logo-clima-social-official.png" alt="Clima Social" />
-          <h1 class="login-tool-title">Sistema de Gestión Call Center</h1>
+          <span class="login-badge-pill">PLATAFORMA DE OPERACIÓN</span>
+          <h1 class="login-tool-title">
+            <span class="title-gradient">Sistema de Gestión</span>
+            <span class="title-sub-gradient">Call Center</span>
+          </h1>
           <p class="login-sub-text">Monitoreo Telefónico &bull; Encuesta GIZ ProCohesión</p>
         </div>
 
