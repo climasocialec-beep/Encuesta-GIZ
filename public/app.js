@@ -1138,7 +1138,7 @@ function loginScreen() {
 
         <div class="login-tech-signature">
           <img src="/logo-equipo-tecnico-horizontal.svg" alt="Clima Social · Equipo Técnico" class="login-tech-logo" />
-          <p>Desarrollo & Soporte por el <strong>Equipo Técnico de Clima Social</strong></p>
+          <p>Procesamiento de datos & cartografía por el <strong>Equipo Técnico de Clima Social</strong></p>
         </div>
       </div>
     </div>
@@ -1381,7 +1381,7 @@ function operatorSidebar() {
       <div class="secure-note"><span>🛡️</span> Sistema protegido</div>
       <div class="tech-signature-sidebar">
         <img src="/logo-equipo-tecnico-dark.png" alt="Clima Social · Equipo Técnico" class="tech-signature-sidebar-logo" />
-        <span class="tech-signature-sidebar-caption">Desarrollo & Cartografía</span>
+        <span class="tech-signature-sidebar-caption">Procesamiento de Datos & Cartografía</span>
       </div>
     </div>
   `;
@@ -1455,7 +1455,7 @@ function supervisorSidebar() {
       <div class="secure-note"><span>🛡️</span> Datos protegidos y auditados</div>
       <div class="tech-signature-sidebar">
         <img src="/logo-equipo-tecnico-dark.png" alt="Clima Social · Equipo Técnico" class="tech-signature-sidebar-logo" />
-        <span class="tech-signature-sidebar-caption">Desarrollo & Cartografía</span>
+        <span class="tech-signature-sidebar-caption">Procesamiento de Datos & Cartografía</span>
       </div>
     </div>
   `;
@@ -1692,7 +1692,7 @@ function renderSupervisorDashboard() {
         <img src="/logo-equipo-tecnico-horizontal.svg" alt="Clima Social · Equipo Técnico" class="system-footer-logo" />
         <div class="system-footer-text">
           <strong>Sistema de Monitoreo Telefónico & Evaluación de Campo</strong>
-          <span>Desarrollo de Software, Procesamiento de Datos & Cartografía por el <strong>Equipo Técnico de Clima Social</strong> &bull; Programa ProCohesión GIZ</span>
+          <span>Procesamiento de datos & cartografía por el <strong>Equipo Técnico de Clima Social</strong> &bull; Programa ProCohesión GIZ</span>
         </div>
       </div>
       <div class="system-footer-meta">
