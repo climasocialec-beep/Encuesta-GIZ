@@ -1691,7 +1691,7 @@ function renderSupervisorDashboard() {
         <img src="/logo-equipo-tecnico-horizontal.svg" alt="Clima Social · Equipo Técnico" class="system-footer-logo" />
         <div class="system-footer-text">
           <strong>Sistema de Monitoreo Telefónico & Evaluación de Campo</strong>
-          <span>Procesamiento de datos & cartografía por el <strong>Equipo Técnico de Clima Social</strong> &bull; Programa ProCohesión GIZ</span>
+          <span>Procesamiento de datos & cartografía &bull; Programa ProCohesión GIZ</span>
         </div>
       </div>
       <div class="system-footer-meta">
