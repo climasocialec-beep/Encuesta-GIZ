@@ -1383,7 +1383,6 @@ function operatorSidebar() {
       <div class="secure-note"><span>🛡️</span> Sistema protegido</div>
       <div class="tech-signature-sidebar">
         <img src="/logo-equipo-tecnico-dark.png" alt="Clima Social · Equipo Técnico" class="tech-signature-sidebar-logo" />
-        <span class="tech-signature-sidebar-caption">Procesamiento de Datos & Cartografía</span>
       </div>
     </div>
   `;
@@ -1457,7 +1456,6 @@ function supervisorSidebar() {
       <div class="secure-note"><span>🛡️</span> Datos protegidos y auditados</div>
       <div class="tech-signature-sidebar">
         <img src="/logo-equipo-tecnico-dark.png" alt="Clima Social · Equipo Técnico" class="tech-signature-sidebar-logo" />
-        <span class="tech-signature-sidebar-caption">Procesamiento de Datos & Cartografía</span>
       </div>
     </div>
   `;

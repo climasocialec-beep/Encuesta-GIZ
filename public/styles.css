@@ -3319,10 +3319,9 @@ h1 {
 /* 1. Sidebar Signature */
 .tech-signature-sidebar {
   display: flex;
-  flex-direction: column;
   align-items: center;
-  gap: 4px;
-  padding: 10px 8px 6px;
+  justify-content: center;
+  padding: 8px 12px;
   margin-top: 4px;
   background: rgba(0, 0, 0, 0.25);
   border: 1px solid rgba(255, 255, 255, 0.08);
@@ -3331,19 +3330,10 @@ h1 {
 }
 
 .tech-signature-sidebar-logo {
-  max-width: 135px;
+  max-width: 140px;
   height: auto;
   object-fit: contain;
   filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
-}
-
-.tech-signature-sidebar-caption {
-  font-family: var(--font-mono);
-  font-size: 9.5px;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-  color: #a79bb5;
 }
 
 /* 2. Login Screen Signature */
