@@ -351,154 +351,588 @@ function normalizePhones(value) {
   return { primary, others: unique.filter(phone => phone !== primary) };
 }
 
+const DATA_DIR = path.join(__dirname, 'data');
+const STATE_FILE = path.join(DATA_DIR, 'campaign_state.json');
+const INITIAL_CONTACTS_FILE = path.join(DATA_DIR, 'initial_contacts.json');
+
+if (!fs.existsSync(DATA_DIR)) fs.mkdirSync(DATA_DIR, { recursive: true });
+
+let serverState = null;
+
+function loadServerState() {
+  if (fs.existsSync(STATE_FILE)) {
+    try {
+      const data = JSON.parse(fs.readFileSync(STATE_FILE, 'utf8'));
+      if (data && Array.isArray(data.contacts) && data.contacts.length > 0) {
+        serverState = data;
+        return serverState;
+      }
+    } catch (e) {
+      console.warn('Error reading campaign_state.json:', e.message);
+    }
+  }
+
+  let baseContacts = [];
+  if (fs.existsSync(INITIAL_CONTACTS_FILE)) {
+    try {
+      baseContacts = JSON.parse(fs.readFileSync(INITIAL_CONTACTS_FILE, 'utf8'));
+    } catch (e) {
+      console.warn('Error reading initial_contacts.json:', e.message);
+    }
+  }
+
+  serverState = {
+    version: 3,
+    campaign: 'GIZ · OE1 - ProCohesión (Fase III · 2026)',
+    contacts: baseContacts,
+    history: [],
+    shifts: []
+  };
+
+  saveServerState();
+  return serverState;
+}
+
+function saveServerState() {
+  if (!serverState) return;
+  try {
+    fs.writeFileSync(STATE_FILE, JSON.stringify(serverState, null, 2), 'utf8');
+  } catch (e) {
+    console.error('Error saving campaign_state.json:', e.message);
+  }
+}
+
+// Inicialización de la base general al encender el servidor
+loadServerState();
+
+// API REST: Obtener estado centralizado
+app.get('/api/state', (_req, res) => {
+  if (!serverState) loadServerState();
+  res.json({
+    version: serverState.version,
+    campaign: serverState.campaign,
+    contacts: serverState.contacts,
+    history: serverState.history,
+    shifts: serverState.shifts
+  });
+});
+
+// API REST: Guardar intento de llamada en cascada en la base general
+app.post('/api/calls/save', (req, res) => {
+  if (!serverState) loadServerState();
+  const { contactId, outcome, notes, rescheduledFor, operator, operatorInitials } = req.body;
+  if (!contactId || !outcome) return res.status(400).json({ error: 'Faltan parámetros requeridos (contactId, outcome)' });
+
+  const contact = serverState.contacts.find(c => c.id === contactId);
+  if (!contact) return res.status(404).json({ error: 'Contacto no encontrado' });
+
+  const MAX_ATTEMPTS = 3;
+  contact.attempts = (Number(contact.attempts) || 0) + 1;
+  const now = new Date();
+  const dateFormatted = new Intl.DateTimeFormat('es-EC', { dateStyle: 'short', timeStyle: 'short', timeZone: 'America/Guayaquil' }).format(now);
+  const nowIso = now.toISOString();
+
+  contact.last = dateFormatted;
+  contact.lastAttemptAt = nowIso;
+  if (operatorInitials) contact.operator = operatorInitials;
+  contact.rescheduledFor = rescheduledFor || '';
+  contact.notes = notes || '';
+
+  const shouldDiscard = contact.attempts >= MAX_ATTEMPTS && !['effective', 'wrong', 'refused'].includes(outcome);
+  contact.status = shouldDiscard ? 'discarded' : outcome;
+  contact.pendingReason = outcome === 'pending' ? 'rescheduled' : outcome === 'no-answer' ? 'no_answer' : null;
+
+  const historyItem = {
+    id: contact.id,
+    contact: contact.name,
+    phone: contact.phone,
+    courseCode: contact.courseCode || '',
+    courseName: contact.courseName || '',
+    organization: contact.organization || '',
+    canton: contact.canton || '',
+    provincia: contact.provincia || '',
+    result: outcome,
+    operator: operator || (operatorInitials === 'JC' ? 'Josselyn Carvajal' : operatorInitials === 'DO' ? 'Darwin Olivo' : 'Clima Social'),
+    operatorInitials: operatorInitials || contact.operator,
+    attempt: contact.attempts,
+    date: dateFormatted,
+    rawDate: nowIso,
+    notes: notes || '',
+    rescheduledFor: rescheduledFor || ''
+  };
+
+  serverState.history.unshift(historyItem);
+  saveServerState();
+
+  return res.json({ success: true, contact, historyItem });
+});
+
+// API REST: Iniciar jornada de operador en el servidor
+app.post('/api/shifts/start', (req, res) => {
+  if (!serverState) loadServerState();
+  const { username, operator, operatorId } = req.body;
+  const nowIso = new Date().toISOString();
+
+  serverState.shifts.forEach(shift => {
+    if ((shift.username === username || (operatorId && shift.operatorId === operatorId)) && !shift.endedAt) {
+      shift.endedAt = nowIso;
+    }
+  });
+
+  const newShift = {
+    id: `shift-${Date.now()}`,
+    operatorId: operatorId || username,
+    username: username,
+    operator: operator || username,
+    startedAt: nowIso,
+    endedAt: null
+  };
+
+  serverState.shifts.unshift(newShift);
+  saveServerState();
+
+  return res.json({ success: true, shift: newShift });
+});
+
+// API REST: Finalizar jornada de operador en el servidor
+app.post('/api/shifts/end', (req, res) => {
+  if (!serverState) loadServerState();
+  const { username, operatorId } = req.body;
+  const nowIso = new Date().toISOString();
+
+  let closedCount = 0;
+  serverState.shifts.forEach(shift => {
+    if ((shift.username === username || (operatorId && shift.operatorId === operatorId)) && !shift.endedAt) {
+      shift.endedAt = nowIso;
+      closedCount++;
+    }
+  });
+
+  saveServerState();
+  return res.json({ success: true, closedCount });
+});
+
+// API REST: Sincronización bidireccional cliente-servidor
+app.post('/api/sync', (req, res) => {
+  if (!serverState) loadServerState();
+  const clientContacts = Array.isArray(req.body.contacts) ? req.body.contacts : [];
+  const clientHistory = Array.isArray(req.body.history) ? req.body.history : [];
+
+  if (clientContacts.length > 0) {
+    const contactMap = new Map(serverState.contacts.map(c => [c.id, c]));
+    clientContacts.forEach(clientContact => {
+      const existing = contactMap.get(clientContact.id);
+      if (existing) {
+        if ((clientContact.attempts || 0) > (existing.attempts || 0)) {
+          Object.assign(existing, clientContact);
+        }
+      }
+    });
+  }
+
+  if (clientHistory.length > 0) {
+    const existingKeys = new Set(serverState.history.map(h => `${h.id}-${h.attempt}`));
+    clientHistory.forEach(item => {
+      const key = `${item.id}-${item.attempt}`;
+      if (!existingKeys.has(key)) {
+        serverState.history.push(item);
+        existingKeys.add(key);
+      }
+    });
+    serverState.history.sort((a, b) => new Date(b.rawDate || 0) - new Date(a.rawDate || 0));
+  }
+
+  saveServerState();
+  return res.json({
+    success: true,
+    contacts: serverState.contacts,
+    history: serverState.history,
+    shifts: serverState.shifts
+  });
+});
+
+// EXPORTACIÓN OFICIAL EXCEL GIZ PROCOHESIÓN (4 PESTAÑAS)
 app.post('/export/xlsx', async (req, res) => {
   if (req.get('x-app-role') !== 'supervisor') return res.status(403).json({ error: 'Solo el supervisor puede exportar información' });
   try {
-    const contacts = Array.isArray(req.body.contacts) ? req.body.contacts : [];
-    const history = Array.isArray(req.body.history) ? req.body.history : [];
+    if (!serverState) loadServerState();
+
+    // Preferir la base del servidor; si el cliente envía datos más actualizados, sincronizarlos
+    const clientContacts = Array.isArray(req.body.contacts) ? req.body.contacts : [];
+    const clientHistory = Array.isArray(req.body.history) ? req.body.history : [];
+
+    let contacts = serverState.contacts.length ? serverState.contacts : clientContacts;
+    let history = serverState.history.length ? serverState.history : clientHistory;
+
+    // Si el cliente tiene contactos más recientes, los tomamos en cuenta
+    if (clientContacts.length > 0 && contacts !== clientContacts) {
+      const map = new Map(contacts.map(c => [c.id, c]));
+      clientContacts.forEach(c => {
+        const s = map.get(c.id);
+        if (s && (c.attempts || 0) > (s.attempts || 0)) Object.assign(s, c);
+      });
+    }
+
     const workbook = new ExcelJS.Workbook();
     workbook.creator = 'Clima Social';
     workbook.created = new Date();
     workbook.modified = new Date();
 
     const colors = {
-      indigo: '454A91',
-      terracotta: 'B23A2E',
-      green: '2F6B45',
-      mustard: 'C9862E',
-      cream: 'F6F1E7',
-      soft: 'EFE8DA',
+      purple: '400054',       // Morado Clima Social principal
+      purpleDark: '2A0038',
+      purpleLight: 'F5EEF8',
       text: '241E15',
-      muted: '7A6D5C',
-      white: 'FFFFFF'
+      muted: '64748B',
+      white: 'FFFFFF',
+      stripe: 'FBF9F6',
+      border: 'E2E8F0',
+      greenBg: 'ECFDF5',
+      greenText: '065F46',
+      amberBg: 'FFFBEB',
+      amberText: '92400E',
+      grayBg: 'F1F5F9',
+      grayText: '475569',
+      redBg: 'FEF2F2',
+      redText: '991B1B'
     };
-    const statusLabels = {
-      pending: 'Pendiente',
-      callback: 'Pendiente / reintento',
-      effective: 'Efectiva',
-      'no-answer': 'No contesta',
-      no_answer: 'No contesta',
-      wrong: 'Número incorrecto',
-      wrong_number: 'Número incorrecto',
-      refused: 'Rechazó la encuesta',
-      discarded: 'Descartado',
-      'not-managed': 'No gestionado',
-      not_managed: 'No gestionado'
-    };
-    const formatEcuadorDate = value => new Intl.DateTimeFormat('es-EC', { dateStyle: 'short', timeStyle: 'short', timeZone: 'America/Guayaquil' }).format(new Date(value));
-    const font = { name: 'Poppins', size: 11, color: { argb: colors.text } };
-    const headerFont = { name: 'Poppins', size: 11, bold: true, color: { argb: colors.white } };
-    const logoPath = path.join(__dirname, 'public', 'logo-icon.png');
 
-    const summary = workbook.addWorksheet('Resumen');
-    summary.properties.defaultRowHeight = 19;
-    summary.getColumn(1).width = 3;
-    summary.getColumn(2).width = 12;
-    summary.getColumn(3).width = 10;
-    summary.getColumn(4).width = 34;
-    summary.getColumn(5).width = 20;
-    summary.getColumn(6).width = 20;
-    summary.getColumn(7).width = 20;
-    summary.getRow(2).height = 34;
-    summary.getRow(3).height = 22;
-    summary.mergeCells('D2:G2');
-    summary.getCell('D2').value = 'Evaluación de Cursos y Capacitaciones · Clima Social GIZ';
-    summary.getCell('D2').font = { name: 'Poppins', size: 14, bold: true, color: { argb: colors.indigo } };
-    summary.getCell('D2').alignment = { vertical: 'middle', wrapText: false };
-    summary.mergeCells('D3:G3');
-    summary.getCell('D3').value = 'Reporte oficial de gestión y seguimiento de llamadas telefónicas';
-    summary.getCell('D3').font = { name: 'Poppins', size: 10, italic: true, color: { argb: colors.muted } };
-    summary.getCell('D3').alignment = { vertical: 'middle' };
+    const statusLabels = {
+      pending: 'Reprogramada / Pendiente',
+      callback: 'Reprogramada / Pendiente',
+      effective: 'Encuesta Completada',
+      'no-answer': 'No Contesta',
+      no_answer: 'No Contesta',
+      wrong: 'Número Incorrecto',
+      wrong_number: 'Número Incorrecto',
+      refused: 'Rechazó Participar',
+      discarded: 'Descartado (3 intentos)',
+      'not-managed': 'Sin Gestión',
+      not_managed: 'Sin Gestión'
+    };
+
+    const formatEcuadorDate = value => new Intl.DateTimeFormat('es-EC', { dateStyle: 'short', timeStyle: 'short', timeZone: 'America/Guayaquil' }).format(new Date(value));
+    const font = { name: 'Poppins', size: 10.5, color: { argb: colors.text } };
+    const headerFont = { name: 'Poppins', size: 10.5, bold: true, color: { argb: colors.white } };
+    const titleFont = { name: 'Poppins', size: 13, bold: true, color: { argb: colors.purple } };
+    const subFont = { name: 'Poppins', size: 10, italic: true, color: { argb: colors.muted } };
+    const borderThin = {
+      top: { style: 'thin', color: { argb: colors.border } },
+      bottom: { style: 'thin', color: { argb: colors.border } },
+      left: { style: 'thin', color: { argb: colors.border } },
+      right: { style: 'thin', color: { argb: colors.border } }
+    };
+
+    // ==========================================
+    // HOJA 1: RESUMEN EJECUTIVO
+    // ==========================================
+    const s1 = workbook.addWorksheet('Resumen Ejecutivo');
+    s1.properties.defaultRowHeight = 20;
+    s1.getColumn(1).width = 4;
+    s1.getColumn(2).width = 30;
+    s1.getColumn(3).width = 16;
+    s1.getColumn(4).width = 6;
+    s1.getColumn(5).width = 24;
+    s1.getColumn(6).width = 16;
+    s1.getColumn(7).width = 16;
+    s1.getColumn(8).width = 16;
+
+    s1.mergeCells('B2:H2');
+    s1.getCell('B2').value = 'CLIMA SOCIAL · MONITOREO CALL CENTER GIZ PROCOHESIÓN';
+    s1.getCell('B2').font = titleFont;
+    s1.getCell('B2').alignment = { vertical: 'middle' };
+
+    s1.mergeCells('B3:H3');
+    s1.getCell('B3').value = 'Evaluación Telefónica de Impacto de Cursos y Capacitaciones · Manabí (Fase III · 2026)';
+    s1.getCell('B3').font = subFont;
+    s1.getCell('B3').alignment = { vertical: 'middle' };
+
+    const logoPath = path.join(__dirname, 'public', 'logo-clima-social-official.png');
     if (fs.existsSync(logoPath)) {
-      const imageId = workbook.addImage({ filename: logoPath, extension: 'png' });
-      summary.addImage(imageId, { tl: { col: 1, row: 1 }, ext: { width: 64, height: 64 } });
+      try {
+        const imageId = workbook.addImage({ filename: logoPath, extension: 'png' });
+        s1.addImage(imageId, { tl: { col: 1, row: 1 }, ext: { width: 140, height: 42 } });
+      } catch (e) {}
     }
-    const managed = contacts.filter(contact => Number(contact.attempts) > 0).length;
-    const effective = contacts.filter(contact => contact.status === 'effective').length;
-    const pending = contacts.filter(contact => contact.status === 'pending').length;
-    const rejected = contacts.filter(contact => contact.status === 'refused').length;
-    const summaryRows = [
-      ['Indicador', 'Valor'],
-      ['Total de contactos', contacts.length],
-      ['Contactos gestionados', managed],
-      ['Encuestas efectivas', effective],
-      ['Pendientes', pending],
-      ['Rechazaron la encuesta', rejected],
-      ['Bases incluidas', [...new Set(contacts.map(contact => contact.baseName).filter(Boolean))].join(' | ') || 'Sin especificar'],
-      ['Fecha de exportación', formatEcuadorDate(new Date())]
+
+    const totalContacts = contacts.length;
+    const managedContacts = contacts.filter(c => Number(c.attempts) > 0).length;
+    const effectiveContacts = contacts.filter(c => c.status === 'effective').length;
+    const pendingContacts = contacts.filter(c => c.status === 'pending' || c.status === 'callback').length;
+    const noAnswerContacts = contacts.filter(c => c.status === 'no-answer' || c.status === 'no_answer').length;
+    const refusedContacts = contacts.filter(c => c.status === 'refused').length;
+    const wrongContacts = contacts.filter(c => c.status === 'wrong' || c.status === 'wrong_number').length;
+    const discardedContacts = contacts.filter(c => c.status === 'discarded').length;
+
+    // Tabla 1: Indicadores Globales
+    s1.getCell('B5').value = 'Indicadores Globales de Campaña';
+    s1.getCell('B5').font = { name: 'Poppins', size: 11, bold: true, color: { argb: colors.purple } };
+
+    const kpis = [
+      ['Total de contactos cargados', totalContacts],
+      ['Contactos gestionados (al menos 1 intento)', managedContacts],
+      ['Encuestas completadas (Efectivas)', effectiveContacts],
+      ['Citas reprogramadas / Reintento', pendingContacts],
+      ['No contesta', noAnswerContacts],
+      ['Rechazaron participar', refusedContacts],
+      ['Números equivocados / incorrectos', wrongContacts],
+      ['Descartados (3 intentos agotados)', discardedContacts],
+      ['% Cobertura de la base', totalContacts ? `${((managedContacts / totalContacts) * 100).toFixed(1)}%` : '0%'],
+      ['% Tasa de efectividad sobre gestionados', managedContacts ? `${((effectiveContacts / managedContacts) * 100).toFixed(1)}%` : '0%'],
+      ['Fecha y hora de corte', formatEcuadorDate(new Date())]
     ];
-    summary.getCell('B5').value = 'Resumen de campaña';
-    summary.getCell('B5').font = { name: 'Poppins', size: 12, bold: true, color: { argb: colors.text } };
-    summaryRows.forEach((row, index) => {
-      const excelRow = 6 + index;
-      summary.getCell(`B${excelRow}`).value = row[0];
-      summary.getCell(`C${excelRow}`).value = row[1];
-      summary.getCell(`B${excelRow}`).font = index === 0 ? headerFont : font;
-      summary.getCell(`C${excelRow}`).font = index === 0 ? headerFont : { ...font, bold: true };
-      if (index === 0) {
-        summary.getCell(`B${excelRow}`).fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: colors.indigo } };
-        summary.getCell(`C${excelRow}`).fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: colors.indigo } };
-      } else if (index % 2 === 0) {
-        summary.getCell(`B${excelRow}`).fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: colors.cream } };
-        summary.getCell(`C${excelRow}`).fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: colors.cream } };
+
+    s1.getCell('B6').value = 'Métrica';
+    s1.getCell('C6').value = 'Resultado';
+    [s1.getCell('B6'), s1.getCell('C6')].forEach(c => {
+      c.font = headerFont;
+      c.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: colors.purple } };
+      c.alignment = { vertical: 'middle', horizontal: 'center' };
+    });
+
+    kpis.forEach((row, idx) => {
+      const r = 7 + idx;
+      s1.getCell(`B${r}`).value = row[0];
+      s1.getCell(`C${r}`).value = row[1];
+      s1.getCell(`B${r}`).font = font;
+      s1.getCell(`C${r}`).font = { ...font, bold: true };
+      s1.getCell(`C${r}`).alignment = { horizontal: 'center' };
+      s1.getCell(`B${r}`).border = borderThin;
+      s1.getCell(`C${r}`).border = borderThin;
+      if (idx % 2 === 1) {
+        s1.getCell(`B${r}`).fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: colors.stripe } };
+        s1.getCell(`C${r}`).fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: colors.stripe } };
       }
     });
-    summary.views = [{ state: 'frozen', ySplit: 5 }];
-    summary.pageSetup = { fitToPage: true, fitToWidth: 1, fitToHeight: 0, orientation: 'landscape', paperSize: 9 };
 
-    const contactsSheet = workbook.addWorksheet('Contactos');
-    const contactHeaders = ['Identificador', 'Nombre', 'Teléfono', 'Parroquia', 'Ubicación', 'Base', 'Operadora', 'Estado', 'Intentos', 'Última gestión', 'Correo sorteo'];
-    contactsSheet.addRow(contactHeaders);
-    contacts.forEach(contact => contactsSheet.addRow([
-      contact.id,
-      contact.name,
-      contact.phone,
-      contact.parish,
-      contact.location,
-      contact.baseName || 'Sin especificar',
-      contact.operator || 'Sin asignar',
-      statusLabels[contact.status] || contact.status,
-      contact.attempts || 0,
-      contact.last,
-      contact.raffleEmail || ''
-    ]));
-    styleTable(contactsSheet, contactHeaders.length, colors, font, headerFont);
-    contactsSheet.autoFilter = { from: 'A1', to: `K${Math.max(1, contactsSheet.rowCount)}` };
+    // Tabla 2: Desglose por Operador
+    s1.getCell('E5').value = 'Rendimiento por Operador Call Center';
+    s1.getCell('E5').font = { name: 'Poppins', size: 11, bold: true, color: { argb: colors.purple } };
 
-    const historySheet = workbook.addWorksheet('Gestiones');
-    const historyHeaders = ['Contacto', 'Identificador', 'Base', 'Operadora', 'Intentos', 'Estado actual', 'Historial de gestiones', 'Correo sorteo'];
-    historySheet.addRow(historyHeaders);
-    const contactById = new Map(contacts.map(contact => [contact.id, contact]));
-    const groupedHistory = new Map();
-    history.forEach(item => {
-      const key = item.id || item.contact;
-      if (!groupedHistory.has(key)) groupedHistory.set(key, []);
-      groupedHistory.get(key).push(item);
+    const opHeaders = ['Operador/a', 'Asignados', 'Gestionados', 'Efectivas'];
+    ['E6', 'F6', 'G6', 'H6'].forEach((cell, i) => {
+      s1.getCell(cell).value = opHeaders[i];
+      s1.getCell(cell).font = headerFont;
+      s1.getCell(cell).fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: colors.purple } };
+      s1.getCell(cell).alignment = { vertical: 'middle', horizontal: 'center' };
     });
-    groupedHistory.forEach(items => {
-      const ordered = items.slice().sort((a, b) => Number(a.attempt || 0) - Number(b.attempt || 0));
-      const first = ordered[0];
-      const contact = contactById.get(first.id) || {};
-      const details = ordered.map(item => `#${item.attempt || '-'} ${statusLabels[item.result] || item.result} · ${item.date || 'Sin fecha'}${item.notes ? ` · ${item.notes}` : ''}`).join(' | ');
-      historySheet.addRow([
-        contact.name || first.contact,
-        contact.id || first.id,
-        contact.baseName || 'Sin especificar',
-        contact.operator || ordered[ordered.length - 1].operator || 'Sin asignar',
-        contact.attempts || ordered.length,
-        statusLabels[contact.status] || contact.status || statusLabels[first.result] || first.result,
-        details,
-        contact.raffleEmail || ordered.find(item => item.raffleEmail)?.raffleEmail || ''
+
+    const jcContacts = contacts.filter(c => c.operator === 'JC');
+    const doContacts = contacts.filter(c => c.operator === 'DO');
+
+    const opRows = [
+      ['Josselyn Carvajal (JC)', jcContacts.length, jcContacts.filter(c => c.attempts > 0).length, jcContacts.filter(c => c.status === 'effective').length],
+      ['Darwin Olivo (DO)', doContacts.length, doContacts.filter(c => c.attempts > 0).length, doContacts.filter(c => c.status === 'effective').length],
+      ['Total Equipo', contacts.length, managedContacts, effectiveContacts]
+    ];
+
+    opRows.forEach((row, idx) => {
+      const r = 7 + idx;
+      ['E', 'F', 'G', 'H'].forEach((col, cIdx) => {
+        const cell = s1.getCell(`${col}${r}`);
+        cell.value = row[cIdx];
+        cell.font = (idx === 2) ? { ...font, bold: true } : font;
+        cell.border = borderThin;
+        if (cIdx > 0) cell.alignment = { horizontal: 'center' };
+        if (idx === 2) cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: colors.purpleLight } };
+        else if (idx % 2 === 1) cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: colors.stripe } };
+      });
+    });
+
+    // ==========================================
+    // HOJA 2: REGISTRO DE INTENTOS (AUDIT LOG)
+    // ==========================================
+    const s2 = workbook.addWorksheet('Registro de Intentos');
+    const h2 = ['N°', 'ID CONTACTO', 'PARTICIPANTE', 'TELÉFONO', 'CURSO', 'ENTIDAD CAPACITADORA', 'CANTÓN', 'OPERADOR/A', 'INTENTO', 'RESULTADO', 'FECHA Y HORA', 'CITA REPROGRAMADA', 'OBSERVACIONES'];
+    s2.addRow(h2);
+    s2.getRow(1).height = 28;
+    h2.forEach((_, idx) => {
+      const cell = s2.getRow(1).getCell(idx + 1);
+      cell.font = headerFont;
+      cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: colors.purple } };
+      cell.alignment = { vertical: 'middle', horizontal: 'center' };
+    });
+
+    const w2 = [8, 14, 30, 16, 26, 28, 16, 20, 10, 24, 20, 22, 40];
+    w2.forEach((width, idx) => s2.getColumn(idx + 1).width = width);
+
+    history.forEach((item, idx) => {
+      const row = s2.addRow([
+        idx + 1,
+        item.id || '',
+        item.contact || '',
+        item.phone || '',
+        item.courseName || '',
+        item.organization || '',
+        item.canton || '',
+        item.operator || '',
+        `Intento ${item.attempt || 1}`,
+        statusLabels[item.result] || item.result,
+        item.date || '',
+        item.rescheduledFor || '',
+        item.notes || ''
       ]);
+      row.height = 22;
+      row.eachCell((cell, colNumber) => {
+        cell.font = font;
+        cell.border = borderThin;
+        cell.alignment = { vertical: 'middle', wrapText: false };
+        if ([1, 2, 4, 7, 9, 10, 11, 12].includes(colNumber)) cell.alignment = { vertical: 'middle', horizontal: 'center' };
+        if (idx % 2 === 1) cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: colors.stripe } };
+      });
     });
-    styleTable(historySheet, historyHeaders.length, colors, font, headerFont);
-    historySheet.getColumn(1).width = 34;
-    historySheet.getColumn(3).width = 32;
-    historySheet.getColumn(6).width = 26;
-    historySheet.getColumn(7).width = 80;
-    historySheet.getColumn(8).width = 32;
-    historySheet.eachRow((row, rowNumber) => { if (rowNumber > 1) row.height = 42; });
-    historySheet.autoFilter = { from: 'A1', to: `H${Math.max(1, historySheet.rowCount)}` };
+    s2.views = [{ state: 'frozen', ySplit: 1 }];
+    s2.autoFilter = { from: 'A1', to: `M${Math.max(1, s2.rowCount)}` };
+
+    // ==========================================
+    // HOJA 3: BASE GENERAL (651 CONTACTOS)
+    // ==========================================
+    const s3 = workbook.addWorksheet('Base General (651)');
+    const h3 = ['ID CONTACTO', 'PARTICIPANTE', 'TELÉFONO', 'CURSO', 'ENTIDAD CAPACITADORA', 'CANTÓN', 'PROVINCIA', 'BARRIO', 'OPERADOR/A', 'ESTADO ACTUAL', 'INTENTOS', 'ÚLTIMA GESTIÓN', 'CITA REPROGRAMADA', 'OBSERVACIONES'];
+    s3.addRow(h3);
+    s3.getRow(1).height = 28;
+    h3.forEach((_, idx) => {
+      const cell = s3.getRow(1).getCell(idx + 1);
+      cell.font = headerFont;
+      cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: colors.purple } };
+      cell.alignment = { vertical: 'middle', horizontal: 'center' };
+    });
+
+    const w3 = [14, 32, 16, 26, 28, 16, 16, 18, 14, 24, 10, 20, 22, 35];
+    w3.forEach((width, idx) => s3.getColumn(idx + 1).width = width);
+
+    contacts.forEach((c, idx) => {
+      const opName = c.operator === 'JC' ? 'Josselyn C.' : c.operator === 'DO' ? 'Darwin O.' : (c.operator || 'Sin asignar');
+      const row = s3.addRow([
+        c.id,
+        c.name,
+        c.phone,
+        c.courseName,
+        c.organization,
+        c.canton,
+        c.provincia,
+        c.barrio || c.parish || '',
+        opName,
+        statusLabels[c.status] || c.status,
+        Number(c.attempts || 0),
+        c.last || 'Sin gestión',
+        c.rescheduledFor || '',
+        c.notes || ''
+      ]);
+      row.height = 21;
+      row.eachCell((cell, colNumber) => {
+        cell.font = font;
+        cell.border = borderThin;
+        cell.alignment = { vertical: 'middle', wrapText: false };
+        if ([1, 3, 6, 7, 9, 10, 11, 12, 13].includes(colNumber)) cell.alignment = { vertical: 'middle', horizontal: 'center' };
+        if (idx % 2 === 1) cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: colors.stripe } };
+      });
+    });
+    s3.views = [{ state: 'frozen', ySplit: 1 }];
+    s3.autoFilter = { from: 'A1', to: `N${Math.max(1, s3.rowCount)}` };
+
+    // ==========================================
+    // HOJA 4: RESUMEN POR CURSO (25 CURSOS)
+    // ==========================================
+    const s4 = workbook.addWorksheet('Resumen por Curso');
+    const h4 = ['CÓD', 'CURSO', 'ENTIDAD CAPACITADORA', 'CANTÓN', 'TOTAL ASIGNADOS', 'GESTIONADOS', 'EFECTIVAS', 'REPROGRAMADAS', 'NO CONTESTA', 'RECHAZOS', 'INCORRECTOS', 'PENDIENTES', '% AVANCE', '% EFECTIVIDAD'];
+    s4.addRow(h4);
+    s4.getRow(1).height = 28;
+    h4.forEach((_, idx) => {
+      const cell = s4.getRow(1).getCell(idx + 1);
+      cell.font = headerFont;
+      cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: colors.purple } };
+      cell.alignment = { vertical: 'middle', horizontal: 'center' };
+    });
+
+    const w4 = [8, 26, 28, 16, 16, 14, 14, 16, 14, 14, 14, 14, 14, 16];
+    w4.forEach((width, idx) => s4.getColumn(idx + 1).width = width);
+
+    // Agrupar por curso
+    const courseMap = new Map();
+    contacts.forEach(c => {
+      const key = c.courseCode || c.courseName;
+      if (!courseMap.has(key)) {
+        courseMap.set(key, {
+          code: c.courseCode || '',
+          name: c.courseName || '',
+          org: c.organization || '',
+          canton: c.canton || '',
+          total: 0,
+          managed: 0,
+          effective: 0,
+          rescheduled: 0,
+          noAnswer: 0,
+          refused: 0,
+          wrong: 0,
+          pending: 0
+        });
+      }
+      const item = courseMap.get(key);
+      item.total += 1;
+      if (Number(c.attempts) > 0) item.managed += 1;
+      if (c.status === 'effective') item.effective += 1;
+      else if (c.status === 'pending' || c.status === 'callback') item.rescheduled += 1;
+      else if (c.status === 'no-answer' || c.status === 'no_answer') item.noAnswer += 1;
+      else if (c.status === 'refused') item.refused += 1;
+      else if (c.status === 'wrong' || c.status === 'wrong_number') item.wrong += 1;
+      else item.pending += 1;
+    });
+
+    const sortedCourses = [...courseMap.values()].sort((a, b) => (a.code || '').localeCompare(b.code || ''));
+    sortedCourses.forEach((c, idx) => {
+      const pctAvance = c.total ? `${((c.managed / c.total) * 100).toFixed(1)}%` : '0%';
+      const pctEfectiva = c.managed ? `${((c.effective / c.managed) * 100).toFixed(1)}%` : '0%';
+      const row = s4.addRow([
+        c.code,
+        c.name,
+        c.org,
+        c.canton,
+        c.total,
+        c.managed,
+        c.effective,
+        c.rescheduled,
+        c.noAnswer,
+        c.refused,
+        c.wrong,
+        c.pending,
+        pctAvance,
+        pctEfectiva
+      ]);
+      row.height = 21;
+      row.eachCell((cell, colNumber) => {
+        cell.font = font;
+        cell.border = borderThin;
+        cell.alignment = { vertical: 'middle', wrapText: false };
+        if ([1, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14].includes(colNumber)) cell.alignment = { vertical: 'middle', horizontal: 'center' };
+        if (idx % 2 === 1) cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: colors.stripe } };
+      });
+    });
+
+    // Fila totalizadora
+    const sumTotal = sortedCourses.reduce((acc, c) => acc + c.total, 0);
+    const sumManaged = sortedCourses.reduce((acc, c) => acc + c.managed, 0);
+    const sumEffective = sortedCourses.reduce((acc, c) => acc + c.effective, 0);
+    const sumRescheduled = sortedCourses.reduce((acc, c) => acc + c.rescheduled, 0);
+    const sumNoAnswer = sortedCourses.reduce((acc, c) => acc + c.noAnswer, 0);
+    const sumRefused = sortedCourses.reduce((acc, c) => acc + c.refused, 0);
+    const sumWrong = sortedCourses.reduce((acc, c) => acc + c.wrong, 0);
+    const sumPending = sortedCourses.reduce((acc, c) => acc + c.pending, 0);
+    const totAvance = sumTotal ? `${((sumManaged / sumTotal) * 100).toFixed(1)}%` : '0%';
+    const totEfectiva = sumManaged ? `${((sumEffective / sumManaged) * 100).toFixed(1)}%` : '0%';
+
+    const totRow = s4.addRow(['TOTAL', '25 CURSOS COMPLETOS', 'TODAS LAS ENTIDADES', 'MANABÍ', sumTotal, sumManaged, sumEffective, sumRescheduled, sumNoAnswer, sumRefused, sumWrong, sumPending, totAvance, totEfectiva]);
+    totRow.height = 24;
+    totRow.eachCell((cell, colNumber) => {
+      cell.font = { ...font, bold: true };
+      cell.border = borderThin;
+      cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: colors.purpleLight } };
+      cell.alignment = { vertical: 'middle', wrapText: false };
+      if ([1, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14].includes(colNumber)) cell.alignment = { vertical: 'middle', horizontal: 'center' };
+    });
+
+    s4.views = [{ state: 'frozen', ySplit: 1 }];
+    s4.autoFilter = { from: 'A1', to: `N${Math.max(1, s4.rowCount)}` };
 
     const buffer = await workbook.xlsx.writeBuffer();
     res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
@@ -509,29 +943,6 @@ app.post('/export/xlsx', async (req, res) => {
     res.status(500).json({ error: 'No fue posible generar el Excel' });
   }
 });
-
-function styleTable(sheet, columnCount, colors, font, headerFont) {
-  const widths = [24, 32, 22, 26, 30, 34, 24, 26, 12, 26, 34];
-  for (let index = 1; index <= columnCount; index += 1) sheet.getColumn(index).width = widths[index - 1] || 24;
-  const header = sheet.getRow(1);
-  header.height = 30;
-  header.eachCell(cell => {
-    cell.font = headerFont;
-    cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: colors.indigo } };
-    cell.alignment = { vertical: 'middle', horizontal: 'left', wrapText: true };
-    cell.border = { bottom: { style: 'thin', color: { argb: colors.mustard } } };
-  });
-  sheet.eachRow((row, rowNumber) => {
-    if (rowNumber === 1) return;
-    row.eachCell(cell => {
-      cell.font = font;
-      cell.alignment = { vertical: 'middle', wrapText: true };
-      if (rowNumber % 2 === 0) cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: colors.cream } };
-      cell.border = { bottom: { style: 'hair', color: { argb: 'E2D9C9' } } };
-    });
-  });
-  sheet.views = [{ state: 'frozen', ySplit: 1 }];
-}
 
 app.post('/api/shifts/delete', async (req, res) => {
   if (req.get('x-app-role') !== 'supervisor') return res.status(403).json({ error: 'Solo el supervisor puede eliminar jornadas' });
