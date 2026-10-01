@@ -231,10 +231,12 @@
       "organization": "Fe y Alegría - CECAL Manta",
       "referencia": "Equipo Técnico Clima Social / GIZ",
       "baseName": "GIZ · OE1 - ProCohesión (Fase III · 2026)",
-      "status": "pending",
-      "attempts": 0,
-      "last": "Sin gestión",
-      "operator": "DO"
+      "status": "no-answer",
+      "attempts": 1,
+      "last": "1/10/26, 10:33 a. m.",
+      "operator": "DO",
+      "notes": "No contesta y se le envía mensaje whatsapp",
+      "lastAttemptAt": "2026-10-01T15:33:11.876Z"
     },
     {
       "id": "GIZ-010",
@@ -413,10 +415,12 @@
       "organization": "Fe y Alegría - CECAL Manta",
       "referencia": "Equipo Técnico Clima Social / GIZ",
       "baseName": "GIZ · OE1 - ProCohesión (Fase III · 2026)",
-      "status": "pending",
-      "attempts": 0,
-      "last": "Sin gestión",
-      "operator": "JC"
+      "status": "no-answer",
+      "attempts": 1,
+      "last": "1/10/26, 10:28 a. m.",
+      "operator": "JC",
+      "notes": "Dos llamadas realizadas, timbra y no contesta. Le envié mensaje por Whatsapp y me quedo atenta a la respuesta.",
+      "lastAttemptAt": "2026-10-01T15:28:50.819Z"
     },
     {
       "id": "GIZ-017",
@@ -439,10 +443,12 @@
       "organization": "Fe y Alegría - CECAL Manta",
       "referencia": "Equipo Técnico Clima Social / GIZ",
       "baseName": "GIZ · OE1 - ProCohesión (Fase III · 2026)",
-      "status": "pending",
-      "attempts": 0,
-      "last": "Sin gestión",
-      "operator": "JC"
+      "status": "no-answer",
+      "attempts": 1,
+      "last": "1/10/26, 10:33 a. m.",
+      "operator": "JC",
+      "notes": "Dos llamadas realizadas, se va directo al buzón. Le envié mensaje por Whatsapp y me quedo atenta a la respuesta.",
+      "lastAttemptAt": "2026-10-01T15:33:40.644Z"
     },
     {
       "id": "GIZ-018",
@@ -16929,6 +16935,78 @@
       "operator": "DO"
     }
   ],
-  "history": [],
-  "shifts": []
+  "history": [
+    {
+      "id": "GIZ-017",
+      "contact": "Norianys Saraquiel Piñero Remedio",
+      "phone": "0963131669",
+      "courseCode": "C02",
+      "courseName": "Auxiliar De Enfermería",
+      "organization": "Fe y Alegría - CECAL Manta",
+      "canton": "Manta",
+      "provincia": "Manabí",
+      "result": "no-answer",
+      "operator": "Josselyn Carvajal",
+      "operatorInitials": "JC",
+      "attempt": 1,
+      "date": "1/10/26, 10:33 a. m.",
+      "rawDate": "2026-10-01T15:33:40.644Z",
+      "notes": "Dos llamadas realizadas, se va directo al buzón. Le envié mensaje por Whatsapp y me quedo atenta a la respuesta.",
+      "rescheduledFor": ""
+    },
+    {
+      "id": "GIZ-009",
+      "contact": "Jorge Arturo Figueroa Macias",
+      "phone": "0997720325",
+      "courseCode": "C01",
+      "courseName": "Panadería 1",
+      "organization": "Fe y Alegría - CECAL Manta",
+      "canton": "Manta",
+      "provincia": "Manabí",
+      "result": "no-answer",
+      "operator": "Darwin Olivo",
+      "operatorInitials": "DO",
+      "attempt": 1,
+      "date": "1/10/26, 10:33 a. m.",
+      "rawDate": "2026-10-01T15:33:11.876Z",
+      "notes": "No contesta y se le envía mensaje whatsapp",
+      "rescheduledFor": ""
+    },
+    {
+      "id": "GIZ-016",
+      "contact": "Andrea Sofia Salazar Rodríguez",
+      "phone": "0979129982",
+      "courseCode": "C02",
+      "courseName": "Auxiliar De Enfermería",
+      "organization": "Fe y Alegría - CECAL Manta",
+      "canton": "Manta",
+      "provincia": "Manabí",
+      "result": "no-answer",
+      "operator": "Josselyn Carvajal",
+      "operatorInitials": "JC",
+      "attempt": 1,
+      "date": "1/10/26, 10:28 a. m.",
+      "rawDate": "2026-10-01T15:28:50.819Z",
+      "notes": "Dos llamadas realizadas, timbra y no contesta. Le envié mensaje por Whatsapp y me quedo atenta a la respuesta.",
+      "rescheduledFor": ""
+    }
+  ],
+  "shifts": [
+    {
+      "id": "shift-1790868473150",
+      "operatorId": "darwin",
+      "username": "darwin",
+      "operator": "Darwin Olivo",
+      "startedAt": "2026-10-01T15:27:53.150Z",
+      "endedAt": null
+    },
+    {
+      "id": "shift-1790867391659",
+      "operatorId": "josselyn",
+      "username": "josselyn",
+      "operator": "Josselyn Carvajal",
+      "startedAt": "2026-10-01T15:09:51.659Z",
+      "endedAt": null
+    }
+  ]
 }

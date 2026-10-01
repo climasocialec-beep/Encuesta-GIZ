@@ -19640,8 +19640,19 @@ window.syncStateFromServer = async function(silent = true) {
     });
 
     if (Array.isArray(serverData.history)) {
-      if (serverData.history.length !== (state.history || []).length || JSON.stringify(serverData.history[0]) !== JSON.stringify(state.history?.[0])) {
-        state.history = serverData.history;
+      const allHistoryMap = new Map();
+      (serverData.history || []).forEach(h => {
+        if (h && h.id) allHistoryMap.set(`${h.id}-${h.attempt}`, h);
+      });
+      (state.history || []).forEach(h => {
+        if (h && h.id && !allHistoryMap.has(`${h.id}-${h.attempt}`)) {
+          allHistoryMap.set(`${h.id}-${h.attempt}`, h);
+          changed = true;
+        }
+      });
+      const mergedHist = [...allHistoryMap.values()].sort((a, b) => new Date(b.rawDate || 0) - new Date(a.rawDate || 0));
+      if (mergedHist.length !== (state.history || []).length || JSON.stringify(mergedHist[0]) !== JSON.stringify(state.history?.[0])) {
+        state.history = mergedHist;
         changed = true;
       }
     }
