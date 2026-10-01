@@ -1,5 +1,5 @@
-const STORAGE_KEY = 'clima-social-giz-callcenter-v5';
-const DEMO_VERSION = 5;
+const STORAGE_KEY = 'clima-social-giz-callcenter-v6';
+const DEMO_VERSION = 6;
 const MAX_ATTEMPTS = 3;
 const SURVEY_URL = 'https://ee.kobotoolbox.org/x/TjO4VOdE';
 
@@ -17058,7 +17058,6 @@ function loginScreen() {
             <div class="user-quick-info">
               <span class="user-quick-role">Operadora Call Center</span>
               <div class="user-quick-name">Josselyn Carvajal</div>
-              <div class="user-quick-meta">326 contactos asignados &bull; Manabí</div>
             </div>
             <span class="user-quick-arrow">➜</span>
           </button>
@@ -17069,21 +17068,27 @@ function loginScreen() {
             <div class="user-quick-info">
               <span class="user-quick-role">Operador Call Center</span>
               <div class="user-quick-name">Darwin Olivo</div>
-              <div class="user-quick-meta">325 contactos asignados &bull; Manabí</div>
             </div>
             <span class="user-quick-arrow">➜</span>
           </button>
 
-          <!-- Supervisor Clima Social -->
-          <button type="button" class="user-quick-btn" onclick="doOneClickLogin('supervisor')">
-            <div class="user-quick-avatar avatar-cs">CS</div>
-            <div class="user-quick-info">
-              <span class="user-quick-role">Supervisión & Coordinación</span>
-              <div class="user-quick-name">Clima Social</div>
-              <div class="user-quick-meta">Monitoreo en vivo, control de cuotas y exportación</div>
+          <!-- Supervisor Clima Social (Protegido con contraseña Clima.2026) -->
+          <div class="supervisor-quick-wrap">
+            <button type="button" class="user-quick-btn" onclick="toggleSupervisorPassword()">
+              <div class="user-quick-avatar avatar-cs">CS</div>
+              <div class="user-quick-info">
+                <span class="user-quick-role">Supervisión & Coordinación</span>
+                <div class="user-quick-name">Clima Social</div>
+              </div>
+              <span class="user-quick-arrow" id="supervisor-arrow">🔒</span>
+            </button>
+            <div id="supervisor-pwd-box" class="supervisor-pwd-box" style="display:none;">
+              <div class="pwd-input-wrap">
+                <input type="password" id="supervisor-pass" placeholder="Ingresa contraseña" autocomplete="current-password" onkeydown="if(event.key==='Enter') submitSupervisorLogin()" />
+                <button type="button" class="pwd-submit-btn" onclick="submitSupervisorLogin()">Ingresar</button>
+              </div>
             </div>
-            <span class="user-quick-arrow">➜</span>
-          </button>
+          </div>
         </div>
 
         <div class="login-footer-simple">
@@ -17099,35 +17104,53 @@ function loginScreen() {
   `;
 }
 
+window.toggleSupervisorPassword = function() {
+  const box = document.getElementById('supervisor-pwd-box');
+  const arrow = document.getElementById('supervisor-arrow');
+  if (!box) return;
+  const isHidden = box.style.display === 'none';
+  box.style.display = isHidden ? 'block' : 'none';
+  if (arrow) arrow.textContent = isHidden ? '▼' : '🔒';
+  if (isHidden) {
+    const input = document.getElementById('supervisor-pass');
+    if (input) setTimeout(() => input.focus(), 80);
+  }
+};
+
+window.submitSupervisorLogin = function() {
+  const input = document.getElementById('supervisor-pass');
+  const val = (input?.value || '').trim();
+  if (val !== 'Clima.2026') {
+    showToast('Contraseña incorrecta');
+    if (input) {
+      input.style.borderColor = '#dc2626';
+      input.focus();
+      input.select();
+    }
+    return;
+  }
+  const user = appUsers.find(item => item.username === 'supervisor');
+  if (!user) return;
+  currentUser = user;
+  sessionStorage.setItem('giz-current-user', JSON.stringify(user));
+  activeView = 'dashboard';
+  selectedOutcome = '';
+  render();
+};
+
 window.doOneClickLogin = async function(username) {
+  if (username === 'supervisor') {
+    toggleSupervisorPassword();
+    return;
+  }
   const user = appUsers.find(item => item.username === username);
   if (!user) return;
-
-  if (backendMode === 'supabase' && supabaseClient) {
-    try {
-      showToast(`Ingresando como ${user.name}...`);
-      const password = user.role === 'supervisor' ? 'admin2026' : 'giz2026';
-      const { data, error } = await supabaseClient.auth.signInWithPassword({ email: user.authEmail, password });
-      if (!error && data?.session?.user) {
-        await setRemoteUser(data.session.user);
-        await loadRemoteState();
-        activeView = currentUser.role === 'operator' ? 'operator' : 'dashboard';
-        subscribeRemoteChanges();
-        selectedContactId = firstActionable(visibleContacts())?.id || null;
-        selectedOutcome = '';
-        render();
-        return;
-      }
-    } catch (e) {
-      console.warn('Supabase login fallback:', e.message);
-    }
-  }
 
   currentUser = user;
   sessionStorage.setItem('giz-current-user', JSON.stringify(user));
   const assigned = visibleContacts();
   selectedContactId = firstActionable(assigned)?.id || state.contacts[0]?.id;
-  activeView = user.role === 'operator' ? 'operator' : 'dashboard';
+  activeView = 'operator';
   selectedOutcome = '';
   render();
 };

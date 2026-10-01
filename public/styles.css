@@ -2785,6 +2785,65 @@ h1 {
   transform: translateX(4px);
 }
 
+.supervisor-quick-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.supervisor-pwd-box {
+  margin-top: 4px;
+  animation: fadeIn 0.2s ease;
+}
+
+.pwd-input-wrap {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.pwd-input-wrap input {
+  flex: 1;
+  padding: 11px 14px;
+  border: 1.5px solid #e7e5e4;
+  border-radius: 12px;
+  font-family: inherit;
+  font-size: 13px;
+  outline: none;
+  transition: all 0.2s ease;
+  background: #fafaf9;
+  color: #1c1917;
+}
+
+.pwd-input-wrap input:focus {
+  border-color: #400054;
+  background: #ffffff;
+  box-shadow: 0 0 0 3px rgba(64, 0, 84, 0.1);
+}
+
+.pwd-submit-btn {
+  padding: 11px 20px;
+  background: #400054;
+  color: #ffffff;
+  border: none;
+  border-radius: 12px;
+  font-family: inherit;
+  font-weight: 700;
+  font-size: 13px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.pwd-submit-btn:hover {
+  background: #2a0038;
+  transform: translateY(-1px);
+}
+
+.pwd-submit-btn:active {
+  transform: translateY(0);
+}
+
 .reschedule-box-clean {
   margin-top: 14px;
   padding: 12px 14px;
