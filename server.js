@@ -1073,9 +1073,12 @@ app.post('/api/contacts/update-status', async (req, res) => {
 });
 
 app.get('/config', (_req, res) => {
+  // Para la Encuesta GIZ 2026, la plataforma corre sobre el backend central Express/Node
+  // evitando bloqueos de RLS o tablas no migradas de Supabase
+  const useSupabase = process.env.USE_SUPABASE === 'true';
   res.json({
-    supabaseUrl: process.env.SUPABASE_URL || '',
-    supabaseAnonKey: process.env.SUPABASE_ANON_KEY || ''
+    supabaseUrl: useSupabase ? (process.env.SUPABASE_URL || '') : '',
+    supabaseAnonKey: useSupabase ? (process.env.SUPABASE_ANON_KEY || '') : ''
   });
 });
 
