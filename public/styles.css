@@ -526,21 +526,7 @@ a {
 }
 
 .sync-status {
-  display: flex;
-  align-items: center;
-  gap: 7px;
-  font-family: var(--font-mono);
-  font-size: 11px;
-  color: var(--text-muted);
-  background: var(--bg-surface);
-  padding: 6px 12px;
-  border-radius: var(--radius-full);
-  border: 1px solid var(--border-subtle);
-}
-
-.sync-status .live-dot {
-  background: var(--status-effective);
-  box-shadow: 0 0 0 3px var(--status-effective-soft);
+  display: none !important;
 }
 
 .icon-button {

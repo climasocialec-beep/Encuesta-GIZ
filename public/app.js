@@ -17308,7 +17308,8 @@ function updateShell() {
   document.querySelector('.crumb').innerHTML = `<span class="crumb-root">Campañas</span><b class="crumb-sep">/</b><strong class="crumb-active">Encuesta GIZ</strong>`;
   document.querySelector('.top-avatar').textContent = currentUser.initials;
   document.querySelector('.top-user-name').textContent = currentUser.name;
-  document.querySelector('.sync-status').innerHTML = backendMode === 'supabase' ? '<span class="live-dot"></span> Conectado a Supabase' : '<span class="live-dot"></span> Servidor Central GIZ';
+  const syncStatusEl = document.querySelector('.sync-status');
+  if (syncStatusEl) syncStatusEl.remove();
 }
 
 function operatorSidebar() {
