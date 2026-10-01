@@ -220,17 +220,21 @@ end $$;
 -- ==============================================================================
 -- Contraseñas configuradas:
 --   * Supervisor: admin2026
---   * Operadores (Tatiana, Alejandro, Valeria): giz2026
+--   * Operadores (Josselyn Carvajal, Darwin Olivo): giz2026
 
-delete from public.profiles where username in ('supervisor', 'operadora1', 'operadora2', 'operadora3');
+delete from public.profiles where username in ('supervisor', 'josselyn', 'darwin', 'operadora1', 'operadora2', 'operadora3');
 delete from auth.identities where identity_data->>'email' in (
   'supervisor@climasocial.local',
+  'josselyn@climasocial.local',
+  'darwin@climasocial.local',
   'tatiana@climasocial.local',
   'alejandro@climasocial.local',
   'valeria@climasocial.local'
 );
 delete from auth.users where email in (
   'supervisor@climasocial.local',
+  'josselyn@climasocial.local',
+  'darwin@climasocial.local',
   'tatiana@climasocial.local',
   'alejandro@climasocial.local',
   'valeria@climasocial.local'
@@ -239,9 +243,8 @@ delete from auth.users where email in (
 do $$
 declare
   sup_id uuid := gen_random_uuid();
-  tat_id uuid := gen_random_uuid();
-  ale_id uuid := gen_random_uuid();
-  val_id uuid := gen_random_uuid();
+  jos_id uuid := gen_random_uuid();
+  dar_id uuid := gen_random_uuid();
   hashed_sup text := crypt('admin2026', gen_salt('bf'));
   hashed_op text := crypt('giz2026', gen_salt('bf'));
 begin
@@ -272,82 +275,56 @@ begin
   insert into public.profiles (id, full_name, initials, username, role, active)
   values (sup_id, 'Clima Social', 'CS', 'supervisor', 'supervisor', true);
 
-  -- 2. TATIANA PASQUEL (giz2026)
+  -- 2. JOSSELYN CARVAJAL (giz2026)
   insert into auth.users (
     id, instance_id, aud, role, email, encrypted_password,
     email_confirmed_at, recovery_sent_at, last_sign_in_at,
     raw_app_meta_data, raw_user_meta_data,
     created_at, updated_at, confirmation_token, email_change, email_change_token_new, recovery_token
   ) values (
-    tat_id, '00000000-0000-0000-0000-000000000000', 'authenticated', 'authenticated',
-    'tatiana@climasocial.local', hashed_op, now(), now(), now(),
+    jos_id, '00000000-0000-0000-0000-000000000000', 'authenticated', 'authenticated',
+    'josselyn@climasocial.local', hashed_op, now(), now(), now(),
     '{"provider": "email", "providers": ["email"]}'::jsonb,
-    '{"full_name": "Tatiana Pasquel", "username": "operadora1"}'::jsonb,
+    '{"full_name": "Josselyn Carvajal", "username": "josselyn"}'::jsonb,
     now(), now(), '', '', '', ''
   );
 
   insert into auth.identities (
     id, user_id, identity_data, provider, provider_id, last_sign_in_at, created_at, updated_at
   ) values (
-    tat_id, tat_id,
-    jsonb_build_object('sub', tat_id::text, 'email', 'tatiana@climasocial.local'),
-    'email', 'tatiana@climasocial.local',
+    jos_id, jos_id,
+    jsonb_build_object('sub', jos_id::text, 'email', 'josselyn@climasocial.local'),
+    'email', 'josselyn@climasocial.local',
     now(), now(), now()
   );
 
   insert into public.profiles (id, full_name, initials, username, role, active)
-  values (tat_id, 'Tatiana Pasquel', 'TP', 'operadora1', 'operator', true);
+  values (jos_id, 'Josselyn Carvajal', 'JC', 'josselyn', 'operator', true);
 
-  -- 3. ALEJANDRO YANASCUAL (giz2026)
+  -- 3. DARWIN OLIVO (giz2026)
   insert into auth.users (
     id, instance_id, aud, role, email, encrypted_password,
     email_confirmed_at, recovery_sent_at, last_sign_in_at,
     raw_app_meta_data, raw_user_meta_data,
     created_at, updated_at, confirmation_token, email_change, email_change_token_new, recovery_token
   ) values (
-    ale_id, '00000000-0000-0000-0000-000000000000', 'authenticated', 'authenticated',
-    'alejandro@climasocial.local', hashed_op, now(), now(), now(),
+    dar_id, '00000000-0000-0000-0000-000000000000', 'authenticated', 'authenticated',
+    'darwin@climasocial.local', hashed_op, now(), now(), now(),
     '{"provider": "email", "providers": ["email"]}'::jsonb,
-    '{"full_name": "Alejandro Yanascual", "username": "operadora2"}'::jsonb,
+    '{"full_name": "Darwin Olivo", "username": "darwin"}'::jsonb,
     now(), now(), '', '', '', ''
   );
 
   insert into auth.identities (
     id, user_id, identity_data, provider, provider_id, last_sign_in_at, created_at, updated_at
   ) values (
-    ale_id, ale_id,
-    jsonb_build_object('sub', ale_id::text, 'email', 'alejandro@climasocial.local'),
-    'email', 'alejandro@climasocial.local',
+    dar_id, dar_id,
+    jsonb_build_object('sub', dar_id::text, 'email', 'darwin@climasocial.local'),
+    'email', 'darwin@climasocial.local',
     now(), now(), now()
   );
 
   insert into public.profiles (id, full_name, initials, username, role, active)
-  values (ale_id, 'Alejandro Yanascual', 'AY', 'operadora2', 'operator', true);
-
-  -- 4. VALERIA CRUZ (giz2026)
-  insert into auth.users (
-    id, instance_id, aud, role, email, encrypted_password,
-    email_confirmed_at, recovery_sent_at, last_sign_in_at,
-    raw_app_meta_data, raw_user_meta_data,
-    created_at, updated_at, confirmation_token, email_change, email_change_token_new, recovery_token
-  ) values (
-    val_id, '00000000-0000-0000-0000-000000000000', 'authenticated', 'authenticated',
-    'valeria@climasocial.local', hashed_op, now(), now(), now(),
-    '{"provider": "email", "providers": ["email"]}'::jsonb,
-    '{"full_name": "Valeria Cruz", "username": "operadora3"}'::jsonb,
-    now(), now(), '', '', '', ''
-  );
-
-  insert into auth.identities (
-    id, user_id, identity_data, provider, provider_id, last_sign_in_at, created_at, updated_at
-  ) values (
-    val_id, val_id,
-    jsonb_build_object('sub', val_id::text, 'email', 'valeria@climasocial.local'),
-    'email', 'valeria@climasocial.local',
-    now(), now(), now()
-  );
-
-  insert into public.profiles (id, full_name, initials, username, role, active)
-  values (val_id, 'Valeria Cruz', 'VC', 'operadora3', 'operator', true);
+  values (dar_id, 'Darwin Olivo', 'DO', 'darwin', 'operator', true);
 
 end $$;

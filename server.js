@@ -39,6 +39,11 @@ app.post('/import/xlsx', upload.single('file'), async (req, res) => {
     const workbook = new ExcelJS.Workbook();
     await workbook.xlsx.load(req.file.buffer);
     const baseName = String(req.body.baseName || req.file.originalname.replace(/\.xlsx$/i, '')).trim();
+    const masterSheet = workbook.worksheets.find(item => item.name.trim().toUpperCase().includes('BASE MAESTRA'));
+    if (masterSheet) {
+      const result = parseMasterCleanSheet(masterSheet, baseName);
+      return res.json(result);
+    }
     const facilitatorSheet = workbook.worksheets.find(item => item.name.trim().toUpperCase() === 'FACILITADOR');
     if (facilitatorSheet) {
       const result = parseLegacySheet(facilitatorSheet, baseName);
@@ -176,6 +181,77 @@ app.post('/import/xlsx', upload.single('file'), async (req, res) => {
     res.status(500).json({ error: 'No fue posible leer el archivo Excel' });
   }
 });
+
+function parseMasterCleanSheet(sheet, baseName) {
+  const headers = sheet.getRow(1).values.slice(1).map(value => normalizeImportHeader(value));
+  const contacts = [];
+  let skippedRows = 0;
+  let missingPhone = 0;
+  let missingName = 0;
+  const seenIds = new Set();
+  let duplicateIds = 0;
+
+  for (let rowNumber = 2; rowNumber <= sheet.rowCount; rowNumber += 1) {
+    const values = sheet.getRow(rowNumber).values.slice(1).map(getCellText);
+    if (values.every(value => !value.trim())) { skippedRows += 1; continue; }
+    const row = Object.fromEntries(headers.map((header, index) => [header, values[index] || '']));
+    const name = cleanImportText(row.nombres_y_apellidos || row.nombres || row.nombre);
+    const phoneVal = cleanImportText(row.numero_telefonico || row.telefono || row.celular);
+    const phoneData = normalizePhones(phoneVal);
+    if (!name) missingName += 1;
+    if (!phoneData.primary) missingPhone += 1;
+    if (!name && !phoneData.primary) { skippedRows += 1; continue; }
+
+    const id = cleanImportText(row.id_contacto || row.id || row.cod) || `GIZ-${String(rowNumber - 1).padStart(3, '0')}`;
+    if (seenIds.has(id)) duplicateIds += 1;
+    seenIds.add(id);
+
+    const opRaw = cleanImportText(row.operador_asignado || row.operador || '');
+    let opCode = '';
+    if (opRaw.toLowerCase().includes('josselyn') || opRaw.toUpperCase() === 'JC') opCode = 'JC';
+    else if (opRaw.toLowerCase().includes('darwin') || opRaw.toUpperCase() === 'DO') opCode = 'DO';
+
+    const courseCode = cleanImportText(row.codigo_curso || row.codigo || '');
+    const courseName = cleanImportText(row.nombre_del_curso || row.curso || 'Curso ProCohesión GIZ');
+    const organization = cleanImportText(row.entidad_responsable || row.entidad || 'Cooperación Alemana - GIZ');
+    const canton = cleanImportText(row.canton || '');
+    const provincia = cleanImportText(row.provincia || '');
+    const barrio = cleanImportText(row.barrio || canton || 'Sector urbano');
+    const startDate = cleanImportText(row.fecha_inicio || '2025');
+    const endDate = cleanImportText(row.fecha_fin || '2025');
+    const datesStr = (startDate && endDate && startDate !== endDate) ? `${startDate} al ${endDate}` : (endDate || startDate || '2025');
+
+    contacts.push({
+      id,
+      name: name || 'Sin nombre',
+      phone: phoneData.primary || phoneVal || 'No tiene teléfono celular',
+      phoneRaw: phoneVal,
+      phoneOther: phoneData.others.join(' / '),
+      email: cleanImportText(row.correo_electronico || row.correo),
+      parish: barrio,
+      barrio,
+      canton,
+      provincia,
+      location: canton && provincia ? `${canton} · ${provincia}` : (canton || provincia || 'Ecuador'),
+      courseCode,
+      courseName,
+      courseStartDate: startDate,
+      courseEndDate: endDate,
+      courseDates: datesStr,
+      courseRecency: endDate,
+      organization,
+      referencia: 'Equipo Técnico Clima Social / GIZ',
+      baseName: baseName || 'GIZ · OE1 - ProCohesión (Fase III · 2026)',
+      status: 'pending',
+      attempts: 0,
+      last: 'Sin gestión',
+      pendingReason: 'not_called',
+      assignmentRound: 0,
+      operator: opCode
+    });
+  }
+  return { contacts, stats: { sheet: sheet.name, totalRows: sheet.rowCount - 1, imported: contacts.length, skippedRows, missingName, missingPhone, duplicateIds, baseName: baseName || 'GIZ · OE1 - ProCohesión (Fase III · 2026)', sheetStats: [{ sheet: sheet.name, imported: contacts.length }] } };
+}
 
 function parseLegacySheet(sheet, baseName) {
   const headers = sheet.getRow(1).values.slice(1).map(value => normalizeImportHeader(value));

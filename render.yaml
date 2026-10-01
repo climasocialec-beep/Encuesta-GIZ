@@ -3,6 +3,8 @@ services:
     name: call-center-clima-social-giz
     runtime: node
     plan: free
+    branch: main
+    autoDeploy: true
     buildCommand: npm install
     startCommand: npm start
     healthCheckPath: /
