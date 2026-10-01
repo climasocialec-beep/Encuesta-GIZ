@@ -517,14 +517,24 @@ app.post('/api/sync', (req, res) => {
   if (!serverState) loadServerState();
   const clientContacts = Array.isArray(req.body.contacts) ? req.body.contacts : [];
   const clientHistory = Array.isArray(req.body.history) ? req.body.history : [];
+  const clientShifts = Array.isArray(req.body.shifts) ? req.body.shifts : [];
+  const isSupervisor = req.get('x-app-role') === 'supervisor';
 
   if (clientContacts.length > 0) {
     const contactMap = new Map(serverState.contacts.map(c => [c.id, c]));
     clientContacts.forEach(clientContact => {
       const existing = contactMap.get(clientContact.id);
       if (existing) {
-        if ((clientContact.attempts || 0) > (existing.attempts || 0)) {
+        if (isSupervisor) {
           Object.assign(existing, clientContact);
+        } else {
+          if ((clientContact.attempts || 0) > (existing.attempts || 0) ||
+              clientContact.status !== existing.status ||
+              clientContact.operator !== existing.operator ||
+              clientContact.notes !== existing.notes ||
+              clientContact.rescheduledFor !== existing.rescheduledFor) {
+            Object.assign(existing, clientContact);
+          }
         }
       }
     });
@@ -540,6 +550,20 @@ app.post('/api/sync', (req, res) => {
       }
     });
     serverState.history.sort((a, b) => new Date(b.rawDate || 0) - new Date(a.rawDate || 0));
+  } else if (isSupervisor && Array.isArray(req.body.history) && req.body.history.length === 0) {
+    serverState.history = [];
+  }
+
+  if (clientShifts.length > 0) {
+    const shiftMap = new Map(serverState.shifts.map(s => [s.id, s]));
+    clientShifts.forEach(cs => {
+      const existing = shiftMap.get(cs.id);
+      if (existing) {
+        if (cs.endedAt && !existing.endedAt) existing.endedAt = cs.endedAt;
+      } else {
+        serverState.shifts.push(cs);
+      }
+    });
   }
 
   saveServerState();

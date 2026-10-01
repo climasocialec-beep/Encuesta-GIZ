@@ -17447,7 +17447,31 @@ function loadState() {
   } catch { return { version: DEMO_VERSION, contacts: demoContacts, history: [], shifts: [] }; }
 }
 
-function saveState() { state.version = DEMO_VERSION; localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); }
+let syncTimer = null;
+function debouncedServerSync() {
+  clearTimeout(syncTimer);
+  syncTimer = setTimeout(() => {
+    if (!currentUser || !currentUser.role) return;
+    fetch('/api/sync', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-app-role': currentUser.role
+      },
+      body: JSON.stringify({
+        contacts: state.contacts,
+        history: state.history,
+        shifts: state.shifts
+      })
+    }).catch(e => console.warn('Sync notice:', e.message));
+  }, 400);
+}
+
+function saveState() {
+  state.version = DEMO_VERSION;
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+  debouncedServerSync();
+}
 function getContact(id) { return state.contacts.find(contact => contact.id === id); }
 function initials(name) { return name.split(' ').slice(0, 2).map(word => word[0]).join('').toUpperCase(); }
 function escapeHtml(value) { return String(value ?? '').replace(/[&<>'"]/g, char => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[char])); }
@@ -18655,6 +18679,11 @@ async function deleteShift(shiftId) {
   showToast('Eliminando jornada...');
   state.shifts = state.shifts.filter(s => s.id !== shiftId);
   saveState();
+  fetch('/api/shifts/delete', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', 'x-app-role': currentUser.role },
+    body: JSON.stringify({ shiftId })
+  }).catch(e => console.warn('Shift delete notice:', e));
   render();
 
   if (backendMode === 'supabase' && supabaseClient) {
