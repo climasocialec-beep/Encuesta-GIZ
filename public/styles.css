@@ -3193,6 +3193,63 @@ h1 {
   color: var(--text-main);
 }
 
+.attempt-rescheduled-box {
+  margin-top: 6px;
+  padding: 5px 9px;
+  background: rgba(245, 158, 11, 0.08);
+  border: 1px solid rgba(245, 158, 11, 0.28);
+  border-radius: 6px;
+  font-size: 11.5px;
+  color: #b45309;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  line-height: 1.35;
+}
+
+.attempt-rescheduled-time {
+  font-family: var(--font-mono);
+  font-weight: 800;
+  color: #92400e;
+}
+
+.previous-attempts-card {
+  margin-top: 14px;
+  padding: 14px 16px;
+  background: var(--bg-canvas);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-sm);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.previous-attempts-card .panel-title {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding-bottom: 6px;
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.previous-attempts-card .panel-title strong {
+  font-size: 13px;
+  font-weight: 800;
+  color: var(--text-main);
+}
+
+.previous-attempts-count {
+  margin-left: auto;
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  font-weight: 800;
+  background: rgba(13, 148, 136, 0.12);
+  color: var(--primary);
+  padding: 2px 7px;
+  border-radius: 9999px;
+  border: 1px solid rgba(13, 148, 136, 0.25);
+}
+
 /* ==========================================================================
    ESTADOS VACÍOS (EMPTY STATES) ELEGANTES & CENTRADOS
    ========================================================================== */

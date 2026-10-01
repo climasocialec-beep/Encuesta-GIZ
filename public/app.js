@@ -17065,6 +17065,24 @@ function formatDateTime(value) {
   return new Intl.DateTimeFormat('es-EC', { dateStyle: 'short', timeStyle: 'short' }).format(new Date(value));
 }
 
+function formatRescheduleDate(value) {
+  if (!value) return '';
+  try {
+    const d = new Date(value);
+    if (isNaN(d.getTime())) return String(value);
+    return new Intl.DateTimeFormat('es-EC', {
+      weekday: 'short',
+      day: 'numeric',
+      month: 'short',
+      hour: '2-digit',
+      minute: '2-digit',
+      hour12: false
+    }).format(d);
+  } catch (e) {
+    return String(value);
+  }
+}
+
 function formatDuration(start, end = new Date().toISOString()) {
   const minutes = Math.max(0, Math.round((new Date(end) - new Date(start)) / 60000));
   return `${Math.floor(minutes / 60)} h ${String(minutes % 60).padStart(2, '0')} min`;
@@ -17977,6 +17995,74 @@ function renderSelectedContact(contact) {
               </div>
             </div>
           </div>
+
+          ${(() => {
+            const contactAttempts = (state.history || [])
+              .filter(h => h.id === contact.id || h.contactId === contact.id)
+              .sort((a, b) => Number(a.attempt || 0) - Number(b.attempt || 0));
+
+            if (!contactAttempts.length && (!contact.notes && !contact.rescheduledFor)) return '';
+
+            return `
+              <div class="previous-attempts-card">
+                <div class="panel-title">
+                  <span class="panel-icon">📝</span>
+                  <strong>Historial & Observaciones de Intentos Anteriores</strong>
+                  <span class="previous-attempts-count">${contactAttempts.length ? `${contactAttempts.length} intento${contactAttempts.length === 1 ? '' : 's'}` : `${contact.attempts} intentos`}</span>
+                </div>
+                <div class="attempts-thread">
+                  ${contactAttempts.length ? contactAttempts.map((att, idx) => `
+                    <div class="attempt-card outcome-${att.result}">
+                      <div class="attempt-header">
+                        <span class="attempt-pill outcome-${att.result}">Intento #${att.attempt || (idx + 1)}</span>
+                        <span class="attempt-outcome-text outcome-${att.result}">
+                          ${att.result === 'effective' ? '✓ Encuesta completada' : 
+                            att.result === 'pending' || att.result === 'rescheduled' || att.result === 'callback' ? '◷ Reprogramada / Reintento' :
+                            att.result === 'no-answer' ? '◌ No contesta' :
+                            att.result === 'wrong' ? '× Número incorrecto' :
+                            att.result === 'refused' ? '⊘ Rechazó participar' : (outcomeLabels[att.result] || att.result)}
+                        </span>
+                        ${att.operator ? `<span style="font-size:11px;color:var(--text-muted);font-weight:600;">· ${escapeHtml(att.operator)}</span>` : ''}
+                        ${att.date ? `<time class="attempt-timestamp">${escapeHtml(att.date)}</time>` : ''}
+                      </div>
+                      ${att.rescheduledFor ? `
+                        <div class="attempt-rescheduled-box">
+                          <span>⏰</span>
+                          <span>Reprogramado para: <strong class="attempt-rescheduled-time">${escapeHtml(formatRescheduleDate(att.rescheduledFor))}</strong></span>
+                        </div>
+                      ` : ''}
+                      ${att.notes ? `
+                        <div class="attempt-note-box">
+                          <span class="note-icon">💬</span>
+                          <span class="note-text">${escapeHtml(att.notes)}</span>
+                        </div>
+                      ` : ''}
+                    </div>
+                  `).join('') : `
+                    <div class="attempt-card outcome-${contact.status}">
+                      <div class="attempt-header">
+                        <span class="attempt-pill outcome-${contact.status}">Último intento (${contact.attempts})</span>
+                        <span class="attempt-outcome-text outcome-${contact.status}">${outcomeLabels[contact.status] || contact.status}</span>
+                        ${contact.last ? `<time class="attempt-timestamp">${escapeHtml(contact.last)}</time>` : ''}
+                      </div>
+                      ${contact.rescheduledFor ? `
+                        <div class="attempt-rescheduled-box">
+                          <span>⏰</span>
+                          <span>Reprogramado para: <strong class="attempt-rescheduled-time">${escapeHtml(formatRescheduleDate(contact.rescheduledFor))}</strong></span>
+                        </div>
+                      ` : ''}
+                      ${contact.notes ? `
+                        <div class="attempt-note-box">
+                          <span class="note-icon">💬</span>
+                          <span class="note-text">${escapeHtml(contact.notes)}</span>
+                        </div>
+                      ` : ''}
+                    </div>
+                  `}
+                </div>
+              </div>
+            `;
+          })()}
 
           <!-- Registro de Resultado de la Llamada -->
           <div class="call-actions-clean">
@@ -19012,7 +19098,7 @@ function groupHistory(history) {
     const ordered = items.slice().sort((a, b) => Number(a.attempt || 0) - Number(b.attempt || 0));
     const last = ordered[ordered.length - 1];
     const contactObj = getContact(last.id || last.contactId);
-    const searchableText = ordered.map(att => `${att.attempt} ${outcomeLabels[att.result] || att.result} ${att.date || ''} ${att.notes || ''}`).join(' ');
+    const searchableText = ordered.map(att => `${att.attempt} ${outcomeLabels[att.result] || att.result} ${att.date || ''} ${att.notes || ''} ${att.rescheduledFor || ''}`).join(' ');
 
     return {
       contact: contactObj?.name || last.contact,
@@ -19028,6 +19114,7 @@ function groupHistory(history) {
         result: att.result || 'pending',
         date: att.date || '',
         notes: att.notes || '',
+        rescheduledFor: att.rescheduledFor || (att.result === 'pending' ? contactObj?.rescheduledFor : '') || '',
         operator: att.operator || ''
       })),
       searchableText
@@ -19106,6 +19193,12 @@ function renderHistory() {
                           </span>
                           ${att.date ? `<time class="attempt-timestamp">${escapeHtml(att.date)}</time>` : ''}
                         </div>
+                        ${att.rescheduledFor ? `
+                          <div class="attempt-rescheduled-box">
+                            <span>⏰</span>
+                            <span>Reprogramado para: <strong class="attempt-rescheduled-time">${escapeHtml(formatRescheduleDate(att.rescheduledFor))}</strong></span>
+                          </div>
+                        ` : ''}
                         ${att.notes ? `
                           <div class="attempt-note-box">
                             <span class="note-icon">💬</span>
