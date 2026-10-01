@@ -16984,6 +16984,39 @@ function firstActionable(contacts) {
   return contacts.find(contact => contact.status === 'pending' || contact.status === 'no-answer');
 }
 
+function getNextActionableContact(currentContactId, contacts) {
+  const list = contacts || visibleContacts();
+  if (!list || !list.length) return null;
+
+  const currentIndex = list.findIndex(c => c.id === currentContactId);
+
+  // 1. Siguiente contacto NUEVO (0 intentos) hacia adelante
+  for (let i = currentIndex + 1; i < list.length; i++) {
+    const c = list[i];
+    if (isActionableContact(c) && Number(c.attempts || 0) === 0) return c;
+  }
+
+  // 2. Si no hay más adelante, buscar nuevos desde el inicio
+  for (let i = 0; i < currentIndex; i++) {
+    const c = list[i];
+    if (isActionableContact(c) && Number(c.attempts || 0) === 0) return c;
+  }
+
+  // 3. Siguiente contacto accionable (reintentos) posterior al actual
+  for (let i = currentIndex + 1; i < list.length; i++) {
+    const c = list[i];
+    if (isActionableContact(c) && c.id !== currentContactId) return c;
+  }
+
+  // 4. Si no hay después, buscar reintentos desde el inicio
+  for (let i = 0; i < currentIndex; i++) {
+    const c = list[i];
+    if (isActionableContact(c) && c.id !== currentContactId) return c;
+  }
+
+  return null;
+}
+
 function contactStatusLabel(contact) {
   if (contact.status === 'pending' && contact.attempts > 0) return isPreviousDay(contact) ? `Pendiente · ${previousDateLabel(contact.lastAttemptAt)}` : 'Pendiente · espera captura';
   if (contact.status === 'no-answer' && isPreviousDay(contact)) return `No contesta · ${previousDateLabel(contact.lastAttemptAt)}`;
@@ -19491,10 +19524,13 @@ async function saveCall() {
         })
       }).catch(err => console.warn('Background sync note:', err.message));
 
-      selectedContactId = firstActionable(visibleContacts())?.id || null;
+      const currentList = visibleContacts();
+      const nextContact = getNextActionableContact(contact.id, currentList);
+      selectedContactId = nextContact ? nextContact.id : null;
       selectedOutcome = '';
       showToast(shouldDiscard ? `Gestión guardada · ${contact.name} (3er intento finalizado)` : `Gestión guardada para ${contact.name}`);
       render();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
   } catch (error) {
     console.error(error);
     showToast('Error: ' + (error.message || 'Error desconocido'));
@@ -19527,9 +19563,11 @@ async function saveRemoteCall() {
   }
   selectedOutcome = '';
   await loadRemoteState();
-  selectedContactId = firstActionable(state.contacts)?.id || null;
+  const nextContact = getNextActionableContact(contact.id, visibleContacts());
+  selectedContactId = nextContact ? nextContact.id : null;
   showToast(shouldDiscard ? `Gestión guardada · ${contact.name} (3er intento finalizado)` : `Gestión guardada para ${contact.name}`);
   render();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
 function filterContacts() { const query = (document.getElementById('contact-search')?.value || '').toLowerCase(); const status = document.getElementById('status-filter')?.value || ''; const base = document.getElementById('base-filter')?.value || ''; const rows = visibleContacts().filter(contact => (!status || contact.status === status) && (!base || contact.baseName === base) && [contact.name, contact.phone, contact.id, contact.parish, contact.baseName || ''].some(value => value.toLowerCase().includes(query))); const tbody = document.querySelector('#contacts-table tbody'); if (tbody) { tbody.innerHTML = contactRows(rows, currentUser.role === 'supervisor'); document.querySelectorAll('[data-assign-contact]').forEach(select => select.addEventListener('change', () => { const contact = getContact(select.dataset.assignContact); if (!contact) return; const initialsValue = select.value; if (backendMode === 'supabase') { assignContactRemote(contact, initialsValue); return; } contact.operator = initialsValue; saveState(); showToast(initialsValue ? 'Contacto asignado correctamente' : 'Asignación retirada'); })); } }
