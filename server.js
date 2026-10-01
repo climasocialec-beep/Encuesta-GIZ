@@ -393,9 +393,37 @@ function loadServerState() {
   return serverState;
 }
 
+function reconcileContactsWithHistory() {
+  if (!serverState || !Array.isArray(serverState.history) || !Array.isArray(serverState.contacts)) return;
+  const historyByContact = new Map();
+  serverState.history.forEach(h => {
+    if (!h || !h.id) return;
+    if (!historyByContact.has(h.id)) historyByContact.set(h.id, []);
+    historyByContact.get(h.id).push(h);
+  });
+
+  serverState.contacts.forEach(c => {
+    const list = historyByContact.get(c.id);
+    if (list && list.length > 0) {
+      list.sort((a, b) => (Number(b.attempt) || 1) - (Number(a.attempt) || 1));
+      const latest = list[0];
+      const maxAttempt = Number(latest.attempt) || 1;
+      if (Number(c.attempts || 0) < maxAttempt) {
+        c.attempts = maxAttempt;
+        c.status = latest.result || c.status;
+        c.last = latest.date || c.last;
+        c.notes = latest.notes || c.notes;
+        c.lastAttemptAt = latest.rawDate || c.lastAttemptAt;
+        if (latest.operatorInitials) c.operator = latest.operatorInitials;
+      }
+    }
+  });
+}
+
 function saveServerState() {
   if (!serverState) return;
   try {
+    reconcileContactsWithHistory();
     fs.writeFileSync(STATE_FILE, JSON.stringify(serverState, null, 2), 'utf8');
   } catch (e) {
     console.error('Error saving campaign_state.json:', e.message);
@@ -408,6 +436,7 @@ loadServerState();
 // API REST: Obtener estado centralizado
 app.get('/api/state', (_req, res) => {
   if (!serverState) loadServerState();
+  reconcileContactsWithHistory();
   res.json({
     version: serverState.version,
     campaign: serverState.campaign,
@@ -525,15 +554,21 @@ app.post('/api/sync', (req, res) => {
     clientContacts.forEach(clientContact => {
       const existing = contactMap.get(clientContact.id);
       if (existing) {
-        if (isSupervisor) {
+        const clientAttempts = Number(clientContact.attempts || 0);
+        const serverAttempts = Number(existing.attempts || 0);
+
+        if (clientAttempts > serverAttempts) {
           Object.assign(existing, clientContact);
-        } else {
-          if ((clientContact.attempts || 0) > (existing.attempts || 0) ||
-              clientContact.status !== existing.status ||
-              clientContact.operator !== existing.operator ||
-              clientContact.notes !== existing.notes ||
-              clientContact.rescheduledFor !== existing.rescheduledFor) {
-            Object.assign(existing, clientContact);
+        } else if (clientAttempts === serverAttempts) {
+          if (clientContact.operator && clientContact.operator !== existing.operator) {
+            existing.operator = clientContact.operator;
+          }
+          if (clientContact.notes) existing.notes = clientContact.notes;
+          if (clientContact.rescheduledFor) existing.rescheduledFor = clientContact.rescheduledFor;
+          if (clientContact.lastAttemptAt && clientContact.lastAttemptAt > (existing.lastAttemptAt || '')) {
+            existing.lastAttemptAt = clientContact.lastAttemptAt;
+            existing.last = clientContact.last;
+            existing.status = clientContact.status;
           }
         }
       }

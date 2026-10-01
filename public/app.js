@@ -17709,18 +17709,28 @@ function renderDashboard() {
   const total = state.contacts.length;
   const managed = managedCount();
   const effective = count('effective');
-  return `${pageHeading('Martes, 24 de junio de 2025', 'Resumen de operación', 'Monitorea el avance de tu equipo y mantén el ritmo de la campaña.', '<button class="button-primary" data-view-action="import" onclick="event.stopPropagation(); openImportView()"><span class="plus">+</span> Importar base</button>')}
+  const todayStr = new Intl.DateTimeFormat('es-EC', { dateStyle: 'full' }).format(new Date());
+  const headerActions = `
+    <div style="display:flex;gap:8px;align-items:center;">
+      <button class="button-secondary" id="refresh-dashboard-hero-btn" type="button" style="display:flex;align-items:center;gap:6px;">
+        <span class="live-dot" style="width:8px;height:8px;background:#10b981;border-radius:50%;display:inline-block;"></span>
+        <span>↻ Actualizar datos</span>
+      </button>
+      <button class="button-primary" data-view-action="import" onclick="event.stopPropagation(); openImportView()"><span class="plus">+</span> Importar base</button>
+    </div>
+  `;
+  return `${pageHeading(todayStr, 'Resumen de operación', 'Monitorea el avance de tu equipo y mantén el ritmo de la campaña.', headerActions)}
     <section class="metric-grid">
       ${metricCard('Total de contactos', total.toLocaleString('es-EC'), 'base activa', '')}
-      ${metricCard('Contactos gestionados', managed.toLocaleString('es-EC'), '+12.4% vs. ayer', 'trend-up')}
-      ${metricCard('Llamadas efectivas', effective.toLocaleString('es-EC'), '+8.7% vs. ayer', 'trend-up')}
+      ${metricCard('Contactos gestionados', managed.toLocaleString('es-EC'), `${percentage(managed, total)} de la base`, 'trend-up')}
+      ${metricCard('Llamadas efectivas', effective.toLocaleString('es-EC'), managed ? `${percentage(effective, managed)} de efectividad` : '0%', 'trend-up')}
       ${metricCard('Avance de campaña', percentage(managed, total), 'Meta: 100%', 'trend-up')}
     </section>
     <section class="dashboard-grid">
       <article class="card"><div class="card-header"><div><h2 class="card-title">Ritmo de gestión</h2><p class="card-subtitle">Contactos gestionados durante la semana</p></div><select class="range-select" aria-label="Rango de gráfica"><option>Esta semana</option><option>Este mes</option></select></div>${barChart()} </article>
       <article class="card donut-card"><div class="card-header"><div><h2 class="card-title">Estado de la campaña</h2><p class="card-subtitle">Distribución de contactos</p></div></div><div class="donut-area"><div class="donut"><div class="donut-center"><strong>${percentage(managed, total)}</strong><span>AVANCE</span></div></div><div class="status-legend">${statusLegend('effective', 'Efectivas', effective)}${statusLegend('pending', 'Pendientes', total - managed)}${statusLegend('unmanaged', 'Sin gestionar', Math.max(0, total - managed))}</div></div><a class="card-footer-link" href="#" data-view-action="contacts">Ver todos los contactos <span>→</span></a></article>
     </section>
-    <section class="bottom-grid"><article class="card"><div class="card-header"><div><h2 class="card-title">Productividad por operadora</h2><p class="card-subtitle">Rendimiento de hoy · 3 operadoras</p></div><button class="button-secondary" data-view-action="history">Ver reporte</button></div>${operatorTable()}</article><article class="card"><div class="card-header"><div><h2 class="card-title">Actividad reciente</h2><p class="card-subtitle">Últimas acciones del equipo</p></div></div>${activityList()}</article></section>`;
+    <section class="bottom-grid"><article class="card"><div class="card-header"><div><h2 class="card-title">Productividad por operador/a</h2><p class="card-subtitle">Rendimiento de hoy · 2 operadores</p></div><button class="button-secondary" data-view-action="history">Ver reporte</button></div>${operatorTable()}</article><article class="card"><div class="card-header"><div><h2 class="card-title">Actividad reciente</h2><p class="card-subtitle">Últimas acciones del equipo</p></div></div>${activityList()}</article></section>`;
 }
 
 function metricCard(label, value, note, className) { return `<article class="metric-card"><div class="metric-label">${label}</div><div class="metric-value">${value}</div><div class="metric-foot"><span class="${className}">${className ? '↗' : '·'}</span><span class="metric-note">${note}</span></div></article>`; }
@@ -19601,7 +19611,72 @@ function showToast(message) { const toast = document.getElementById('toast'); to
 
 window.openImportView = () => { activeView = 'import'; render(); };
 
+window.syncStateFromServer = async function(silent = true) {
+  try {
+    const stateRes = await fetch('/api/state');
+    if (!stateRes.ok) return false;
+    const serverData = await stateRes.json();
+    if (!serverData || !Array.isArray(serverData.contacts) || serverData.contacts.length === 0) return false;
+
+    let changed = false;
+    const clientMap = new Map(state.contacts.map(c => [c.id, c]));
+    serverData.contacts.forEach(sc => {
+      const lc = clientMap.get(sc.id);
+      if (!lc) {
+        state.contacts.push(sc);
+        changed = true;
+      } else {
+        const scAttempts = Number(sc.attempts || 0);
+        const lcAttempts = Number(lc.attempts || 0);
+        if (scAttempts > lcAttempts ||
+            (scAttempts === lcAttempts && sc.lastAttemptAt && sc.lastAttemptAt !== lc.lastAttemptAt) ||
+            sc.status !== lc.status ||
+            sc.operator !== lc.operator ||
+            sc.notes !== lc.notes) {
+          Object.assign(lc, sc);
+          changed = true;
+        }
+      }
+    });
+
+    if (Array.isArray(serverData.history)) {
+      if (serverData.history.length !== (state.history || []).length || JSON.stringify(serverData.history[0]) !== JSON.stringify(state.history?.[0])) {
+        state.history = serverData.history;
+        changed = true;
+      }
+    }
+
+    if (Array.isArray(serverData.shifts)) {
+      if (JSON.stringify(serverData.shifts) !== JSON.stringify(state.shifts)) {
+        state.shifts = serverData.shifts;
+        changed = true;
+      }
+    }
+
+    if (changed || !silent) {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+      render();
+    }
+    return changed;
+  } catch (e) {
+    if (!silent) console.warn('Sync error:', e);
+    return false;
+  }
+};
+
+window.refreshSupervisorData = async function() {
+  showToast('Actualizando datos en vivo...');
+  await window.syncStateFromServer(false);
+  const gestionados = state.contacts.filter(c => Number(c.attempts) > 0).length;
+  showToast(`✓ Datos sincronizados: ${gestionados} gestionados · ${state.history.length} llamadas`);
+};
+
 document.addEventListener('click', event => {
+  if (event.target.closest('#refresh-dashboard-btn') || event.target.closest('#refresh-dashboard-hero-btn')) {
+    event.preventDefault();
+    window.refreshSupervisorData();
+    return;
+  }
   const action = event.target.closest('[data-view-action]');
   if (!action) return;
   event.preventDefault();
@@ -19634,71 +19709,16 @@ async function bootstrap() {
     backendMode = 'demo';
   }
 
-  // Sincronización con la base central del servidor
-  try {
-    const stateRes = await fetch('/api/state');
-    if (stateRes.ok) {
-      const serverData = await stateRes.json();
-      if (serverData && Array.isArray(serverData.contacts) && serverData.contacts.length > 0) {
-        if (!state.contacts || state.contacts.length === 0) {
-          state.contacts = serverData.contacts;
-        } else {
-          const map = new Map(state.contacts.map(c => [c.id, c]));
-          serverData.contacts.forEach(sc => {
-            const lc = map.get(sc.id);
-            if (!lc) state.contacts.push(sc);
-            else if ((sc.attempts || 0) >= (lc.attempts || 0)) Object.assign(lc, sc);
-          });
-        }
-        if (Array.isArray(serverData.history) && serverData.history.length > 0) {
-          const histKeys = new Set((state.history || []).map(h => `${h.id}-${h.attempt}`));
-          serverData.history.forEach(sh => {
-            if (!histKeys.has(`${sh.id}-${sh.attempt}`)) state.history.push(sh);
-          });
-          state.history.sort((a, b) => new Date(b.rawDate || 0) - new Date(a.rawDate || 0));
-        }
-        if (Array.isArray(serverData.shifts)) {
-          state.shifts = serverData.shifts;
-        }
-        saveState();
-      }
-    }
-  } catch (e) {
-    console.warn('Central server sync offline fallback:', e.message);
-  }
-
+  // Sincronización inicial con la base central del servidor
+  await window.syncStateFromServer(true);
   render();
 
-  // Polling automático cada 15 segundos para el supervisor (monitoreo en tiempo real)
+  // Polling automático cada 6 segundos en tiempo real
   setInterval(async () => {
-    if (currentUser?.role === 'supervisor' && activeView === 'dashboard') {
-      try {
-        const res = await fetch('/api/state');
-        if (res.ok) {
-          const fresh = await res.json();
-          if (fresh && Array.isArray(fresh.contacts)) {
-            const map = new Map(state.contacts.map(c => [c.id, c]));
-            let changed = false;
-            fresh.contacts.forEach(sc => {
-              const lc = map.get(sc.id);
-              if (lc && (sc.attempts || 0) !== (lc.attempts || 0)) {
-                Object.assign(lc, sc);
-                changed = true;
-              }
-            });
-            if (fresh.history && fresh.history.length !== (state.history || []).length) {
-              state.history = fresh.history;
-              changed = true;
-            }
-            if (changed) {
-              saveState();
-              render();
-            }
-          }
-        }
-      } catch (err) {}
+    if (currentUser?.role === 'supervisor') {
+      await window.syncStateFromServer(true);
     }
-  }, 15000);
+  }, 6000);
 }
 
 bootstrap();
