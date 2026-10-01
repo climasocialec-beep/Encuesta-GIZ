@@ -17861,7 +17861,7 @@ function renderOperator() {
 }
 
 function renderContactColumn(title, description, items, tone, selectedContact) {
-  return `<section class="contact-column ${tone}"><div class="contact-column-header"><div><h2>${title}</h2><p>${description}</p></div><strong>${items.length}</strong></div><div class="column-search-wrap"><input class="column-search" data-column-search="${tone}" type="search" placeholder="Buscar por nombre..." aria-label="Buscar en ${title}" /></div><div class="contact-column-list">${items.length ? items.map(item => `<button class="contact-board-card ${item.id === selectedContact.id ? 'selected' : ''}" data-contact-id="${item.id}"><div class="contact-board-card-top"><span class="contact-board-initials">${initials(item.name)}</span><span class="contact-board-status">${item.attempts ? `${item.attempts} intento${item.attempts === 1 ? '' : 's'}` : 'Nuevo'}</span></div><strong>${escapeHtml(item.name)}</strong><span style="font-family:var(--font-mono);font-size:11.5px;color:#10b981;font-weight:700;">📞 ${escapeHtml(item.phone)}</span><small style="color:var(--text-muted);">📍 ${escapeHtml(item.barrio || item.parish)} &bull; ${escapeHtml(item.courseName || 'GIZ')}</small></button>`).join('') : '<div class="column-empty">No hay contactos aquí.</div>'}</div></section>`;
+  return `<section class="contact-column ${tone}"><div class="contact-column-header"><div><h2>${title}</h2><p>${description}</p></div><strong>${items.length}</strong></div><div class="column-search-wrap"><input class="column-search" data-column-search="${tone}" type="search" placeholder="Buscar por nombre..." aria-label="Buscar en ${title}" /></div><div class="contact-column-list">${items.length ? items.map(item => `<button class="contact-board-card ${selectedContact && item.id === selectedContact.id ? 'selected' : ''}" data-contact-id="${item.id}"><div class="contact-board-card-top"><span class="contact-board-initials">${initials(item.name)}</span><span class="contact-board-status">${item.rescheduledFor ? '⏰ Reprogramado' : (item.attempts ? `${item.attempts} intento${item.attempts === 1 ? '' : 's'}` : 'Nuevo')}</span></div><strong>${escapeHtml(item.name)}</strong><span style="font-family:var(--font-mono);font-size:11.5px;color:#10b981;font-weight:700;">📞 ${escapeHtml(item.phone)}</span><small style="color:var(--text-muted);">📍 ${escapeHtml(item.barrio || item.parish)} &bull; ${escapeHtml(item.courseName || 'GIZ')}</small>${item.rescheduledFor ? `<span class="card-rescheduled-badge">⏰ ${escapeHtml(formatRescheduleDate(item.rescheduledFor))}</span>` : ''}</button>`).join('') : '<div class="column-empty">No hay contactos aquí.</div>'}</div></section>`;
 }
 
 function contactGreetingName(contact) {
@@ -18243,6 +18243,10 @@ function getOperatorActionableDates(contacts = []) {
   const dates = new Set();
   contacts.forEach(c => {
     if (isActionableContact(c) && (c.attempts || 0) > 0) {
+      if (c.rescheduledFor) {
+        const dResched = extractDateStr('', c.rescheduledFor);
+        if (dResched && dResched !== 'Sin') dates.add(dResched);
+      }
       const d = getContactLastDate(c);
       if (d && d !== 'Sin' && !d.toLowerCase().includes('sin')) {
         dates.add(d);
@@ -18265,8 +18269,11 @@ function isContactInOperatorDate(contact, dateFilter) {
   const today = dayKey(new Date());
   const yesterday = dayKey(new Date(Date.now() - 86400000));
   const lastDate = getContactLastDate(contact);
+  const reschedDate = contact.rescheduledFor ? extractDateStr('', contact.rescheduledFor) : '';
+  const reschedDayKey = contact.rescheduledFor ? dayKey(contact.rescheduledFor) : '';
 
   if (dateFilter === 'today') {
+    if (reschedDayKey === today || reschedDate === extractDateStr('', new Date())) return true;
     if (contact.lastAttemptAt && dayKey(contact.lastAttemptAt) === today) return true;
     const lastText = String(contact.last || '').toLowerCase();
     if (lastText.startsWith('hoy')) return true;
@@ -18274,6 +18281,7 @@ function isContactInOperatorDate(contact, dateFilter) {
   }
 
   if (dateFilter === 'yesterday') {
+    if (reschedDayKey === yesterday || reschedDate === extractDateStr('', new Date(Date.now() - 86400000))) return true;
     if (contact.lastAttemptAt && dayKey(contact.lastAttemptAt) === yesterday) return true;
     const lastText = String(contact.last || '').toLowerCase();
     if (lastText.startsWith('ayer')) return true;
@@ -18281,9 +18289,11 @@ function isContactInOperatorDate(contact, dateFilter) {
   }
 
   if (dateFilter === 'previous') {
+    if (contact.status === 'pending' && (contact.attempts || 0) > 0) return true;
     return isPreviousDay(contact) && (contact.attempts || 0) > 0;
   }
 
+  if (reschedDate && reschedDate === dateFilter) return true;
   if (lastDate && lastDate === dateFilter) return true;
 
   if (contact.lastAttemptAt) {
