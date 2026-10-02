@@ -16975,6 +16975,13 @@ let selectedContactId = currentUser?.role === 'operator'
 let selectedOutcome = '';
 const draftNotesByContact = {};
 const draftRescheduleByContact = {};
+let operatorSearchQuery = '';
+let columnSearchQueries = { 'column-normal': '', 'column-pending': '', 'column-no-answer': '' };
+let contactSearchQuery = '';
+let contactStatusFilter = '';
+let contactBaseFilter = '';
+let historySearchQuery = '';
+let shiftSearchQuery = '';
 
 function visibleContacts() {
   return currentUser?.role === 'operator'
@@ -17571,18 +17578,32 @@ function render() {
   if (!currentUser) { renderLogin(); return; }
   updateShell();
 
-  // Preservar foco y cursor de observaciones y fecha si el usuario está escribiendo
-  let activeField = null;
-  let cursorRange = null;
+  // Preservar foco, cursor y valores de cualquier campo de texto si el usuario está escribiendo o buscando
+  let savedActiveElement = null;
   const activeEl = document.activeElement;
-  if (activeEl) {
-    if (activeEl.id === 'notes') {
-      activeField = 'notes';
-      cursorRange = { start: activeEl.selectionStart, end: activeEl.selectionEnd };
-      if (selectedContactId) draftNotesByContact[selectedContactId] = activeEl.value;
-    } else if (activeEl.id === 'reschedule-time') {
-      activeField = 'reschedule-time';
-      if (selectedContactId) draftRescheduleByContact[selectedContactId] = activeEl.value;
+  if (activeEl && (activeEl.tagName === 'INPUT' || activeEl.tagName === 'TEXTAREA')) {
+    savedActiveElement = {
+      id: activeEl.id || null,
+      datasetColumnSearch: activeEl.dataset?.columnSearch || null,
+      className: activeEl.className || null,
+      value: activeEl.value,
+      start: typeof activeEl.selectionStart === 'number' ? activeEl.selectionStart : null,
+      end: typeof activeEl.selectionEnd === 'number' ? activeEl.selectionEnd : null
+    };
+    if (activeEl.id === 'notes' && selectedContactId) {
+      draftNotesByContact[selectedContactId] = activeEl.value;
+    } else if (activeEl.id === 'reschedule-time' && selectedContactId) {
+      draftRescheduleByContact[selectedContactId] = activeEl.value;
+    } else if (activeEl.id === 'contact-search') {
+      contactSearchQuery = activeEl.value;
+    } else if (activeEl.id === 'operator-contact-search') {
+      operatorSearchQuery = activeEl.value;
+    } else if (activeEl.id === 'history-search') {
+      historySearchQuery = activeEl.value;
+    } else if (activeEl.id === 'shift-search') {
+      shiftSearchQuery = activeEl.value;
+    } else if (activeEl.dataset?.columnSearch) {
+      columnSearchQueries[activeEl.dataset.columnSearch] = activeEl.value;
     }
   }
 
@@ -17599,18 +17620,25 @@ function render() {
   }
   bindViewEvents();
 
-  // Restaurar foco y posición del cursor sin interrupciones
-  if (activeField === 'notes') {
-    const el = document.getElementById('notes');
-    if (el) {
-      el.focus();
-      if (cursorRange && typeof el.setSelectionRange === 'function') {
-        try { el.setSelectionRange(cursorRange.start, cursorRange.end); } catch (e) {}
-      }
+  // Restaurar foco y posición exacta del cursor sin interrupciones ni saltos
+  if (savedActiveElement) {
+    let targetEl = null;
+    if (savedActiveElement.id) {
+      targetEl = document.getElementById(savedActiveElement.id);
+    } else if (savedActiveElement.datasetColumnSearch) {
+      targetEl = document.querySelector(`[data-column-search="${savedActiveElement.datasetColumnSearch}"]`);
     }
-  } else if (activeField === 'reschedule-time') {
-    const el = document.getElementById('reschedule-time');
-    if (el) el.focus();
+    if (targetEl) {
+      if (savedActiveElement.value !== undefined && targetEl.value !== savedActiveElement.value) {
+        targetEl.value = savedActiveElement.value;
+      }
+      try {
+        targetEl.focus();
+        if (savedActiveElement.start !== null && typeof targetEl.setSelectionRange === 'function') {
+          targetEl.setSelectionRange(savedActiveElement.start, savedActiveElement.end);
+        }
+      } catch (e) {}
+    }
   }
 }
 
@@ -17926,7 +17954,8 @@ function renderOperator() {
 }
 
 function renderContactColumn(title, description, items, tone, selectedContact) {
-  return `<section class="contact-column ${tone}"><div class="contact-column-header"><div><h2>${title}</h2><p>${description}</p></div><strong>${items.length}</strong></div><div class="column-search-wrap"><input class="column-search" data-column-search="${tone}" type="search" placeholder="Buscar por nombre..." aria-label="Buscar en ${title}" /></div><div class="contact-column-list">${items.length ? items.map(item => `<button class="contact-board-card ${selectedContact && item.id === selectedContact.id ? 'selected' : ''}" data-contact-id="${item.id}"><div class="contact-board-card-top"><span class="contact-board-initials">${initials(item.name)}</span><span class="contact-board-status">${item.rescheduledFor ? '⏰ Reprogramado' : (item.attempts ? `${item.attempts} intento${item.attempts === 1 ? '' : 's'}` : 'Nuevo')}</span></div><strong>${escapeHtml(item.name)}</strong><span style="font-family:var(--font-mono);font-size:11.5px;color:#10b981;font-weight:700;">📞 ${escapeHtml(item.phone)}</span><small style="color:var(--text-muted);">📍 ${escapeHtml(item.barrio || item.parish)} &bull; ${escapeHtml(item.courseName || 'GIZ')}</small>${item.rescheduledFor ? `<span class="card-rescheduled-badge">⏰ ${escapeHtml(formatRescheduleDate(item.rescheduledFor))}</span>` : ''}</button>`).join('') : '<div class="column-empty">No hay contactos aquí.</div>'}</div></section>`;
+  const currentQuery = columnSearchQueries[tone] || '';
+  return `<section class="contact-column ${tone}"><div class="contact-column-header"><div><h2>${title}</h2><p>${description}</p></div><strong>${items.length}</strong></div><div class="column-search-wrap"><input class="column-search" data-column-search="${tone}" type="search" placeholder="Buscar por nombre o teléfono..." value="${escapeHtml(currentQuery)}" aria-label="Buscar en ${title}" autocomplete="off" /></div><div class="contact-column-list">${items.length ? items.map(item => `<button class="contact-board-card ${selectedContact && item.id === selectedContact.id ? 'selected' : ''}" data-contact-id="${item.id}"><div class="contact-board-card-top"><span class="contact-board-initials">${initials(item.name)}</span><span class="contact-board-status">${item.rescheduledFor ? '⏰ Reprogramado' : (item.attempts ? `${item.attempts} intento${item.attempts === 1 ? '' : 's'}` : 'Nuevo')}</span></div><strong>${escapeHtml(item.name)}</strong><span style="font-family:var(--font-mono);font-size:11.5px;color:#10b981;font-weight:700;">📞 ${escapeHtml(item.phone)}</span><small style="color:var(--text-muted);">📍 ${escapeHtml(item.barrio || item.parish)} &bull; ${escapeHtml(item.courseName || 'GIZ')}</small>${item.rescheduledFor ? `<span class="card-rescheduled-badge">⏰ ${escapeHtml(formatRescheduleDate(item.rescheduledFor))}</span>` : ''}</button>`).join('') : '<div class="column-empty">No hay contactos aquí.</div>'}</div></section>`;
 }
 
 function contactGreetingName(contact) {
@@ -18401,6 +18430,106 @@ window.clearOperatorCourseFilter = function() {
 };
 
 
+function renderOperatorSearchResults(assigned, query) {
+  const rawQ = (query || '').trim().toLowerCase();
+  const phoneQ = rawQ.replace(/\D/g, '');
+  if (!rawQ) return '';
+
+  const matches = (assigned || []).filter(c => {
+    const name = String(c.name || '').toLowerCase();
+    const phone = String(c.phone || '').replace(/\D/g, '');
+    const id = String(c.id || '').toLowerCase();
+    const parish = String(c.parish || c.barrio || '').toLowerCase();
+    const course = String(c.courseName || c.courseCode || '').toLowerCase();
+
+    if (name.includes(rawQ)) return true;
+    if (id.includes(rawQ)) return true;
+    if (parish.includes(rawQ)) return true;
+    if (course.includes(rawQ)) return true;
+    if (phoneQ && phone.includes(phoneQ)) return true;
+    return false;
+  }).slice(0, 10);
+
+  if (!matches.length) {
+    return `<div class="operator-search-dropdown"><div class="search-no-results">Sin coincidencias para "${escapeHtml(query)}"</div></div>`;
+  }
+
+  return `
+    <div class="operator-search-dropdown">
+      <div class="search-dropdown-header">
+        <span>${matches.length} contacto${matches.length === 1 ? '' : 's'} encontrado${matches.length === 1 ? '' : 's'}</span>
+        <small>Haz clic para abrir</small>
+      </div>
+      ${matches.map(c => `
+        <div class="operator-search-item ${selectedContactId === c.id ? 'active' : ''}" onclick="selectOperatorContactFromSearch('${escapeHtml(c.id)}')">
+          <div class="search-item-left">
+            <span class="search-avatar">${initials(c.name)}</span>
+            <div class="search-item-info">
+              <strong>${escapeHtml(c.name)}</strong>
+              <span>📞 ${escapeHtml(c.phone)} · 📍 ${escapeHtml(c.barrio || c.parish || 'S/N')}</span>
+            </div>
+          </div>
+          <div class="search-item-right">
+            <span class="search-status-pill ${c.status}">${statusLabels[c.status] || (c.attempts ? `${c.attempts} intento(s)` : 'Por llamar')}</span>
+            <span class="search-id-badge">${escapeHtml(c.id)}</span>
+          </div>
+        </div>
+      `).join('')}
+    </div>
+  `;
+}
+
+window.selectOperatorContactFromSearch = function(contactId) {
+  selectedContactId = contactId;
+  selectedOutcome = '';
+  operatorSearchQuery = '';
+  render();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+};
+
+window.clearOperatorSearch = function() {
+  operatorSearchQuery = '';
+  render();
+};
+
+function updateOperatorSearchLive(query) {
+  operatorSearchQuery = query;
+  const container = document.getElementById('operator-search-results-container');
+  const allAssigned = visibleContacts();
+  if (container) {
+    container.innerHTML = query ? renderOperatorSearchResults(allAssigned, query) : '';
+  }
+
+  const rawQ = query.trim().toLowerCase();
+  const phoneQ = rawQ.replace(/\D/g, '');
+  document.querySelectorAll('.contact-column').forEach(column => {
+    const cards = [...column.querySelectorAll('.contact-board-card')];
+    let visibleCount = 0;
+    cards.forEach(card => {
+      if (!rawQ) {
+        card.hidden = false;
+        visibleCount++;
+        return;
+      }
+      const text = card.textContent.toLowerCase();
+      const matchText = text.includes(rawQ);
+      const matchPhone = phoneQ && text.replace(/\D/g, '').includes(phoneQ);
+      const isVisible = matchText || matchPhone;
+      card.hidden = !isVisible;
+      if (isVisible) visibleCount++;
+    });
+
+    let empty = column.querySelector('.column-search-empty');
+    if (!visibleCount && cards.length && rawQ) {
+      if (!empty) {
+        column.querySelector('.contact-column-list')?.insertAdjacentHTML('beforeend', '<div class="column-search-empty">No hay coincidencias en esta columna.</div>');
+      }
+    } else if (empty) {
+      empty.remove();
+    }
+  });
+}
+
 function renderOperatorBoard() {
   const activeShift = getActiveShift();
   if (!activeShift) return `${pageHeading('Jornada de trabajo', `Hola, ${escapeHtml(currentUser.name.split(' ')[0])}`, 'Antes de comenzar tus llamadas debes registrar el inicio de tu jornada.', '')}<article class="card shift-start-card"><div class="shift-icon">◷</div><h2>¿Listo/a para comenzar?</h2><p>Al iniciar la jornada registraremos la fecha y hora. Cuando termines, recuerda finalizarla para calcular tu tiempo de trabajo.</p><button class="button-primary" id="start-shift">Iniciar jornada <span>→</span></button></article>`;
@@ -18481,7 +18610,19 @@ function renderOperatorBoard() {
         </div>
       </div>
 
-      <!-- 3. Selector de Filtro de Fecha & Finalizar Jornada -->
+      <!-- 3. Buscador Directo por Nombre o Teléfono -->
+      <div class="topbar-search-wrap">
+        <div class="operator-search-input-box">
+          <span class="search-ico">🔍</span>
+          <input type="search" id="operator-contact-search" class="operator-search-input" placeholder="Buscar por nombre o teléfono..." value="${escapeHtml(operatorSearchQuery || '')}" autocomplete="off" />
+          ${operatorSearchQuery ? `<button class="clear-filter-btn" onclick="clearOperatorSearch()" type="button" title="Limpiar búsqueda" style="margin-left:4px;">✕</button>` : ''}
+        </div>
+        <div id="operator-search-results-container">
+          ${operatorSearchQuery ? renderOperatorSearchResults(allAssigned, operatorSearchQuery) : ''}
+        </div>
+      </div>
+
+      <!-- 4. Selector de Filtro de Fecha & Finalizar Jornada -->
       <div class="topbar-actions-block">
         <div class="topbar-date-filter-wrap">
           <select id="operator-course-filter" class="filter-select-compact" onchange="setOperatorCourseFilter(this.value)" title="Filtrar por curso">
@@ -18664,31 +18805,59 @@ async function executeCustomReassignment() {
 }
 
 function renderContacts() {
-  const contacts = visibleContacts();
+  const allContacts = visibleContacts();
+  const rawQuery = (contactSearchQuery || '').trim().toLowerCase();
+  const phoneQuery = rawQuery.replace(/\D/g, '');
+  const status = contactStatusFilter || '';
+  const base = contactBaseFilter || '';
+
+  const filteredContacts = allContacts.filter(contact => {
+    if (status && contact.status !== status) return false;
+    if (base && contact.baseName !== base) return false;
+    if (!rawQuery) return true;
+
+    const name = String(contact.name || '').toLowerCase();
+    const phone = String(contact.phone || '').replace(/\D/g, '');
+    const id = String(contact.id || '').toLowerCase();
+    const parish = String(contact.parish || contact.barrio || '').toLowerCase();
+    const canton = String(contact.canton || contact.location || '').toLowerCase();
+    const course = String(contact.courseName || contact.courseCode || '').toLowerCase();
+    const baseName = String(contact.baseName || '').toLowerCase();
+
+    if (name.includes(rawQuery)) return true;
+    if (id.includes(rawQuery)) return true;
+    if (parish.includes(rawQuery)) return true;
+    if (canton.includes(rawQuery)) return true;
+    if (course.includes(rawQuery)) return true;
+    if (baseName.includes(rawQuery)) return true;
+    if (phoneQuery && phone.includes(phoneQuery)) return true;
+    return false;
+  });
+
   const title = currentUser.role === 'operator' ? 'Mis contactos' : 'Todos los contactos';
   const showAssignment = currentUser.role === 'supervisor';
-  const bases = [...new Set(contacts.map(contact => contact.baseName).filter(Boolean))].sort();
-  const baseOptions = bases.map(base => `<option value="${escapeHtml(base)}">${escapeHtml(base)}</option>`).join('');
+  const bases = [...new Set(allContacts.map(contact => contact.baseName).filter(Boolean))].sort();
+  const baseOptions = bases.map(b => `<option value="${escapeHtml(b)}" ${base === b ? 'selected' : ''}>${escapeHtml(b)}</option>`).join('');
 
   return `
     ${pageHeading('Base de contactos', title, currentUser.role === 'operator' ? 'Estos son únicamente los registros que te asignó el supervisor.' : 'Consulta el estado de cada registro y administra el trabajo de tu equipo.', showAssignment ? '<div style="display:flex;gap:8px;"><button class="button-secondary" onclick="exportHistoryXlsx()">⬇ Exportar Excel</button><button class="button-primary" data-view-action="import"><span class="plus">+</span> Importar base</button></div>' : '')}
     <article class="card contacts-card">
       <div class="page-card-header">
         <div>
-          <h2 class="card-title">${contacts.length.toLocaleString('es-EC')} registros</h2>
+          <h2 class="card-title">${filteredContacts.length.toLocaleString('es-EC')} registros${rawQuery ? ` (coincidencias con "${escapeHtml(contactSearchQuery)}")` : ''}</h2>
           <p class="card-subtitle">Seguimiento de llamadas del programa GIZ</p>
         </div>
         <div class="filters">
-          <input class="search-input" id="contact-search" placeholder="Buscar nombre, teléfono, barrio o ID..." />
+          <input class="search-input" id="contact-search" placeholder="Buscar por nombre, teléfono, barrio o ID..." value="${escapeHtml(contactSearchQuery || '')}" autocomplete="off" />
           <select class="filter-select" id="base-filter"><option value="">Todas las bases</option>${baseOptions}</select>
           <select class="filter-select" id="status-filter">
-            <option value="">Todos los estados</option>
-            <option value="effective">Efectivas</option>
-            <option value="pending">Pendientes</option>
-            <option value="no-answer">No contesta</option>
-            <option value="wrong">Número incorrecto</option>
-            <option value="refused">Rechazaron la encuesta</option>
-            <option value="discarded">Descartados</option>
+            <option value="" ${!status ? 'selected' : ''}>Todos los estados</option>
+            <option value="effective" ${status === 'effective' ? 'selected' : ''}>Efectivas</option>
+            <option value="pending" ${status === 'pending' ? 'selected' : ''}>Pendientes</option>
+            <option value="no-answer" ${status === 'no-answer' ? 'selected' : ''}>No contesta</option>
+            <option value="wrong" ${status === 'wrong' ? 'selected' : ''}>Número incorrecto</option>
+            <option value="refused" ${status === 'refused' ? 'selected' : ''}>Rechazaron la encuesta</option>
+            <option value="discarded" ${status === 'discarded' ? 'selected' : ''}>Descartados</option>
           </select>
         </div>
       </div>
@@ -18708,7 +18877,7 @@ function renderContacts() {
             </tr>
           </thead>
           <tbody>
-            ${contactRows(contacts, showAssignment)}
+            ${contactRows(filteredContacts, showAssignment)}
           </tbody>
         </table>
       </div>
@@ -18970,8 +19139,6 @@ function getShiftGestionesMetrics(shift) {
   return { total, effective, pending, noAnswer, other, ratePerHour };
 }
 
-let shiftSearchQuery = '';
-
 function filterShiftsRealtime(query) {
   shiftSearchQuery = query;
   const q = query.trim().toLowerCase();
@@ -19169,8 +19336,6 @@ async function exportHistoryXlsx() {
     exportHistory();
   }
 }
-
-let historySearchQuery = '';
 
 function groupHistory(history) {
   const groups = new Map();
@@ -19373,17 +19538,39 @@ function bindViewEvents() {
   document.getElementById('reassign-scope-select')?.addEventListener('change', e => { reassignFormState.scope = e.target.value; render(); });
   document.getElementById('execute-custom-reassign-btn')?.addEventListener('click', executeCustomReassignment);
 
-  document.querySelectorAll('[data-column-search]').forEach(input => input.addEventListener('input', () => {
-    const query = input.value.trim().toLowerCase();
-    const column = input.closest('.contact-column');
-    const cards = [...column.querySelectorAll('.contact-board-card')];
-    const visible = cards.filter(card => card.textContent.toLowerCase().includes(query));
-    cards.forEach(card => { card.hidden = !visible.includes(card); });
-    let empty = column.querySelector('.column-search-empty');
-    if (!visible.length && cards.length) {
-      if (!empty) { column.querySelector('.contact-column-list').insertAdjacentHTML('beforeend', '<div class="column-search-empty">No encontramos ese contacto.</div>'); }
-    } else if (empty) empty.remove();
-  }));
+  const opSearch = document.getElementById('operator-contact-search');
+  if (opSearch) {
+    opSearch.addEventListener('input', (e) => {
+      updateOperatorSearchLive(e.target.value);
+    });
+  }
+
+  document.querySelectorAll('[data-column-search]').forEach(input => {
+    const tone = input.dataset.columnSearch;
+    const filterColumnCards = () => {
+      const query = input.value.trim().toLowerCase();
+      const phoneQ = query.replace(/\D/g, '');
+      if (tone) columnSearchQueries[tone] = input.value;
+      const column = input.closest('.contact-column');
+      if (!column) return;
+      const cards = [...column.querySelectorAll('.contact-board-card')];
+      const visible = cards.filter(card => {
+        if (!query) return true;
+        const text = card.textContent.toLowerCase();
+        if (text.includes(query)) return true;
+        if (phoneQ && text.replace(/\D/g, '').includes(phoneQ)) return true;
+        return false;
+      });
+      cards.forEach(card => { card.hidden = !visible.includes(card); });
+      let empty = column.querySelector('.column-search-empty');
+      if (!visible.length && cards.length) {
+        if (!empty) { column.querySelector('.contact-column-list')?.insertAdjacentHTML('beforeend', '<div class="column-search-empty">No encontramos ese contacto en esta columna.</div>'); }
+      } else if (empty) empty.remove();
+    };
+
+    input.addEventListener('input', filterColumnCards);
+    if (input.value) filterColumnCards();
+  });
 }
 
 async function logoutUser() {
@@ -19825,7 +20012,59 @@ const rescheduleTime = document.getElementById('reschedule-time')?.value ?? draf
   window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
-function filterContacts() { const query = (document.getElementById('contact-search')?.value || '').toLowerCase(); const status = document.getElementById('status-filter')?.value || ''; const base = document.getElementById('base-filter')?.value || ''; const rows = visibleContacts().filter(contact => (!status || contact.status === status) && (!base || contact.baseName === base) && [contact.name, contact.phone, contact.id, contact.parish, contact.baseName || ''].some(value => value.toLowerCase().includes(query))); const tbody = document.querySelector('#contacts-table tbody'); if (tbody) { tbody.innerHTML = contactRows(rows, currentUser.role === 'supervisor'); document.querySelectorAll('[data-assign-contact]').forEach(select => select.addEventListener('change', () => { const contact = getContact(select.dataset.assignContact); if (!contact) return; const initialsValue = select.value; if (backendMode === 'supabase') { assignContactRemote(contact, initialsValue); return; } contact.operator = initialsValue; saveState(); showToast(initialsValue ? 'Contacto asignado correctamente' : 'Asignación retirada'); })); } }
+function filterContacts() {
+  const input = document.getElementById('contact-search');
+  contactSearchQuery = input ? input.value : (contactSearchQuery || '');
+  const rawQuery = contactSearchQuery.trim().toLowerCase();
+  const phoneQuery = rawQuery.replace(/\D/g, '');
+  contactStatusFilter = document.getElementById('status-filter')?.value || '';
+  contactBaseFilter = document.getElementById('base-filter')?.value || '';
+
+  const rows = visibleContacts().filter(contact => {
+    if (contactStatusFilter && contact.status !== contactStatusFilter) return false;
+    if (contactBaseFilter && contact.baseName !== contactBaseFilter) return false;
+    if (!rawQuery) return true;
+
+    const name = String(contact.name || '').toLowerCase();
+    const phone = String(contact.phone || '').replace(/\D/g, '');
+    const id = String(contact.id || '').toLowerCase();
+    const parish = String(contact.parish || contact.barrio || '').toLowerCase();
+    const canton = String(contact.canton || contact.location || '').toLowerCase();
+    const course = String(contact.courseName || contact.courseCode || '').toLowerCase();
+    const baseName = String(contact.baseName || '').toLowerCase();
+
+    if (name.includes(rawQuery)) return true;
+    if (id.includes(rawQuery)) return true;
+    if (parish.includes(rawQuery)) return true;
+    if (canton.includes(rawQuery)) return true;
+    if (course.includes(rawQuery)) return true;
+    if (baseName.includes(rawQuery)) return true;
+    if (phoneQuery && phone.includes(phoneQuery)) return true;
+    return false;
+  });
+
+  const tbody = document.querySelector('#contacts-table tbody');
+  if (tbody) {
+    tbody.innerHTML = contactRows(rows, currentUser.role === 'supervisor');
+    document.querySelectorAll('[data-assign-contact]').forEach(select => select.addEventListener('change', () => {
+      const contact = getContact(select.dataset.assignContact);
+      if (!contact) return;
+      const initialsValue = select.value;
+      if (backendMode === 'supabase') {
+        assignContactRemote(contact, initialsValue);
+        return;
+      }
+      contact.operator = initialsValue;
+      saveState();
+      showToast(initialsValue ? 'Contacto asignado correctamente' : 'Asignación retirada');
+    }));
+  }
+
+  const countEl = document.querySelector('.contacts-card .card-title');
+  if (countEl) {
+    countEl.textContent = `${rows.length.toLocaleString('es-EC')} registros${rawQuery ? ` (coincidencias con "${contactSearchQuery}")` : ''}`;
+  }
+}
 
 async function assignContactRemote(contact, initialsValue) {
   if (!contact.remoteId) return showToast('No se encontró el registro en Supabase');
@@ -19995,21 +20234,36 @@ window.syncStateFromServer = async function(silent = true) {
 
     if (changed || !silent) {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
-      if (silent && activeView === 'operator') {
+      if (silent) {
         const activeEl = document.activeElement;
-        const isEditing = activeEl && (
+        const isUserInteracting = activeEl && (
           activeEl.tagName === 'INPUT' || 
           activeEl.tagName === 'TEXTAREA' || 
-          activeEl.id === 'notes' || 
-          activeEl.id === 'reschedule-time' || 
-          (activeEl.closest && activeEl.closest('.call-actions-clean')) ||
-          (activeEl.closest && activeEl.closest('.selected-contact-card'))
+          activeEl.tagName === 'SELECT' ||
+          activeEl.isContentEditable ||
+          (activeEl.closest && (
+            activeEl.closest('.call-actions-clean') || 
+            activeEl.closest('.selected-contact-card') ||
+            activeEl.closest('.contact-column') ||
+            activeEl.closest('.filters') ||
+            activeEl.closest('.topbar-search-wrap')
+          ))
         );
         const currentNotesVal = document.getElementById('notes')?.value?.trim();
         const hasDraft = Boolean(currentNotesVal || (selectedContactId && draftNotesByContact[selectedContactId]?.trim()));
         const hasOutcome = Boolean(selectedOutcome);
+        const hasActiveSearch = Boolean(
+          (contactSearchQuery && contactSearchQuery.trim()) ||
+          (operatorSearchQuery && operatorSearchQuery.trim()) ||
+          (historySearchQuery && historySearchQuery.trim()) ||
+          (shiftSearchQuery && shiftSearchQuery.trim()) ||
+          document.getElementById('contact-search')?.value?.trim() ||
+          document.getElementById('operator-contact-search')?.value?.trim() ||
+          document.getElementById('history-search')?.value?.trim() ||
+          [...document.querySelectorAll('.column-search')].some(el => el.value && el.value.trim())
+        );
 
-        if (isEditing || hasDraft || hasOutcome) {
+        if (isUserInteracting || hasDraft || hasOutcome || hasActiveSearch) {
           return changed;
         }
       }

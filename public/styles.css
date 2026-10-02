@@ -3623,3 +3623,177 @@ h1 {
   border-radius: 9999px;
   border: 1px solid var(--border-medium);
 }
+
+/* ==========================================================================
+   Buscador Unificado del Operador & Resultados Flotantes
+   ========================================================================== */
+.topbar-search-wrap {
+  position: relative;
+  flex: 1 1 240px;
+  min-width: 220px;
+  max-width: 380px;
+}
+
+.operator-search-input-box {
+  display: flex;
+  align-items: center;
+  position: relative;
+  background: var(--bg-canvas);
+  border: 1px solid var(--border-medium);
+  border-radius: var(--radius-sm);
+  padding: 3px 10px;
+  transition: all 0.15s ease;
+}
+
+.operator-search-input-box:focus-within {
+  border-color: var(--cs-coral);
+  background: #ffffff;
+  box-shadow: 0 0 0 3px var(--cs-coral-soft);
+}
+
+.operator-search-input-box .search-ico {
+  font-size: 13px;
+  margin-right: 6px;
+  color: var(--text-muted);
+  user-select: none;
+}
+
+.operator-search-input {
+  width: 100%;
+  border: none;
+  background: transparent;
+  padding: 4px 0;
+  font-size: 12px;
+  color: var(--text-main);
+  outline: none;
+  font-family: inherit;
+}
+
+.operator-search-dropdown {
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 0;
+  right: 0;
+  background: #ffffff;
+  border: 1px solid var(--border-medium);
+  border-radius: var(--radius-md);
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.14), 0 2px 6px rgba(0, 0, 0, 0.06);
+  max-height: 320px;
+  overflow-y: auto;
+  z-index: 1200;
+  padding: 6px;
+}
+
+.search-dropdown-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 4px 8px 6px;
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--text-muted);
+  border-bottom: 1px solid var(--border-subtle);
+  margin-bottom: 4px;
+}
+
+.operator-search-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 10px;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: all 0.1s ease;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.03);
+}
+
+.operator-search-item:last-child {
+  border-bottom: none;
+}
+
+.operator-search-item:hover, .operator-search-item.active {
+  background: rgba(224, 77, 38, 0.08);
+}
+
+.search-item-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+}
+
+.search-avatar {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: var(--cs-purple-soft);
+  color: var(--cs-purple);
+  font-size: 11px;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.search-item-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.search-item-info strong {
+  font-size: 12.5px;
+  color: var(--text-main);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.search-item-info span {
+  font-size: 11px;
+  color: var(--text-muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.search-item-right {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-shrink: 0;
+}
+
+.search-status-pill {
+  font-size: 10.5px;
+  font-weight: 700;
+  padding: 2px 7px;
+  border-radius: 9999px;
+  background: var(--bg-canvas);
+  color: var(--text-muted);
+}
+
+.search-status-pill.effective { background: var(--status-effective-soft); color: var(--status-effective); }
+.search-status-pill.pending { background: var(--cs-gold-soft); color: var(--cs-gold); }
+.search-status-pill.no-answer { background: var(--cs-teal-soft); color: var(--cs-teal); }
+.search-status-pill.wrong { background: rgba(239, 68, 68, 0.1); color: #dc2626; }
+.search-status-pill.refused { background: rgba(100, 116, 139, 0.1); color: #475569; }
+
+.search-id-badge {
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  color: var(--text-soft);
+  background: var(--bg-canvas);
+  padding: 2px 5px;
+  border-radius: 4px;
+}
+
+.search-no-results {
+  padding: 16px;
+  text-align: center;
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
