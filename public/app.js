@@ -16973,6 +16973,8 @@ let selectedContactId = currentUser?.role === 'operator'
   ? firstActionable(state.contacts.filter(contact => contact.operator === currentUser.initials))?.id
   : state.contacts[0]?.id;
 let selectedOutcome = '';
+const draftNotesByContact = {};
+const draftRescheduleByContact = {};
 
 function visibleContacts() {
   return currentUser?.role === 'operator'
@@ -17568,6 +17570,22 @@ function formatTime() { return new Intl.DateTimeFormat('es-EC', { hour: '2-digit
 function render() {
   if (!currentUser) { renderLogin(); return; }
   updateShell();
+
+  // Preservar foco y cursor de observaciones y fecha si el usuario está escribiendo
+  let activeField = null;
+  let cursorRange = null;
+  const activeEl = document.activeElement;
+  if (activeEl) {
+    if (activeEl.id === 'notes') {
+      activeField = 'notes';
+      cursorRange = { start: activeEl.selectionStart, end: activeEl.selectionEnd };
+      if (selectedContactId) draftNotesByContact[selectedContactId] = activeEl.value;
+    } else if (activeEl.id === 'reschedule-time') {
+      activeField = 'reschedule-time';
+      if (selectedContactId) draftRescheduleByContact[selectedContactId] = activeEl.value;
+    }
+  }
+
   const content = document.getElementById('app-content');
   content.classList.remove('view-enter');
   void content.offsetWidth;
@@ -17580,6 +17598,20 @@ function render() {
     content.innerHTML = `<article class="card empty-state app-error">No se pudo abrir esta vista: ${escapeHtml(error?.message || 'Error desconocido')}</article>`;
   }
   bindViewEvents();
+
+  // Restaurar foco y posición del cursor sin interrupciones
+  if (activeField === 'notes') {
+    const el = document.getElementById('notes');
+    if (el) {
+      el.focus();
+      if (cursorRange && typeof el.setSelectionRange === 'function') {
+        try { el.setSelectionRange(cursorRange.start, cursorRange.end); } catch (e) {}
+      }
+    }
+  } else if (activeField === 'reschedule-time') {
+    const el = document.getElementById('reschedule-time');
+    if (el) el.focus();
+  }
 }
 
 function pageHeading(eyebrow, title, copy, action = '') {
@@ -17890,7 +17922,7 @@ function renderOperator() {
   if (!contact) return `${pageHeading('Jornada del operador', 'Sin contactos disponibles', 'Importa una base o solicita una asignación al supervisor.')}`;
   const assigned = visibleContacts();
   const managed = managedCount(assigned);
-  return `${pageHeading('Jornada de hoy', `Hola, ${escapeHtml(currentUser.name.split(' ')[0])}`, `${assigned.length} contactos asignados · ${managed} ya gestionados.`, '<button class="button-secondary" id="end-shift">Finalizar jornada</button>')}<div class="shift-live-note"><span class="live-dot"></span> Jornada iniciada ${formatDateTime(activeShift.startedAt)} · Tiempo transcurrido: ${formatDuration(activeShift.startedAt)}</div><div class="operator-summary"><div><span>Asignados</span><strong>${assigned.length}</strong></div><div><span>Gestionados</span><strong>${managed}</strong></div><div><span>Pendientes</span><strong>${assigned.filter(item => item.status === 'pending' || item.status === 'no-answer').length}</strong></div></div><section class="operator-layout"><article class="card operator-card"><div class="contact-top"><div><small>CONTACTO ${escapeHtml(contact.id)} · INTENTO ${contact.attempts + 1}</small><h2>${escapeHtml(contact.name)}</h2><p>${escapeHtml(contact.parish)} · ${escapeHtml(contact.location)}</p></div><div class="contact-number">${escapeHtml(contact.phone)}</div></div><div class="contact-body"><div class="info-grid"><div class="info-item"><label>Identificador</label><strong>${escapeHtml(contact.id)}</strong></div><div class="info-item"><label>Última gestión</label><strong>${escapeHtml(contact.last)}</strong></div><div class="info-item"><label>Estado actual</label><strong class="table-status ${contact.status}">${statusLabels[contact.status] || 'Pendiente'}</strong></div><div class="info-item"><label>Asignado a</label><strong>${escapeHtml(currentUser.name)}</strong></div></div><div class="call-actions"><h3>Resultado de la llamada</h3><div class="outcome-grid"><button class="outcome-button green ${selectedOutcome === 'effective' ? 'selected' : ''}" data-outcome="effective">✓ Efectiva</button><button class="outcome-button ${selectedOutcome === 'pending' ? 'selected' : ''}" data-outcome="pending">◷ Pendiente</button><button class="outcome-button ${selectedOutcome === 'no-answer' ? 'selected' : ''}" data-outcome="no-answer">◌ No contesta</button><button class="outcome-button red ${selectedOutcome === 'wrong' ? 'selected' : ''}" data-outcome="wrong">× Número incorrecto</button><button class="outcome-button ${selectedOutcome === 'pending' ? 'selected' : ''}" data-outcome="pending">↻ Reintentar</button></div><label class="notes-label" for="notes">Observaciones</label><textarea class="notes-input" id="notes" placeholder="Escribe aquí cualquier detalle relevante..."></textarea><div class="save-row"><small>Se registra operador, fecha, hora e intento.</small><button class="button-primary" id="save-call" ${selectedOutcome ? '' : 'disabled'}>Guardar gestión <span>→</span></button></div></div></div></article><article class="card queue-card"><div class="card-header"><div><h2 class="card-title">Mis contactos</h2><p class="card-subtitle">Reintentos y contactos por llamar</p></div><span class="status-pill on">${assigned.length} total</span></div>${renderOperatorQueue(assigned, contact)}</article></section>`;
+  return `${pageHeading('Jornada de hoy', `Hola, ${escapeHtml(currentUser.name.split(' ')[0])}`, `${assigned.length} contactos asignados · ${managed} ya gestionados.`, '<button class="button-secondary" id="end-shift">Finalizar jornada</button>')}<div class="shift-live-note"><span class="live-dot"></span> Jornada iniciada ${formatDateTime(activeShift.startedAt)} · Tiempo transcurrido: ${formatDuration(activeShift.startedAt)}</div><div class="operator-summary"><div><span>Asignados</span><strong>${assigned.length}</strong></div><div><span>Gestionados</span><strong>${managed}</strong></div><div><span>Pendientes</span><strong>${assigned.filter(item => item.status === 'pending' || item.status === 'no-answer').length}</strong></div></div><section class="operator-layout"><article class="card operator-card"><div class="contact-top"><div><small>CONTACTO ${escapeHtml(contact.id)} · INTENTO ${contact.attempts + 1}</small><h2>${escapeHtml(contact.name)}</h2><p>${escapeHtml(contact.parish)} · ${escapeHtml(contact.location)}</p></div><div class="contact-number">${escapeHtml(contact.phone)}</div></div><div class="contact-body"><div class="info-grid"><div class="info-item"><label>Identificador</label><strong>${escapeHtml(contact.id)}</strong></div><div class="info-item"><label>Última gestión</label><strong>${escapeHtml(contact.last)}</strong></div><div class="info-item"><label>Estado actual</label><strong class="table-status ${contact.status}">${statusLabels[contact.status] || 'Pendiente'}</strong></div><div class="info-item"><label>Asignado a</label><strong>${escapeHtml(currentUser.name)}</strong></div></div><div class="call-actions"><h3>Resultado de la llamada</h3><div class="outcome-grid"><button class="outcome-button green ${selectedOutcome === 'effective' ? 'selected' : ''}" data-outcome="effective">✓ Efectiva</button><button class="outcome-button ${selectedOutcome === 'pending' ? 'selected' : ''}" data-outcome="pending">◷ Pendiente</button><button class="outcome-button ${selectedOutcome === 'no-answer' ? 'selected' : ''}" data-outcome="no-answer">◌ No contesta</button><button class="outcome-button red ${selectedOutcome === 'wrong' ? 'selected' : ''}" data-outcome="wrong">× Número incorrecto</button><button class="outcome-button ${selectedOutcome === 'pending' ? 'selected' : ''}" data-outcome="pending">↻ Reintentar</button></div><label class="notes-label" for="notes">Observaciones</label><textarea class="notes-input" id="notes" placeholder="Escribe aquí cualquier detalle relevante...">${escapeHtml(draftNotesByContact[contact.id] !== undefined ? draftNotesByContact[contact.id] : '')}</textarea><div class="save-row"><small>Se registra operador, fecha, hora e intento.</small><button class="button-primary" id="save-call" ${selectedOutcome ? '' : 'disabled'}>Guardar gestión <span>→</span></button></div></div></div></article><article class="card queue-card"><div class="card-header"><div><h2 class="card-title">Mis contactos</h2><p class="card-subtitle">Reintentos y contactos por llamar</p></div><span class="status-pill on">${assigned.length} total</span></div>${renderOperatorQueue(assigned, contact)}</article></section>`;
 }
 
 function renderContactColumn(title, description, items, tone, selectedContact) {
@@ -18129,12 +18161,12 @@ function renderSelectedContact(contact) {
 
             <div id="reschedule-box" class="reschedule-box-clean ${selectedOutcome === 'pending' ? 'show' : ''}">
               <label for="reschedule-time">⏰ Fecha y hora acordada para volver a llamar (opcional):</label>
-              <input type="datetime-local" id="reschedule-time" value="${contact.rescheduledFor || ''}" />
+              <input type="datetime-local" id="reschedule-time" value="${escapeHtml(draftRescheduleByContact[contact.id] !== undefined ? draftRescheduleByContact[contact.id] : (contact.rescheduledFor || ''))}" />
             </div>
 
             <div class="notes-block">
               <label for="notes">Observaciones / Novedades de la llamada</label>
-              <textarea id="notes" class="notes-clean" placeholder="Escribe aquí cualquier detalle de la llamada (ej. acordó llamar a las 16h00, o encuesta completada)..."></textarea>
+              <textarea id="notes" class="notes-clean" placeholder="Escribe aquí cualquier detalle de la llamada (ej. acordó llamar a las 16h00, o encuesta completada)...">${escapeHtml(draftNotesByContact[contact.id] !== undefined ? draftNotesByContact[contact.id] : '')}</textarea>
             </div>
 
             <div class="save-actions-bar">
@@ -19300,6 +19332,26 @@ function bindViewEvents() {
     const reschedBox = document.getElementById('reschedule-box');
     if (reschedBox) reschedBox.classList.toggle('show', outcome === 'pending');
   }));
+  const notesInput = document.getElementById('notes');
+  if (notesInput) {
+    const syncNotes = (e) => {
+      if (selectedContactId) draftNotesByContact[selectedContactId] = e.target.value;
+    };
+    notesInput.addEventListener('input', syncNotes);
+    notesInput.addEventListener('change', syncNotes);
+    notesInput.addEventListener('keyup', syncNotes);
+    notesInput.addEventListener('paste', syncNotes);
+  }
+
+  const reschedInput = document.getElementById('reschedule-time');
+  if (reschedInput) {
+    const syncResched = (e) => {
+      if (selectedContactId) draftRescheduleByContact[selectedContactId] = e.target.value;
+    };
+    reschedInput.addEventListener('input', syncResched);
+    reschedInput.addEventListener('change', syncResched);
+  }
+
   document.getElementById('save-call')?.addEventListener('click', saveCall);
   document.getElementById('copy-phone')?.addEventListener('click', copySelectedPhone);
   document.getElementById('start-shift')?.addEventListener('click', startShift);
@@ -19643,105 +19695,108 @@ async function saveCall() {
       }
     }
 
-    const note = document.getElementById('notes')?.value.trim() || '';
-      const rescheduleTime = document.getElementById('reschedule-time')?.value || '';
-      contact.attempts = (Number(contact.attempts) || 0) + 1;
-      const now = new Date();
-      const dateFormatted = new Intl.DateTimeFormat('es-EC', { dateStyle: 'short', timeStyle: 'short', timeZone: 'America/Guayaquil' }).format(now);
-      const nowIso = now.toISOString();
+    const note = (document.getElementById('notes')?.value ?? draftNotesByContact[contact.id] ?? '').trim();
+    const rescheduleTime = document.getElementById('reschedule-time')?.value ?? draftRescheduleByContact[contact.id] ?? '';
+    contact.attempts = (Number(contact.attempts) || 0) + 1;
+    const now = new Date();
+    const dateFormatted = new Intl.DateTimeFormat('es-EC', { dateStyle: 'short', timeStyle: 'short', timeZone: 'America/Guayaquil' }).format(now);
+    const nowIso = now.toISOString();
 
-      contact.last = dateFormatted;
-      contact.lastAttemptAt = nowIso;
-      contact.operator = currentUser.initials;
-      contact.rescheduledFor = rescheduleTime;
-      contact.notes = note;
+    contact.last = dateFormatted;
+    contact.lastAttemptAt = nowIso;
+    contact.operator = currentUser.initials;
+    contact.rescheduledFor = rescheduleTime;
+    contact.notes = note;
 
-      const shouldDiscard = contact.attempts >= MAX_ATTEMPTS && !['effective', 'wrong', 'refused'].includes(selectedOutcome);
-      contact.status = shouldDiscard ? 'discarded' : selectedOutcome;
-      contact.pendingReason = selectedOutcome === 'pending' ? 'rescheduled' : selectedOutcome === 'no-answer' ? 'no_answer' : null;
+    const shouldDiscard = contact.attempts >= MAX_ATTEMPTS && !['effective', 'wrong', 'refused'].includes(selectedOutcome);
+    contact.status = shouldDiscard ? 'discarded' : selectedOutcome;
+    contact.pendingReason = selectedOutcome === 'pending' ? 'rescheduled' : selectedOutcome === 'no-answer' ? 'no_answer' : null;
 
-      const historyItem = {
-        contact: contact.name,
-        id: contact.id,
-        phone: contact.phone,
-        courseCode: contact.courseCode || '',
-        courseName: contact.courseName || '',
-        organization: contact.organization || '',
-        canton: contact.canton || '',
-        provincia: contact.provincia || '',
-        result: selectedOutcome,
-        operator: currentUser.name,
-        operatorInitials: currentUser.initials,
-        attempt: contact.attempts,
-        date: dateFormatted,
-        rawDate: nowIso,
-        notes: note,
-        rescheduledFor: rescheduleTime
-      };
+    const historyItem = {
+      contact: contact.name,
+      id: contact.id,
+      phone: contact.phone,
+      courseCode: contact.courseCode || '',
+      courseName: contact.courseName || '',
+      organization: contact.organization || '',
+      canton: contact.canton || '',
+      provincia: contact.provincia || '',
+      result: selectedOutcome,
+      operator: currentUser.name,
+      operatorInitials: currentUser.initials,
+      attempt: contact.attempts,
+      date: dateFormatted,
+      rawDate: nowIso,
+      notes: note,
+      rescheduledFor: rescheduleTime
+    };
 
-      state.history.unshift(historyItem);
+    state.history.unshift(historyItem);
 
-      // Si la encuesta fue efectiva, propagar inmediatamente a cualquier contacto duplicado en otros cursos
-      if (selectedOutcome === 'effective') {
-        const p = (contact.phone || '').trim();
-        const n = (contact.name || '').trim().toLowerCase();
-        state.contacts.forEach(other => {
-          if (other.id !== contact.id && other.status !== 'effective') {
-            const otherP = (other.phone || '').trim();
-            const otherN = (other.name || '').trim().toLowerCase();
-            const matchPhone = p && p.length >= 7 && otherP === p;
-            const matchName = n && n !== 'no registra' && otherN === n;
-            if (matchPhone || matchName) {
-              other.status = 'effective';
-              other.last = dateFormatted;
-              other.lastAttemptAt = nowIso;
-              other.attempts = Math.max(Number(other.attempts || 0), 1);
-              const linkNote = `Encuesta ya realizada en ${contact.id} (${contact.courseName || contact.name})`;
-              if (!other.notes || !other.notes.includes(contact.id)) {
-                other.notes = other.notes ? `${other.notes} · ${linkNote}` : linkNote;
-              }
+    // Si la encuesta fue efectiva, propagar inmediatamente a cualquier contacto duplicado en otros cursos
+    if (selectedOutcome === 'effective') {
+      const p = (contact.phone || '').trim();
+      const n = (contact.name || '').trim().toLowerCase();
+      state.contacts.forEach(other => {
+        if (other.id !== contact.id && other.status !== 'effective') {
+          const otherP = (other.phone || '').trim();
+          const otherN = (other.name || '').trim().toLowerCase();
+          const matchPhone = p && p.length >= 7 && otherP === p;
+          const matchName = n && n !== 'no registra' && otherN === n;
+          if (matchPhone || matchName) {
+            other.status = 'effective';
+            other.last = dateFormatted;
+            other.lastAttemptAt = nowIso;
+            other.attempts = Math.max(Number(other.attempts || 0), 1);
+            const linkNote = `Encuesta ya realizada en ${contact.id} (${contact.courseName || contact.name})`;
+            if (!other.notes || !other.notes.includes(contact.id)) {
+              other.notes = other.notes ? `${other.notes} · ${linkNote}` : linkNote;
             }
           }
-        });
-      }
+        }
+      });
+    }
 
-      saveState();
+    delete draftNotesByContact[contact.id];
+    delete draftRescheduleByContact[contact.id];
+    saveState();
 
-      // Sincronización transparente en background con el servidor central GIZ (0 ms delay en pantalla)
-      fetch('/api/calls/save', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          contactId: contact.id,
-          outcome: selectedOutcome,
-          notes: note,
-          rescheduledFor: rescheduleTime,
-          operator: currentUser.name,
-          operatorInitials: currentUser.initials,
-          attemptNumber: contact.attempts
-        })
-      }).catch(err => console.warn('Background sync note:', err.message));
+    // Sincronización transparente en background con el servidor central GIZ (0 ms delay en pantalla)
+    fetch('/api/calls/save', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        contactId: contact.id,
+        outcome: selectedOutcome,
+        notes: note,
+        rescheduledFor: rescheduleTime,
+        operator: currentUser.name,
+        operatorInitials: currentUser.initials,
+        attemptNumber: contact.attempts
+      })
+    }).catch(err => console.warn('Background sync note:', err.message));
 
-      const currentList = visibleContacts();
-      const nextContact = getNextActionableContact(contact.id, currentList);
-      selectedContactId = nextContact ? nextContact.id : null;
-      selectedOutcome = '';
-      showToast(shouldDiscard ? `Gestión guardada · ${contact.name} (3er intento finalizado)` : `Gestión guardada para ${contact.name}`);
-      render();
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-  } catch (error) {
-    console.error(error);
-    showToast('Error: ' + (error.message || 'Error desconocido'));
-  } finally {
-    saving = false;
-  }
+    const currentList = visibleContacts();
+    const nextContact = getNextActionableContact(contact.id, currentList);
+    selectedContactId = nextContact ? nextContact.id : null;
+    selectedOutcome = '';
+    showToast(shouldDiscard ? `Gestión guardada · ${contact.name} (3er intento finalizado)` : `Gestión guardada para ${contact.name}`);
+    render();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+} catch (error) {
+  console.error(error);
+  showToast('Error: ' + (error.message || 'Error desconocido'));
+} finally {
+  saving = false;
+}
 }
 
 async function saveRemoteCall() {
-  const contact = getContact(selectedContactId);
-  if (!contact) { showToast('No se encontró el contacto seleccionado'); return; }
-  if (!selectedOutcome) { showToast('Selecciona un resultado antes de guardar'); return; }
-  const note = document.getElementById('notes')?.value.trim() || '';
+const contact = getContact(selectedContactId);
+if (!contact) { showToast('No se encontró el contacto seleccionado'); return; }
+if (!selectedOutcome) { showToast('Selecciona un resultado antes de guardar'); return; }
+const note = (document.getElementById('notes')?.value ?? draftNotesByContact[contact.id] ?? '').trim();
+const rescheduleTime = document.getElementById('reschedule-time')?.value ?? draftRescheduleByContact[contact.id] ?? '';
   const outcomeCode = { effective: 'effective', pending: 'callback', 'no-answer': 'no_answer', wrong: 'wrong_number', refused: 'refused' }[selectedOutcome] || 'callback';
   const outcomeId = outcomeCache.get(outcomeCode);
   if (!outcomeId) { showToast('Los resultados no están configurados en Supabase.'); return; }
@@ -19759,6 +19814,8 @@ async function saveRemoteCall() {
     const message = contactError.code === '42501' ? 'Solo puedes actualizar contactos que tienes asignados.' : contactError.message;
     showToast(message); return;
   }
+  delete draftNotesByContact[contact.id];
+  delete draftRescheduleByContact[contact.id];
   selectedOutcome = '';
   await loadRemoteState();
   const nextContact = getNextActionableContact(contact.id, visibleContacts());
@@ -19938,6 +19995,24 @@ window.syncStateFromServer = async function(silent = true) {
 
     if (changed || !silent) {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+      if (silent && activeView === 'operator') {
+        const activeEl = document.activeElement;
+        const isEditing = activeEl && (
+          activeEl.tagName === 'INPUT' || 
+          activeEl.tagName === 'TEXTAREA' || 
+          activeEl.id === 'notes' || 
+          activeEl.id === 'reschedule-time' || 
+          (activeEl.closest && activeEl.closest('.call-actions-clean')) ||
+          (activeEl.closest && activeEl.closest('.selected-contact-card'))
+        );
+        const currentNotesVal = document.getElementById('notes')?.value?.trim();
+        const hasDraft = Boolean(currentNotesVal || (selectedContactId && draftNotesByContact[selectedContactId]?.trim()));
+        const hasOutcome = Boolean(selectedOutcome);
+
+        if (isEditing || hasDraft || hasOutcome) {
+          return changed;
+        }
+      }
       render();
     }
     return changed;
