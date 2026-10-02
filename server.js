@@ -357,6 +357,33 @@ const INITIAL_CONTACTS_FILE = path.join(DATA_DIR, 'initial_contacts.json');
 
 if (!fs.existsSync(DATA_DIR)) fs.mkdirSync(DATA_DIR, { recursive: true });
 
+function deduplicateShifts(shifts) {
+  if (!Array.isArray(shifts)) return [];
+  const result = [];
+  const sorted = [...shifts].sort((a, b) => new Date(b.startedAt || 0) - new Date(a.startedAt || 0));
+
+  for (const shift of sorted) {
+    const shiftTime = new Date(shift.startedAt || 0).getTime();
+    const existingIndex = result.findIndex(existing => {
+      const existingTime = new Date(existing.startedAt || 0).getTime();
+      const sameUser = (shift.username && existing.username && shift.username.toLowerCase() === existing.username.toLowerCase()) ||
+                       (shift.operatorId && existing.operatorId && shift.operatorId.toLowerCase() === existing.operatorId.toLowerCase()) ||
+                       (shift.operator && existing.operator && shift.operator.toLowerCase() === existing.operator.toLowerCase());
+      return sameUser && !isNaN(shiftTime) && !isNaN(existingTime) && Math.abs(shiftTime - existingTime) < 180000;
+    });
+
+    if (existingIndex === -1) {
+      result.push({ ...shift });
+    } else {
+      const existing = result[existingIndex];
+      if (shift.endedAt && !existing.endedAt) existing.endedAt = shift.endedAt;
+      if (!existing.operator && shift.operator) existing.operator = shift.operator;
+      if (!existing.operatorId && shift.operatorId) existing.operatorId = shift.operatorId;
+    }
+  }
+  return result;
+}
+
 let serverState = null;
 
 function loadServerState() {
@@ -364,6 +391,9 @@ function loadServerState() {
     try {
       const data = JSON.parse(fs.readFileSync(STATE_FILE, 'utf8'));
       if (data && Array.isArray(data.contacts) && data.contacts.length > 0) {
+        if (Array.isArray(data.shifts)) {
+          data.shifts = deduplicateShifts(data.shifts);
+        }
         serverState = data;
         return serverState;
       }
@@ -423,6 +453,9 @@ function reconcileContactsWithHistory() {
 function saveServerState() {
   if (!serverState) return;
   try {
+    if (Array.isArray(serverState.shifts)) {
+      serverState.shifts = deduplicateShifts(serverState.shifts);
+    }
     reconcileContactsWithHistory();
     fs.writeFileSync(STATE_FILE, JSON.stringify(serverState, null, 2), 'utf8');
   } catch (e) {
@@ -499,18 +532,40 @@ app.post('/api/calls/save', (req, res) => {
 // API REST: Iniciar jornada de operador en el servidor
 app.post('/api/shifts/start', (req, res) => {
   if (!serverState) loadServerState();
-  const { username, operator, operatorId } = req.body;
+  const { id, username, operator, operatorId } = req.body;
   const nowIso = new Date().toISOString();
 
-  serverState.shifts.forEach(shift => {
-    if ((shift.username === username || (operatorId && shift.operatorId === operatorId)) && !shift.endedAt) {
-      shift.endedAt = nowIso;
+  serverState.shifts = deduplicateShifts(serverState.shifts || []);
+
+  const opId = operatorId || username;
+  const isMatch = (s) => (
+    (username && s.username && s.username.toLowerCase() === username.toLowerCase()) ||
+    (opId && s.operatorId && s.operatorId.toLowerCase() === opId.toLowerCase()) ||
+    (operator && s.operator && s.operator.toLowerCase() === operator.toLowerCase())
+  );
+
+  // If there is already an active shift for this operator:
+  const activeShift = serverState.shifts.find(s => isMatch(s) && !s.endedAt);
+  if (activeShift) {
+    const activeStart = new Date(activeShift.startedAt).getTime();
+    if (!isNaN(activeStart) && (Date.now() - activeStart) < 300000) {
+      return res.json({ success: true, shift: activeShift });
     }
-  });
+    // Close prior active shift before starting a new one
+    activeShift.endedAt = nowIso;
+  }
+
+  // If client provided an existing ID that is already stored:
+  if (id) {
+    const existingById = serverState.shifts.find(s => s.id === id);
+    if (existingById) {
+      return res.json({ success: true, shift: existingById });
+    }
+  }
 
   const newShift = {
-    id: `shift-${Date.now()}`,
-    operatorId: operatorId || username,
+    id: id || `shift-${Date.now()}`,
+    operatorId: opId,
     username: username,
     operator: operator || username,
     startedAt: nowIso,
@@ -518,6 +573,7 @@ app.post('/api/shifts/start', (req, res) => {
   };
 
   serverState.shifts.unshift(newShift);
+  serverState.shifts = deduplicateShifts(serverState.shifts);
   saveServerState();
 
   return res.json({ success: true, shift: newShift });
@@ -526,17 +582,25 @@ app.post('/api/shifts/start', (req, res) => {
 // API REST: Finalizar jornada de operador en el servidor
 app.post('/api/shifts/end', (req, res) => {
   if (!serverState) loadServerState();
-  const { username, operatorId } = req.body;
-  const nowIso = new Date().toISOString();
+  const { username, operatorId, operator, endedAt } = req.body;
+  const nowIso = endedAt || new Date().toISOString();
+
+  const isMatch = (shift) => {
+    return (username && shift.username && shift.username.toLowerCase() === username.toLowerCase()) ||
+           (operatorId && shift.operatorId && shift.operatorId.toLowerCase() === operatorId.toLowerCase()) ||
+           (operator && shift.operator && shift.operator.toLowerCase() === operator.toLowerCase()) ||
+           (username && shift.operator && shift.operator.toLowerCase() === username.toLowerCase());
+  };
 
   let closedCount = 0;
-  serverState.shifts.forEach(shift => {
-    if ((shift.username === username || (operatorId && shift.operatorId === operatorId)) && !shift.endedAt) {
+  (serverState.shifts || []).forEach(shift => {
+    if (isMatch(shift) && !shift.endedAt) {
       shift.endedAt = nowIso;
       closedCount++;
     }
   });
 
+  serverState.shifts = deduplicateShifts(serverState.shifts || []);
   saveServerState();
   return res.json({ success: true, closedCount });
 });
@@ -599,6 +663,7 @@ app.post('/api/sync', (req, res) => {
         serverState.shifts.push(cs);
       }
     });
+    serverState.shifts = deduplicateShifts(serverState.shifts);
   }
 
   saveServerState();
@@ -1033,6 +1098,11 @@ app.post('/api/shifts/delete', async (req, res) => {
   const { shiftId } = req.body;
   if (!shiftId) return res.status(400).json({ error: 'Falta shiftId' });
 
+  if (!serverState) loadServerState();
+  const beforeCount = (serverState.shifts || []).length;
+  serverState.shifts = (serverState.shifts || []).filter(s => s.id !== shiftId);
+  saveServerState();
+
   const supabaseUrl = process.env.SUPABASE_URL;
   const anonKey = process.env.SUPABASE_ANON_KEY;
   const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY || anonKey;
@@ -1051,20 +1121,36 @@ app.post('/api/shifts/delete', async (req, res) => {
       });
       if (!response.ok) {
         const text = await response.text();
-        return res.status(response.status).json({ error: text || 'Error al eliminar en Supabase' });
+        console.warn('Supabase delete shift notice:', text);
       }
-      return res.json({ success: true, message: 'Jornada eliminada' });
     } catch (err) {
-      return res.status(500).json({ error: err.message });
+      console.warn('Supabase delete error (local deletion persisted):', err.message);
     }
   }
-  return res.json({ success: true, mode: 'local' });
+  return res.json({ success: true, message: 'Jornada eliminada', deleted: beforeCount !== (serverState.shifts || []).length });
 });
 
 app.post('/api/shifts/close', async (req, res) => {
   if (req.get('x-app-role') !== 'supervisor') return res.status(403).json({ error: 'Solo el supervisor puede cerrar jornadas' });
   const { shiftId, operatorId, endedAt } = req.body;
   const finalEndedAt = endedAt || new Date().toISOString();
+
+  if (!serverState) loadServerState();
+  let closedCount = 0;
+  (serverState.shifts || []).forEach(s => {
+    const matchId = shiftId && s.id === shiftId;
+    const matchOp = operatorId && (
+      (s.operatorId && s.operatorId.toLowerCase() === operatorId.toLowerCase()) ||
+      (s.username && s.username.toLowerCase() === operatorId.toLowerCase()) ||
+      (s.operator && s.operator.toLowerCase() === operatorId.toLowerCase())
+    );
+    if ((matchId || matchOp) && !s.endedAt) {
+      s.endedAt = finalEndedAt;
+      closedCount++;
+    }
+  });
+  serverState.shifts = deduplicateShifts(serverState.shifts || []);
+  saveServerState();
 
   const supabaseUrl = process.env.SUPABASE_URL;
   const anonKey = process.env.SUPABASE_ANON_KEY;
@@ -1096,13 +1182,11 @@ app.post('/api/shifts/close', async (req, res) => {
           body: JSON.stringify({ ended_at: finalEndedAt })
         });
       }
-
-      return res.json({ success: true, message: 'Jornada cerrada' });
     } catch (err) {
-      return res.status(500).json({ error: err.message });
+      console.warn('Supabase close shift notice:', err.message);
     }
   }
-  return res.json({ success: true, mode: 'local' });
+  return res.json({ success: true, message: 'Jornada cerrada', closedCount });
 });
 
 app.post('/api/contacts/update-status', async (req, res) => {

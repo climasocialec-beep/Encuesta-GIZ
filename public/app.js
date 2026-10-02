@@ -17027,6 +17027,33 @@ function dayKey(value) { return value ? new Intl.DateTimeFormat('en-CA', { timeZ
 function isPreviousDay(contact) { const last = dayKey(contact.lastAttemptAt); return Boolean(last && last !== dayKey(new Date())); }
 function previousDateLabel(value) { return value ? new Intl.DateTimeFormat('es-EC', { timeZone: 'America/Guayaquil', day: '2-digit', month: '2-digit' }).format(new Date(value)) : 'fecha anterior'; }
 
+function deduplicateShiftsClient(shifts) {
+  if (!Array.isArray(shifts)) return [];
+  const result = [];
+  const sorted = [...shifts].sort((a, b) => new Date(b.startedAt || 0) - new Date(a.startedAt || 0));
+
+  for (const shift of sorted) {
+    const shiftTime = new Date(shift.startedAt || 0).getTime();
+    const existingIndex = result.findIndex(existing => {
+      const existingTime = new Date(existing.startedAt || 0).getTime();
+      const sameUser = (shift.username && existing.username && shift.username.toLowerCase() === existing.username.toLowerCase()) ||
+                       (shift.operatorId && existing.operatorId && shift.operatorId.toLowerCase() === existing.operatorId.toLowerCase()) ||
+                       (shift.operator && existing.operator && shift.operator.toLowerCase() === existing.operator.toLowerCase());
+      return sameUser && !isNaN(shiftTime) && !isNaN(existingTime) && Math.abs(shiftTime - existingTime) < 180000;
+    });
+
+    if (existingIndex === -1) {
+      result.push({ ...shift });
+    } else {
+      const existing = result[existingIndex];
+      if (shift.endedAt && !existing.endedAt) existing.endedAt = shift.endedAt;
+      if (!existing.operator && shift.operator) existing.operator = shift.operator;
+      if (!existing.operatorId && shift.operatorId) existing.operatorId = shift.operatorId;
+    }
+  }
+  return result;
+}
+
 function getActiveShift(user = currentUser) {
   if (!user) return null;
   const userAuthId = user.authId || user.id;
@@ -17039,7 +17066,10 @@ function getActiveShift(user = currentUser) {
     }
     return (userAuthId && shift.operatorId === userAuthId) ||
            (profileId && shift.operatorId === profileId) ||
-           (shift.username && (shift.username === user.username || shift.username === user.name || shift.username === user.email || shift.username === user.authEmail));
+           (user.username && (shift.username === user.username || shift.operatorId === user.username)) ||
+           (user.initials && shift.operatorId === user.initials) ||
+           (shift.username && (shift.username === user.username || shift.username === user.name || shift.username === user.email || shift.username === user.authEmail)) ||
+           (shift.operator && (shift.operator === user.name || shift.operator === user.username));
   }) || null;
 }
 
@@ -18759,23 +18789,50 @@ async function forceCloseShift(shiftId, operatorInitials) {
   const endedAt = new Date().toISOString();
   showToast('Cerrando jornada...');
 
-  const targetUser = operatorInitials ? appUsers.find(u => u.initials === operatorInitials) : null;
-  const targetProfile = operatorInitials ? [...remoteProfiles.values()].find(p => p.initials === operatorInitials) : null;
-  const targetOperatorId = targetProfile?.id;
+  const shiftToClose = state.shifts.find(s => s.id === shiftId);
+  const targetInitials = operatorInitials || (shiftToClose ? (shiftToClose.operator ? initials(shiftToClose.operator) : '') : '');
+  const targetUser = targetInitials ? appUsers.find(u => u.initials === targetInitials) : null;
+  const targetProfile = targetInitials ? [...remoteProfiles.values()].find(p => p.initials === targetInitials) : null;
+  const targetOperatorId = targetProfile?.id || shiftToClose?.operatorId;
 
   // 1. Optimistic Update Inmediato
   state.shifts.forEach(s => {
-    if (s.id === shiftId || (targetOperatorId && s.operatorId === targetOperatorId) || (targetUser && (s.username === targetUser.username || s.username === targetUser.name))) {
+    const matchesShift = s.id === shiftId;
+    const matchesOpId = targetOperatorId && s.operatorId === targetOperatorId;
+    const matchesUser = targetUser && (s.username === targetUser.username || s.username === targetUser.name);
+    if ((matchesShift || matchesOpId || matchesUser) && !s.endedAt) {
       s.endedAt = endedAt;
     }
   });
+  state.shifts = deduplicateShiftsClient(state.shifts);
   saveState();
   render();
 
-  // 2. Sincronización en Supabase
+  // 2. Sincronización Servidor Central (Siempre)
+  let token = '';
+  try {
+    const session = supabaseClient?.auth ? await supabaseClient.auth.getSession() : null;
+    token = session?.data?.session?.access_token || '';
+  } catch (e) {}
+
+  try {
+    await fetch('/api/shifts/close', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-app-role': currentUser.role,
+        'x-supabase-auth': token
+      },
+      body: JSON.stringify({ shiftId, endedAt, operatorId: targetOperatorId || shiftToClose?.username || targetInitials })
+    });
+  } catch (e) {
+    console.warn('Error notifying server of closed shift:', e);
+  }
+
+  // 3. Sincronización en Supabase si está activo
   if (backendMode === 'supabase' && supabaseClient) {
     try {
-      if (shiftId && !String(shiftId).startsWith('local-')) {
+      if (shiftId && !String(shiftId).startsWith('local-') && !String(shiftId).startsWith('shift-')) {
         await supabaseClient.rpc('admin_close_shift', { p_shift_id: shiftId, p_ended_at: endedAt });
         await supabaseClient.from('operator_shifts').update({ ended_at: endedAt }).eq('id', shiftId);
       }
@@ -18783,28 +18840,10 @@ async function forceCloseShift(shiftId, operatorInitials) {
         await supabaseClient.rpc('admin_close_all_operator_shifts', { p_operator_id: targetOperatorId, p_ended_at: endedAt });
         await supabaseClient.from('operator_shifts').update({ ended_at: endedAt }).eq('operator_id', targetOperatorId).is('ended_at', null);
       }
-
-      const session = await supabaseClient.auth.getSession();
-      const token = session?.data?.session?.access_token || '';
-      await fetch('/api/shifts/close', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'x-app-role': currentUser.role,
-          'x-supabase-auth': token
-        },
-        body: JSON.stringify({ shiftId, endedAt, operatorId: targetOperatorId })
-      });
-
       await loadRemoteState();
-      showToast('Jornada finalizada correctamente');
-      render();
     } catch (err) {
-      console.error('Error closing shift:', err);
-      showToast('Jornada finalizada');
-      render();
+      console.warn('Supabase shift close notice:', err.message);
     }
-    return;
   }
 
   showToast('Jornada finalizada correctamente');
@@ -18818,39 +18857,40 @@ async function deleteShift(shiftId) {
   showToast('Eliminando jornada...');
   state.shifts = state.shifts.filter(s => s.id !== shiftId);
   saveState();
-  fetch('/api/shifts/delete', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', 'x-app-role': currentUser.role },
-    body: JSON.stringify({ shiftId })
-  }).catch(e => console.warn('Shift delete notice:', e));
   render();
+
+  let token = '';
+  try {
+    const session = supabaseClient?.auth ? await supabaseClient.auth.getSession() : null;
+    token = session?.data?.session?.access_token || '';
+  } catch (e) {}
+
+  try {
+    await fetch('/api/shifts/delete', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-app-role': currentUser.role,
+        'x-supabase-auth': token
+      },
+      body: JSON.stringify({ shiftId })
+    });
+  } catch (e) {
+    console.warn('Shift delete notice:', e);
+  }
 
   if (backendMode === 'supabase' && supabaseClient) {
     try {
-      if (shiftId && !String(shiftId).startsWith('local-')) {
+      if (shiftId && !String(shiftId).startsWith('local-') && !String(shiftId).startsWith('shift-')) {
         await supabaseClient.rpc('admin_delete_shift', { p_shift_id: shiftId });
         await supabaseClient.from('operator_shifts').delete().eq('id', shiftId);
       }
-      const session = await supabaseClient.auth.getSession();
-      const token = session?.data?.session?.access_token || '';
-      await fetch('/api/shifts/delete', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'x-app-role': currentUser.role,
-          'x-supabase-auth': token
-        },
-        body: JSON.stringify({ shiftId })
-      });
       await loadRemoteState();
-      showToast('Jornada eliminada');
-      render();
     } catch (err) {
-      console.error('Error deleting shift:', err);
-      showToast('Jornada eliminada');
+      console.warn('Supabase shift delete notice:', err.message);
     }
-    return;
   }
+
   showToast('Jornada eliminada');
   render();
 }
@@ -19477,17 +19517,31 @@ async function startShift() {
     endedAt: null
   };
   state.shifts.unshift(shiftItem);
+  state.shifts = deduplicateShiftsClient(state.shifts);
   saveState();
 
-  fetch('/api/shifts/start', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      username: currentUser.username,
-      operator: currentUser.name,
-      operatorId: shiftItem.operatorId
-    })
-  }).catch(e => console.warn('Server shift sync:', e.message));
+  try {
+    const res = await fetch('/api/shifts/start', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        id: shiftItem.id,
+        username: currentUser.username,
+        operator: currentUser.name,
+        operatorId: shiftItem.operatorId
+      })
+    });
+    if (res.ok) {
+      const data = await res.json();
+      if (data?.shift?.id && data.shift.id !== shiftItem.id) {
+        shiftItem.id = data.shift.id;
+        state.shifts = deduplicateShiftsClient(state.shifts);
+        saveState();
+      }
+    }
+  } catch (e) {
+    console.warn('Server shift sync:', e.message);
+  }
 
   showToast('Jornada iniciada. Buen trabajo.');
   render();
@@ -19502,23 +19556,36 @@ async function endShift() {
   const endedAt = new Date().toISOString();
   const startedAt = active.startedAt;
 
-  // 1. Optimistic Update Local Inmediato
+  // 1. Optimistic Update Local Inmediato: cerrar todas las jornadas activas del usuario
   state.shifts.forEach(s => {
-    if (!s.endedAt && (s.operatorId === currentUser.authId || s.username === currentUser.username || s.username === currentUser.name)) {
+    const isUser = (currentUser.authId && s.operatorId === currentUser.authId) ||
+                   (s.operatorId === currentUser.username) ||
+                   (currentUser.initials && s.operatorId === currentUser.initials) ||
+                   (s.username === currentUser.username) ||
+                   (s.username === currentUser.name) ||
+                   (s.operator === currentUser.name);
+    if (!s.endedAt && isUser) {
       s.endedAt = endedAt;
     }
   });
+  state.shifts = deduplicateShiftsClient(state.shifts);
   saveState();
 
   // 2. Sincronización en servidor central
-  fetch('/api/shifts/end', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      username: currentUser.username,
-      operatorId: currentUser.authId || currentUser.username
-    })
-  }).catch(e => console.warn('Server end shift sync:', e));
+  try {
+    await fetch('/api/shifts/end', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        username: currentUser.username,
+        operatorId: currentUser.authId || currentUser.username,
+        operator: currentUser.name,
+        endedAt
+      })
+    });
+  } catch (e) {
+    console.warn('Server end shift sync:', e);
+  }
 
   // 3. Sincronización en Supabase si está disponible
   if (backendMode === 'supabase' && supabaseClient && currentUser?.authId) {
@@ -19799,8 +19866,9 @@ window.syncStateFromServer = async function(silent = true) {
     }
 
     if (Array.isArray(serverData.shifts)) {
-      if (JSON.stringify(serverData.shifts) !== JSON.stringify(state.shifts)) {
-        state.shifts = serverData.shifts;
+      const dedupedShifts = deduplicateShiftsClient(serverData.shifts);
+      if (JSON.stringify(dedupedShifts) !== JSON.stringify(state.shifts)) {
+        state.shifts = dedupedShifts;
         changed = true;
       }
     }
