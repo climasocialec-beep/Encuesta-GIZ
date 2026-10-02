@@ -120,7 +120,7 @@
       "lastAttemptAt": "2026-10-01T19:53:52.079Z",
       "rescheduledFor": "",
       "notes": "encuesta realizada",
-      "pendingReason": "no_answer"
+      "pendingReason": null
     },
     {
       "id": "GIZ-005",
@@ -478,7 +478,9 @@
       "last": "1/10/26, 10:28 a. m.",
       "operator": "JC",
       "notes": "Dos llamadas realizadas, timbra y no contesta. Le envié mensaje por Whatsapp y me quedo atenta a la respuesta.",
-      "lastAttemptAt": "2026-10-01T15:28:50.819Z"
+      "lastAttemptAt": "2026-10-01T15:28:50.819Z",
+      "rescheduledFor": "",
+      "pendingReason": "no_answer"
     },
     {
       "id": "GIZ-017",
@@ -501,12 +503,14 @@
       "organization": "Fe y Alegría - CECAL Manta",
       "referencia": "Equipo Técnico Clima Social / GIZ",
       "baseName": "GIZ · OE1 - ProCohesión (Fase III · 2026)",
-      "status": "effective",
+      "status": "no-answer",
       "attempts": 1,
-      "last": "1/10/26, 11:07 a. m.",
+      "last": "1/10/26, 10:33 a. m.",
       "operator": "JC",
-      "notes": "Dos llamadas realizadas, se va directo al buzón. Le envié mensaje por Whatsapp y me quedo atenta a la respuesta. · Encuesta ya realizada en GIZ-020 (Auxiliar De Enfermería)",
-      "lastAttemptAt": "2026-10-01T16:07:03.859Z"
+      "notes": "Dos llamadas realizadas, se va directo al buzón. Le envié mensaje por Whatsapp y me quedo atenta a la respuesta.",
+      "lastAttemptAt": "2026-10-01T15:33:40.644Z",
+      "rescheduledFor": "",
+      "pendingReason": "no_answer"
     },
     {
       "id": "GIZ-018",
@@ -626,7 +630,7 @@
       "lastAttemptAt": "2026-10-01T20:15:52.345Z",
       "rescheduledFor": "",
       "notes": "encuesta realizada",
-      "pendingReason": "no_answer"
+      "pendingReason": null
     },
     {
       "id": "GIZ-022",
@@ -715,8 +719,8 @@
       "operator": "DO",
       "lastAttemptAt": "2026-10-01T18:12:29.864Z",
       "rescheduledFor": "",
-      "notes": "Contesta pero se cerro la llamada y se le envía mensaje whatsapp",
-      "pendingReason": "no_answer"
+      "notes": "",
+      "pendingReason": null
     },
     {
       "id": "GIZ-025",
@@ -984,7 +988,9 @@
       "last": "1/10/26, 1:14 p. m.",
       "operator": "JC",
       "notes": "encuesta realizada",
-      "lastAttemptAt": "2026-10-01T18:14:49.792Z"
+      "lastAttemptAt": "2026-10-01T18:14:49.792Z",
+      "rescheduledFor": "",
+      "pendingReason": null
     },
     {
       "id": "GIZ-034",
@@ -1012,7 +1018,9 @@
       "last": "1/10/26, 2:20 p. m.",
       "operator": "JC",
       "notes": "encuesta realizada",
-      "lastAttemptAt": "2026-10-01T19:20:05.629Z"
+      "lastAttemptAt": "2026-10-01T19:20:05.629Z",
+      "rescheduledFor": "",
+      "pendingReason": null
     },
     {
       "id": "GIZ-035",
@@ -1040,7 +1048,9 @@
       "last": "1/10/26, 2:24 p. m.",
       "operator": "JC",
       "notes": "Dos llamadas realizadas, timbra y no contesta. Le envié mensaje por Whatsapp y me quedo atenta a la respuesta.",
-      "lastAttemptAt": "2026-10-01T19:24:55.845Z"
+      "lastAttemptAt": "2026-10-01T19:24:55.845Z",
+      "rescheduledFor": "",
+      "pendingReason": "no_answer"
     },
     {
       "id": "GIZ-036",
@@ -1068,7 +1078,9 @@
       "last": "1/10/26, 2:35 p. m.",
       "operator": "JC",
       "notes": "encuesta realizada",
-      "lastAttemptAt": "2026-10-01T19:35:05.660Z"
+      "lastAttemptAt": "2026-10-01T19:35:05.660Z",
+      "rescheduledFor": "",
+      "pendingReason": null
     },
     {
       "id": "GIZ-037",
@@ -1096,7 +1108,9 @@
       "last": "1/10/26, 2:45 p. m.",
       "operator": "JC",
       "notes": "encuesta realizada",
-      "lastAttemptAt": "2026-10-01T19:45:55.926Z"
+      "lastAttemptAt": "2026-10-01T19:45:55.926Z",
+      "rescheduledFor": "",
+      "pendingReason": null
     },
     {
       "id": "GIZ-038",
@@ -1124,7 +1138,9 @@
       "last": "1/10/26, 2:47 p. m.",
       "operator": "JC",
       "notes": "Ha desviado la llamada. Le envié mensaje por Whatsapp y me quedo atenta a la respuesta.",
-      "lastAttemptAt": "2026-10-01T19:47:46.139Z"
+      "lastAttemptAt": "2026-10-01T19:47:46.139Z",
+      "rescheduledFor": "",
+      "pendingReason": "no_answer"
     },
     {
       "id": "GIZ-039",
@@ -1152,7 +1168,9 @@
       "last": "1/10/26, 2:56 p. m.",
       "operator": "JC",
       "notes": "Dos llamadas realizadas, se va directo al buzón. Le envié mensaje por Whatsapp y me quedo atenta a la respuesta.",
-      "lastAttemptAt": "2026-10-01T19:56:05.921Z"
+      "lastAttemptAt": "2026-10-01T19:56:05.921Z",
+      "rescheduledFor": "",
+      "pendingReason": "no_answer"
     },
     {
       "id": "GIZ-040",
@@ -1180,7 +1198,9 @@
       "last": "1/10/26, 3:07 p. m.",
       "operator": "JC",
       "notes": "encuesta realizada",
-      "lastAttemptAt": "2026-10-01T20:07:44.533Z"
+      "lastAttemptAt": "2026-10-01T20:07:44.533Z",
+      "rescheduledFor": "",
+      "pendingReason": null
     },
     {
       "id": "GIZ-041",
@@ -1208,7 +1228,9 @@
       "last": "1/10/26, 1:19 p. m.",
       "operator": "DO",
       "notes": "No contesta y se le envía mensaje whatsapp",
-      "lastAttemptAt": "2026-10-01T18:19:15.371Z"
+      "lastAttemptAt": "2026-10-01T18:19:15.371Z",
+      "rescheduledFor": "",
+      "pendingReason": "no_answer"
     },
     {
       "id": "GIZ-042",
@@ -1236,7 +1258,9 @@
       "last": "1/10/26, 1:23 p. m.",
       "operator": "DO",
       "notes": "No contesta y se envía mensaje whatsapp",
-      "lastAttemptAt": "2026-10-01T18:23:11.643Z"
+      "lastAttemptAt": "2026-10-01T18:23:11.643Z",
+      "rescheduledFor": "",
+      "pendingReason": "no_answer"
     },
     {
       "id": "GIZ-043",
@@ -1264,7 +1288,9 @@
       "last": "1/10/26, 1:26 p. m.",
       "operator": "DO",
       "notes": "No contesta y se envía mensaje whatsapp",
-      "lastAttemptAt": "2026-10-01T18:26:57.643Z"
+      "lastAttemptAt": "2026-10-01T18:26:57.643Z",
+      "rescheduledFor": "",
+      "pendingReason": "no_answer"
     },
     {
       "id": "GIZ-044",
@@ -1292,7 +1318,9 @@
       "last": "1/10/26, 1:35 p. m.",
       "operator": "DO",
       "notes": "No contesta y se envía mensaje whatsapp",
-      "lastAttemptAt": "2026-10-01T18:35:43.117Z"
+      "lastAttemptAt": "2026-10-01T18:35:43.117Z",
+      "rescheduledFor": "",
+      "pendingReason": "no_answer"
     },
     {
       "id": "GIZ-045",
@@ -1320,7 +1348,9 @@
       "last": "1/10/26, 2:43 p. m.",
       "operator": "DO",
       "notes": "No contesta y se envía mensaje whatsapp",
-      "lastAttemptAt": "2026-10-01T19:43:53.875Z"
+      "lastAttemptAt": "2026-10-01T19:43:53.875Z",
+      "rescheduledFor": "",
+      "pendingReason": "no_answer"
     },
     {
       "id": "GIZ-046",
@@ -1347,7 +1377,10 @@
       "attempts": 2,
       "last": "1/10/26, 3:00 p. m.",
       "operator": "DO",
-      "lastAttemptAt": "2026-10-01T20:00:26.453Z"
+      "lastAttemptAt": "2026-10-01T20:00:26.453Z",
+      "notes": "",
+      "rescheduledFor": "",
+      "pendingReason": null
     },
     {
       "id": "GIZ-047",
@@ -1374,7 +1407,10 @@
       "attempts": 2,
       "last": "1/10/26, 3:11 p. m.",
       "operator": "DO",
-      "lastAttemptAt": "2026-10-01T20:11:58.319Z"
+      "lastAttemptAt": "2026-10-01T20:11:58.319Z",
+      "notes": "",
+      "rescheduledFor": "",
+      "pendingReason": null
     },
     {
       "id": "GIZ-048",
@@ -1402,7 +1438,9 @@
       "last": "1/10/26, 2:53 p. m.",
       "operator": "DO",
       "notes": "No contesta y se envía mensaje whatsapp",
-      "lastAttemptAt": "2026-10-01T19:53:40.068Z"
+      "lastAttemptAt": "2026-10-01T19:53:40.068Z",
+      "rescheduledFor": "",
+      "pendingReason": "no_answer"
     },
     {
       "id": "GIZ-049",
@@ -1430,7 +1468,9 @@
       "last": "1/10/26, 3:32 p. m.",
       "operator": "DO",
       "notes": "No contesta y se envía mensaje whatsapp",
-      "lastAttemptAt": "2026-10-01T20:32:40.656Z"
+      "lastAttemptAt": "2026-10-01T20:32:40.656Z",
+      "rescheduledFor": "",
+      "pendingReason": "no_answer"
     },
     {
       "id": "GIZ-050",
@@ -1457,7 +1497,10 @@
       "attempts": 1,
       "last": "1/10/26, 3:40 p. m.",
       "operator": "DO",
-      "lastAttemptAt": "2026-10-01T20:40:05.839Z"
+      "lastAttemptAt": "2026-10-01T20:40:05.839Z",
+      "notes": "",
+      "rescheduledFor": "",
+      "pendingReason": null
     },
     {
       "id": "GIZ-051",
@@ -1485,7 +1528,9 @@
       "last": "1/10/26, 3:25 p. m.",
       "operator": "JC",
       "notes": "encuesta realizada",
-      "lastAttemptAt": "2026-10-01T20:25:44.279Z"
+      "lastAttemptAt": "2026-10-01T20:25:44.279Z",
+      "rescheduledFor": "",
+      "pendingReason": null
     },
     {
       "id": "GIZ-052",
@@ -1513,7 +1558,9 @@
       "last": "1/10/26, 3:29 p. m.",
       "operator": "JC",
       "notes": "Dos llamadas realizadas, timbra y no contesta. Le envié mensaje por Whatsapp y me quedo atenta a la respuesta.",
-      "lastAttemptAt": "2026-10-01T20:29:33.473Z"
+      "lastAttemptAt": "2026-10-01T20:29:33.473Z",
+      "rescheduledFor": "",
+      "pendingReason": "no_answer"
     },
     {
       "id": "GIZ-053",
@@ -1541,7 +1588,9 @@
       "last": "1/10/26, 3:31 p. m.",
       "operator": "JC",
       "notes": "tipeé bien el contacto y la operadora dice que el número no es el correcto. Me fijé de nuevo y en verdad no es correcto",
-      "lastAttemptAt": "2026-10-01T20:31:29.208Z"
+      "lastAttemptAt": "2026-10-01T20:31:29.208Z",
+      "rescheduledFor": "",
+      "pendingReason": null
     },
     {
       "id": "GIZ-054",
@@ -1569,7 +1618,9 @@
       "last": "1/10/26, 3:41 p. m.",
       "operator": "JC",
       "notes": "encuesta realizada",
-      "lastAttemptAt": "2026-10-01T20:41:15.715Z"
+      "lastAttemptAt": "2026-10-01T20:41:15.715Z",
+      "rescheduledFor": "",
+      "pendingReason": null
     },
     {
       "id": "GIZ-055",
@@ -1597,7 +1648,9 @@
       "last": "1/10/26, 3:42 p. m.",
       "operator": "JC",
       "notes": "Dos llamadas realizadas, timbra y no contesta. Le envié mensaje por Whatsapp y me quedo atenta a la respuesta.",
-      "lastAttemptAt": "2026-10-01T20:42:00.608Z"
+      "lastAttemptAt": "2026-10-01T20:42:00.608Z",
+      "rescheduledFor": "",
+      "pendingReason": "no_answer"
     },
     {
       "id": "GIZ-056",
@@ -1625,7 +1678,9 @@
       "last": "1/10/26, 3:48 p. m.",
       "operator": "JC",
       "notes": "encuesta realizada",
-      "lastAttemptAt": "2026-10-01T20:48:00.162Z"
+      "lastAttemptAt": "2026-10-01T20:48:00.162Z",
+      "rescheduledFor": "",
+      "pendingReason": null
     },
     {
       "id": "GIZ-057",
@@ -1652,7 +1707,10 @@
       "attempts": 1,
       "last": "1/10/26, 3:27 p. m.",
       "operator": "DO",
-      "lastAttemptAt": "2026-10-01T20:27:57.470Z"
+      "lastAttemptAt": "2026-10-01T20:27:57.470Z",
+      "notes": "",
+      "rescheduledFor": "",
+      "pendingReason": null
     },
     {
       "id": "GIZ-058",
@@ -1679,7 +1737,10 @@
       "attempts": 1,
       "last": "1/10/26, 4:00 p. m.",
       "operator": "DO",
-      "lastAttemptAt": "2026-10-01T21:00:44.439Z"
+      "lastAttemptAt": "2026-10-01T21:00:44.439Z",
+      "notes": "",
+      "rescheduledFor": "",
+      "pendingReason": null
     },
     {
       "id": "GIZ-059",
@@ -1707,7 +1768,9 @@
       "last": "1/10/26, 4:05 p. m.",
       "operator": "DO",
       "notes": "No contesta y se envía mensaje whatsapp",
-      "lastAttemptAt": "2026-10-01T21:05:34.110Z"
+      "lastAttemptAt": "2026-10-01T21:05:34.110Z",
+      "rescheduledFor": "",
+      "pendingReason": "no_answer"
     },
     {
       "id": "GIZ-060",
@@ -1735,7 +1798,9 @@
       "last": "1/10/26, 4:08 p. m.",
       "operator": "DO",
       "rescheduledFor": "2026-10-02T10:00",
-      "lastAttemptAt": "2026-10-01T21:08:48.158Z"
+      "lastAttemptAt": "2026-10-01T21:08:48.158Z",
+      "notes": "",
+      "pendingReason": "rescheduled"
     },
     {
       "id": "GIZ-061",
@@ -1762,7 +1827,10 @@
       "attempts": 1,
       "last": "1/10/26, 4:21 p. m.",
       "operator": "DO",
-      "lastAttemptAt": "2026-10-01T21:21:23.766Z"
+      "lastAttemptAt": "2026-10-01T21:21:23.766Z",
+      "notes": "",
+      "rescheduledFor": "",
+      "pendingReason": null
     },
     {
       "id": "GIZ-062",
@@ -1790,7 +1858,9 @@
       "last": "1/10/26, 3:59 p. m.",
       "operator": "JC",
       "notes": "encuesta realizada",
-      "lastAttemptAt": "2026-10-01T20:59:32.013Z"
+      "lastAttemptAt": "2026-10-01T20:59:32.013Z",
+      "rescheduledFor": "",
+      "pendingReason": null
     },
     {
       "id": "GIZ-063",
@@ -1818,7 +1888,9 @@
       "last": "1/10/26, 4:02 p. m.",
       "operator": "JC",
       "notes": "cuando conteste hay que hacerle la encuesta de belleza 1 y belleza 2",
-      "lastAttemptAt": "2026-10-01T21:02:25.217Z"
+      "lastAttemptAt": "2026-10-01T21:02:25.217Z",
+      "rescheduledFor": "",
+      "pendingReason": "no_answer"
     },
     {
       "id": "GIZ-064",
@@ -1845,7 +1917,10 @@
       "attempts": 1,
       "last": "1/10/26, 4:03 p. m.",
       "operator": "JC",
-      "lastAttemptAt": "2026-10-01T21:03:48.223Z"
+      "lastAttemptAt": "2026-10-01T21:03:48.223Z",
+      "notes": "",
+      "rescheduledFor": "",
+      "pendingReason": null
     },
     {
       "id": "GIZ-065",
@@ -1868,12 +1943,12 @@
       "organization": "Fe y Alegría - CECAL Manta",
       "referencia": "Equipo Técnico Clima Social / GIZ",
       "baseName": "GIZ · OE1 - ProCohesión (Fase III · 2026)",
-      "status": "effective",
-      "attempts": 1,
-      "last": "1/10/26, 3:41 p. m.",
+      "status": "pending",
+      "attempts": 0,
+      "last": "Sin gestión",
       "operator": "JC",
-      "notes": "Encuesta ya realizada en GIZ-054 (Belleza 1)",
-      "lastAttemptAt": "2026-10-01T20:41:15.715Z"
+      "notes": "",
+      "rescheduledFor": ""
     },
     {
       "id": "GIZ-066",
@@ -1901,7 +1976,9 @@
       "last": "1/10/26, 4:05 p. m.",
       "operator": "JC",
       "notes": "cuando contesté también realizar la encuesta de belleza 2",
-      "lastAttemptAt": "2026-10-01T21:05:41.605Z"
+      "lastAttemptAt": "2026-10-01T21:05:41.605Z",
+      "rescheduledFor": "",
+      "pendingReason": "no_answer"
     },
     {
       "id": "GIZ-067",
@@ -1924,12 +2001,14 @@
       "organization": "Fe y Alegría - CECAL Manta",
       "referencia": "Equipo Técnico Clima Social / GIZ",
       "baseName": "GIZ · OE1 - ProCohesión (Fase III · 2026)",
-      "status": "effective",
+      "status": "no-answer",
       "attempts": 1,
-      "last": "1/10/26, 3:48 p. m.",
+      "last": "1/10/26, 4:26 p. m.",
       "operator": "DO",
-      "notes": "No contesta y se envía mensaje whatsapp · Encuesta ya realizada en GIZ-056 (Belleza 1)",
-      "lastAttemptAt": "2026-10-01T20:48:00.162Z"
+      "notes": "No contesta y se envía mensaje whatsapp",
+      "lastAttemptAt": "2026-10-01T21:26:04.837Z",
+      "rescheduledFor": "",
+      "pendingReason": "no_answer"
     },
     {
       "id": "GIZ-068",
@@ -1956,7 +2035,10 @@
       "attempts": 1,
       "last": "1/10/26, 4:35 p. m.",
       "operator": "DO",
-      "lastAttemptAt": "2026-10-01T21:35:40.093Z"
+      "lastAttemptAt": "2026-10-01T21:35:40.093Z",
+      "notes": "",
+      "rescheduledFor": "",
+      "pendingReason": null
     },
     {
       "id": "GIZ-069",
@@ -1983,7 +2065,10 @@
       "attempts": 1,
       "last": "1/10/26, 5:09 p. m.",
       "operator": "DO",
-      "lastAttemptAt": "2026-10-01T22:09:06.355Z"
+      "lastAttemptAt": "2026-10-01T22:09:06.355Z",
+      "notes": "",
+      "rescheduledFor": "",
+      "pendingReason": null
     },
     {
       "id": "GIZ-070",
@@ -2063,7 +2148,9 @@
       "last": "1/10/26, 4:10 p. m.",
       "operator": "JC",
       "notes": "Dos llamadas realizadas, timbra y no contesta. Le envié mensaje por Whatsapp y me quedo atenta a la respuesta.",
-      "lastAttemptAt": "2026-10-01T21:10:34.327Z"
+      "lastAttemptAt": "2026-10-01T21:10:34.327Z",
+      "rescheduledFor": "",
+      "pendingReason": "no_answer"
     },
     {
       "id": "GIZ-073",
@@ -2091,7 +2178,9 @@
       "last": "1/10/26, 4:12 p. m.",
       "operator": "JC",
       "notes": "Dos llamadas realizadas, timbra y no contesta. Le envié mensaje por Whatsapp y me quedo atenta a la respuesta.",
-      "lastAttemptAt": "2026-10-01T21:12:52.029Z"
+      "lastAttemptAt": "2026-10-01T21:12:52.029Z",
+      "rescheduledFor": "",
+      "pendingReason": "no_answer"
     },
     {
       "id": "GIZ-074",
@@ -2119,7 +2208,9 @@
       "last": "1/10/26, 4:24 p. m.",
       "operator": "JC",
       "notes": "encuesta realizada\n0960515811 este es su número\nel número de la base es el de su esposo",
-      "lastAttemptAt": "2026-10-01T21:24:20.016Z"
+      "lastAttemptAt": "2026-10-01T21:24:20.016Z",
+      "rescheduledFor": "",
+      "pendingReason": null
     },
     {
       "id": "GIZ-075",
@@ -2147,7 +2238,9 @@
       "last": "1/10/26, 4:33 p. m.",
       "operator": "JC",
       "notes": "encuesta realizada",
-      "lastAttemptAt": "2026-10-01T21:33:20.725Z"
+      "lastAttemptAt": "2026-10-01T21:33:20.725Z",
+      "rescheduledFor": "",
+      "pendingReason": null
     },
     {
       "id": "GIZ-076",
@@ -2176,7 +2269,8 @@
       "operator": "JC",
       "notes": "su mamá contesto, dijo que a las 7pm ya va a estar con gustavo",
       "rescheduledFor": "2026-10-01T19:00",
-      "lastAttemptAt": "2026-10-01T21:38:41.327Z"
+      "lastAttemptAt": "2026-10-01T21:38:41.327Z",
+      "pendingReason": "rescheduled"
     },
     {
       "id": "GIZ-077",
@@ -2334,7 +2428,9 @@
       "last": "1/10/26, 4:54 p. m.",
       "operator": "JC",
       "notes": "encuesta realizada",
-      "lastAttemptAt": "2026-10-01T21:54:56.174Z"
+      "lastAttemptAt": "2026-10-01T21:54:56.174Z",
+      "rescheduledFor": "",
+      "pendingReason": null
     },
     {
       "id": "GIZ-083",
@@ -2362,7 +2458,9 @@
       "last": "1/10/26, 5:00 p. m.",
       "operator": "JC",
       "notes": "encuesta realizada",
-      "lastAttemptAt": "2026-10-01T22:00:39.488Z"
+      "lastAttemptAt": "2026-10-01T22:00:39.488Z",
+      "rescheduledFor": "",
+      "pendingReason": null
     },
     {
       "id": "GIZ-084",
@@ -2390,7 +2488,9 @@
       "last": "1/10/26, 5:14 p. m.",
       "operator": "JC",
       "notes": "encuesta realizada",
-      "lastAttemptAt": "2026-10-01T22:14:12.392Z"
+      "lastAttemptAt": "2026-10-01T22:14:12.392Z",
+      "rescheduledFor": "",
+      "pendingReason": null
     },
     {
       "id": "GIZ-085",
@@ -2725,12 +2825,12 @@
       "organization": "Fe y Alegría - CECAL Manta",
       "referencia": "Equipo Técnico Clima Social / GIZ",
       "baseName": "GIZ · OE1 - ProCohesión (Fase III · 2026)",
-      "status": "effective",
-      "attempts": 1,
-      "last": "1/10/26, 10:48 a. m.",
+      "status": "pending",
+      "attempts": 0,
+      "last": "Sin gestión",
       "operator": "DO",
-      "notes": "Encuesta ya realizada en GIZ-010 (Panadería 1)",
-      "lastAttemptAt": "2026-10-01T15:48:41.421Z"
+      "notes": "",
+      "rescheduledFor": ""
     },
     {
       "id": "GIZ-098",
@@ -2779,12 +2879,12 @@
       "organization": "Fe y Alegría - CECAL Manta",
       "referencia": "Equipo Técnico Clima Social / GIZ",
       "baseName": "GIZ · OE1 - ProCohesión (Fase III · 2026)",
-      "status": "effective",
-      "attempts": 1,
-      "last": "1/10/26, 11:35 a. m.",
+      "status": "pending",
+      "attempts": 0,
+      "last": "Sin gestión",
       "operator": "DO",
-      "notes": "Encuesta ya realizada en GIZ-015 (Panadería 1)",
-      "lastAttemptAt": "2026-10-01T16:35:31.672Z"
+      "notes": "",
+      "rescheduledFor": ""
     },
     {
       "id": "GIZ-100",
@@ -2807,12 +2907,12 @@
       "organization": "Fe y Alegría - CECAL Manta",
       "referencia": "Equipo Técnico Clima Social / GIZ",
       "baseName": "GIZ · OE1 - ProCohesión (Fase III · 2026)",
-      "status": "effective",
-      "attempts": 1,
-      "last": "1/10/26, 3:48 p. m.",
+      "status": "pending",
+      "attempts": 0,
+      "last": "Sin gestión",
       "operator": "DO",
-      "notes": "Encuesta ya realizada en GIZ-056 (Belleza 1)",
-      "lastAttemptAt": "2026-10-01T20:48:00.162Z"
+      "notes": "",
+      "rescheduledFor": ""
     },
     {
       "id": "GIZ-101",

@@ -425,6 +425,15 @@ function loadServerState() {
 
 function reconcileContactsWithHistory() {
   if (!serverState || !Array.isArray(serverState.history) || !Array.isArray(serverState.contacts)) return;
+
+  let initialContactsMap = new Map();
+  if (fs.existsSync(INITIAL_CONTACTS_FILE)) {
+    try {
+      const arr = JSON.parse(fs.readFileSync(INITIAL_CONTACTS_FILE, 'utf8'));
+      if (Array.isArray(arr)) initialContactsMap = new Map(arr.map(c => [c.id, c]));
+    } catch {}
+  }
+
   const historyByContact = new Map();
   serverState.history.forEach(h => {
     if (!h || !h.id) return;
@@ -434,51 +443,31 @@ function reconcileContactsWithHistory() {
 
   serverState.contacts.forEach(c => {
     const list = historyByContact.get(c.id);
-    if (list && list.length > 0) {
+    const base = initialContactsMap.get(c.id);
+    if (!list || list.length === 0) {
+      if (c.status !== 'pending' || (c.attempts || 0) !== 0 || (c.notes && c.notes.includes('Encuesta ya realizada en'))) {
+        c.status = 'pending';
+        c.attempts = 0;
+        c.last = base ? base.last : 'Sin gestión';
+        c.notes = '';
+        c.rescheduledFor = '';
+        delete c.lastAttemptAt;
+        delete c.pendingReason;
+      }
+    } else {
       list.sort((a, b) => (Number(b.attempt) || 1) - (Number(a.attempt) || 1));
       const latest = list[0];
       const maxAttempt = Number(latest.attempt) || 1;
       const hasEffective = list.some(item => item.result === 'effective');
 
-      if (Number(c.attempts || 0) < maxAttempt || hasEffective) {
-        c.attempts = Math.max(Number(c.attempts || 0), maxAttempt);
-        c.status = hasEffective ? 'effective' : (latest.result || c.status);
-        c.last = latest.date || c.last;
-        c.notes = latest.notes || c.notes;
-        c.lastAttemptAt = latest.rawDate || c.lastAttemptAt;
-        if (latest.operatorInitials) c.operator = latest.operatorInitials;
-      }
-    }
-  });
-
-  // Vinculación y propagación automática de contactos duplicados entre cursos (mismo teléfono o misma persona)
-  const phoneToEff = new Map();
-  const nameToEff = new Map();
-
-  serverState.contacts.forEach(c => {
-    if (c.status === 'effective') {
-      const p = (c.phone || '').trim();
-      if (p && p.length >= 7) phoneToEff.set(p, c);
-      const n = (c.name || '').trim().toLowerCase();
-      if (n && n !== 'no registra') nameToEff.set(n, c);
-    }
-  });
-
-  serverState.contacts.forEach(c => {
-    if (c.status !== 'effective') {
-      const p = (c.phone || '').trim();
-      const n = (c.name || '').trim().toLowerCase();
-      const match = (p && phoneToEff.get(p)) || (n && nameToEff.get(n));
-      if (match) {
-        c.status = 'effective';
-        const linkNote = `Encuesta ya realizada en ${match.id} (${match.courseName || match.name})`;
-        if (!c.notes || !c.notes.includes(match.id)) {
-          c.notes = c.notes ? `${c.notes} · ${linkNote}` : linkNote;
-        }
-        c.last = match.last || c.last;
-        c.lastAttemptAt = match.lastAttemptAt || c.lastAttemptAt;
-        c.attempts = Math.max(Number(c.attempts || 0), 1);
-      }
+      c.attempts = maxAttempt;
+      c.status = hasEffective ? 'effective' : (latest.result || c.status);
+      c.last = latest.date || c.last;
+      c.notes = (latest.notes || '').replace(/\s*·\s*Encuesta ya realizada en.*$/, '').trim();
+      c.rescheduledFor = latest.rescheduledFor || '';
+      c.lastAttemptAt = latest.rawDate || c.lastAttemptAt;
+      if (latest.operatorInitials) c.operator = latest.operatorInitials;
+      c.pendingReason = c.status === 'pending' ? (c.rescheduledFor ? 'rescheduled' : 'pending') : c.status === 'no-answer' ? 'no_answer' : null;
     }
   });
 }
@@ -557,30 +546,6 @@ app.post('/api/calls/save', (req, res) => {
   };
 
   serverState.history.unshift(historyItem);
-
-  // Si la encuesta fue efectiva, propagar inmediatamente a cualquier contacto duplicado en otros cursos
-  if (outcome === 'effective') {
-    const p = (contact.phone || '').trim();
-    const n = (contact.name || '').trim().toLowerCase();
-    serverState.contacts.forEach(other => {
-      if (other.id !== contact.id && other.status !== 'effective') {
-        const otherP = (other.phone || '').trim();
-        const otherN = (other.name || '').trim().toLowerCase();
-        const matchPhone = p && p.length >= 7 && otherP === p;
-        const matchName = n && n !== 'no registra' && otherN === n;
-        if (matchPhone || matchName) {
-          other.status = 'effective';
-          other.last = dateFormatted;
-          other.lastAttemptAt = nowIso;
-          other.attempts = Math.max(Number(other.attempts || 0), 1);
-          const linkNote = `Encuesta ya realizada en ${contact.id} (${contact.courseName || contact.name})`;
-          if (!other.notes || !other.notes.includes(contact.id)) {
-            other.notes = other.notes ? `${other.notes} · ${linkNote}` : linkNote;
-          }
-        }
-      }
-    });
-  }
 
   saveServerState();
 
