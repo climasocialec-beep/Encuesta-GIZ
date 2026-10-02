@@ -438,13 +438,46 @@ function reconcileContactsWithHistory() {
       list.sort((a, b) => (Number(b.attempt) || 1) - (Number(a.attempt) || 1));
       const latest = list[0];
       const maxAttempt = Number(latest.attempt) || 1;
-      if (Number(c.attempts || 0) < maxAttempt) {
-        c.attempts = maxAttempt;
-        c.status = latest.result || c.status;
+      const hasEffective = list.some(item => item.result === 'effective');
+
+      if (Number(c.attempts || 0) < maxAttempt || hasEffective) {
+        c.attempts = Math.max(Number(c.attempts || 0), maxAttempt);
+        c.status = hasEffective ? 'effective' : (latest.result || c.status);
         c.last = latest.date || c.last;
         c.notes = latest.notes || c.notes;
         c.lastAttemptAt = latest.rawDate || c.lastAttemptAt;
         if (latest.operatorInitials) c.operator = latest.operatorInitials;
+      }
+    }
+  });
+
+  // Vinculación y propagación automática de contactos duplicados entre cursos (mismo teléfono o misma persona)
+  const phoneToEff = new Map();
+  const nameToEff = new Map();
+
+  serverState.contacts.forEach(c => {
+    if (c.status === 'effective') {
+      const p = (c.phone || '').trim();
+      if (p && p.length >= 7) phoneToEff.set(p, c);
+      const n = (c.name || '').trim().toLowerCase();
+      if (n && n !== 'no registra') nameToEff.set(n, c);
+    }
+  });
+
+  serverState.contacts.forEach(c => {
+    if (c.status !== 'effective') {
+      const p = (c.phone || '').trim();
+      const n = (c.name || '').trim().toLowerCase();
+      const match = (p && phoneToEff.get(p)) || (n && nameToEff.get(n));
+      if (match) {
+        c.status = 'effective';
+        const linkNote = `Encuesta ya realizada en ${match.id} (${match.courseName || match.name})`;
+        if (!c.notes || !c.notes.includes(match.id)) {
+          c.notes = c.notes ? `${c.notes} · ${linkNote}` : linkNote;
+        }
+        c.last = match.last || c.last;
+        c.lastAttemptAt = match.lastAttemptAt || c.lastAttemptAt;
+        c.attempts = Math.max(Number(c.attempts || 0), 1);
       }
     }
   });
@@ -524,6 +557,31 @@ app.post('/api/calls/save', (req, res) => {
   };
 
   serverState.history.unshift(historyItem);
+
+  // Si la encuesta fue efectiva, propagar inmediatamente a cualquier contacto duplicado en otros cursos
+  if (outcome === 'effective') {
+    const p = (contact.phone || '').trim();
+    const n = (contact.name || '').trim().toLowerCase();
+    serverState.contacts.forEach(other => {
+      if (other.id !== contact.id && other.status !== 'effective') {
+        const otherP = (other.phone || '').trim();
+        const otherN = (other.name || '').trim().toLowerCase();
+        const matchPhone = p && p.length >= 7 && otherP === p;
+        const matchName = n && n !== 'no registra' && otherN === n;
+        if (matchPhone || matchName) {
+          other.status = 'effective';
+          other.last = dateFormatted;
+          other.lastAttemptAt = nowIso;
+          other.attempts = Math.max(Number(other.attempts || 0), 1);
+          const linkNote = `Encuesta ya realizada en ${contact.id} (${contact.courseName || contact.name})`;
+          if (!other.notes || !other.notes.includes(contact.id)) {
+            other.notes = other.notes ? `${other.notes} · ${linkNote}` : linkNote;
+          }
+        }
+      }
+    });
+  }
+
   saveServerState();
 
   return res.json({ success: true, contact, historyItem });
@@ -618,11 +676,20 @@ app.post('/api/sync', (req, res) => {
     clientContacts.forEach(clientContact => {
       const existing = contactMap.get(clientContact.id);
       if (existing) {
+        // REGLA DE ORO: Un contacto ya efectivo NUNCA se degrada a pendiente o no-contesta
+        if (existing.status === 'effective' && clientContact.status !== 'effective') {
+          return;
+        }
+
         const clientAttempts = Number(clientContact.attempts || 0);
         const serverAttempts = Number(existing.attempts || 0);
 
         if (clientAttempts > serverAttempts) {
+          const wasEffective = existing.status === 'effective';
           Object.assign(existing, clientContact);
+          if (wasEffective && existing.status !== 'effective') {
+            existing.status = 'effective';
+          }
         } else if (clientAttempts === serverAttempts) {
           if (clientContact.operator && clientContact.operator !== existing.operator) {
             existing.operator = clientContact.operator;
@@ -632,11 +699,14 @@ app.post('/api/sync', (req, res) => {
           if (clientContact.lastAttemptAt && clientContact.lastAttemptAt > (existing.lastAttemptAt || '')) {
             existing.lastAttemptAt = clientContact.lastAttemptAt;
             existing.last = clientContact.last;
-            existing.status = clientContact.status;
+            if (clientContact.status === 'effective' || existing.status !== 'effective') {
+              existing.status = clientContact.status;
+            }
           }
         }
       }
     });
+    reconcileContactsWithHistory();
   }
 
   if (clientHistory.length > 0) {

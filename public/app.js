@@ -17229,10 +17229,13 @@ window.doOneClickLogin = async function(username) {
 
   currentUser = user;
   sessionStorage.setItem('giz-current-user', JSON.stringify(user));
-  const assigned = visibleContacts();
-  selectedContactId = firstActionable(assigned)?.id || state.contacts[0]?.id;
   activeView = 'operator';
   selectedOutcome = '';
+
+  // Sincronizar inmediatamente con el servidor central para tener los contactos más frescos
+  await window.syncStateFromServer(true);
+  const assigned = visibleContacts();
+  selectedContactId = firstActionable(assigned)?.id || state.contacts[0]?.id;
   render();
 };
 
@@ -19677,6 +19680,31 @@ async function saveCall() {
       };
 
       state.history.unshift(historyItem);
+
+      // Si la encuesta fue efectiva, propagar inmediatamente a cualquier contacto duplicado en otros cursos
+      if (selectedOutcome === 'effective') {
+        const p = (contact.phone || '').trim();
+        const n = (contact.name || '').trim().toLowerCase();
+        state.contacts.forEach(other => {
+          if (other.id !== contact.id && other.status !== 'effective') {
+            const otherP = (other.phone || '').trim();
+            const otherN = (other.name || '').trim().toLowerCase();
+            const matchPhone = p && p.length >= 7 && otherP === p;
+            const matchName = n && n !== 'no registra' && otherN === n;
+            if (matchPhone || matchName) {
+              other.status = 'effective';
+              other.last = dateFormatted;
+              other.lastAttemptAt = nowIso;
+              other.attempts = Math.max(Number(other.attempts || 0), 1);
+              const linkNote = `Encuesta ya realizada en ${contact.id} (${contact.courseName || contact.name})`;
+              if (!other.notes || !other.notes.includes(contact.id)) {
+                other.notes = other.notes ? `${other.notes} · ${linkNote}` : linkNote;
+              }
+            }
+          }
+        });
+      }
+
       saveState();
 
       // Sincronización transparente en background con el servidor central GIZ (0 ms delay en pantalla)
@@ -19836,12 +19864,47 @@ window.syncStateFromServer = async function(silent = true) {
       } else {
         const scAttempts = Number(sc.attempts || 0);
         const lcAttempts = Number(lc.attempts || 0);
-        if (scAttempts > lcAttempts ||
+        if (sc.status === 'effective' && lc.status !== 'effective') {
+          Object.assign(lc, sc);
+          changed = true;
+        } else if (lc.status === 'effective' && sc.status !== 'effective') {
+          // Proteger contacto completado contra degradación
+        } else if (scAttempts > lcAttempts ||
             (scAttempts === lcAttempts && sc.lastAttemptAt && sc.lastAttemptAt !== lc.lastAttemptAt) ||
             sc.status !== lc.status ||
             sc.operator !== lc.operator ||
             sc.notes !== lc.notes) {
           Object.assign(lc, sc);
+          changed = true;
+        }
+      }
+    });
+
+    // Propagación cliente de encuestas ya completadas en contactos duplicados de otros cursos
+    const phoneToEff = new Map();
+    const nameToEff = new Map();
+    state.contacts.forEach(c => {
+      if (c.status === 'effective') {
+        const p = (c.phone || '').trim();
+        if (p && p.length >= 7) phoneToEff.set(p, c);
+        const n = (c.name || '').trim().toLowerCase();
+        if (n && n !== 'no registra') nameToEff.set(n, c);
+      }
+    });
+    state.contacts.forEach(c => {
+      if (c.status !== 'effective') {
+        const p = (c.phone || '').trim();
+        const n = (c.name || '').trim().toLowerCase();
+        const match = (p && phoneToEff.get(p)) || (n && nameToEff.get(n));
+        if (match) {
+          c.status = 'effective';
+          const linkNote = `Encuesta ya realizada en ${match.id} (${match.courseName || match.name})`;
+          if (!c.notes || !c.notes.includes(match.id)) {
+            c.notes = c.notes ? `${c.notes} · ${linkNote}` : linkNote;
+          }
+          c.last = match.last || c.last;
+          c.lastAttemptAt = match.lastAttemptAt || c.lastAttemptAt;
+          c.attempts = Math.max(Number(c.attempts || 0), 1);
           changed = true;
         }
       }
@@ -19933,12 +19996,12 @@ async function bootstrap() {
   await window.syncStateFromServer(true);
   render();
 
-  // Polling automático cada 6 segundos en tiempo real
+  // Polling automático cada 5 segundos en tiempo real (tanto para supervisor como para operadoras)
   setInterval(async () => {
-    if (currentUser?.role === 'supervisor') {
+    if (currentUser) {
       await window.syncStateFromServer(true);
     }
-  }, 6000);
+  }, 5000);
 }
 
 bootstrap();
