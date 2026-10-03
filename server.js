@@ -357,6 +357,15 @@ const INITIAL_CONTACTS_FILE = path.join(DATA_DIR, 'initial_contacts.json');
 
 if (!fs.existsSync(DATA_DIR)) fs.mkdirSync(DATA_DIR, { recursive: true });
 
+const MAX_SHIFT_HOURS = 14;
+
+function isShiftExpired(shift) {
+  if (!shift || !shift.startedAt) return false;
+  const started = new Date(shift.startedAt).getTime();
+  if (isNaN(started)) return false;
+  return (Date.now() - started) > (MAX_SHIFT_HOURS * 3600000);
+}
+
 function deduplicateShifts(shifts) {
   if (!Array.isArray(shifts)) return [];
   const result = [];
@@ -373,7 +382,12 @@ function deduplicateShifts(shifts) {
     });
 
     if (existingIndex === -1) {
-      result.push({ ...shift });
+      const copy = { ...shift };
+      // Auto-cerrar jornadas huérfanas mayores a 14 horas
+      if (!copy.endedAt && isShiftExpired(copy)) {
+        copy.endedAt = new Date(shiftTime + (8 * 3600000)).toISOString();
+      }
+      result.push(copy);
     } else {
       const existing = result[existingIndex];
       if (shift.endedAt && !existing.endedAt) existing.endedAt = shift.endedAt;

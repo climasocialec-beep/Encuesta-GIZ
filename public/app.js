@@ -17036,6 +17036,15 @@ function dayKey(value) { return value ? new Intl.DateTimeFormat('en-CA', { timeZ
 function isPreviousDay(contact) { const last = dayKey(contact.lastAttemptAt); return Boolean(last && last !== dayKey(new Date())); }
 function previousDateLabel(value) { return value ? new Intl.DateTimeFormat('es-EC', { timeZone: 'America/Guayaquil', day: '2-digit', month: '2-digit' }).format(new Date(value)) : 'fecha anterior'; }
 
+const MAX_SHIFT_HOURS = 14;
+
+function isShiftExpired(shift) {
+  if (!shift || !shift.startedAt) return false;
+  const started = new Date(shift.startedAt).getTime();
+  if (isNaN(started)) return false;
+  return (Date.now() - started) > (MAX_SHIFT_HOURS * 3600000);
+}
+
 function deduplicateShiftsClient(shifts) {
   if (!Array.isArray(shifts)) return [];
   const result = [];
@@ -17052,7 +17061,12 @@ function deduplicateShiftsClient(shifts) {
     });
 
     if (existingIndex === -1) {
-      result.push({ ...shift });
+      const copy = { ...shift };
+      // Auto-cerrar jornadas huérfanas que superen el límite máximo de horas
+      if (!copy.endedAt && isShiftExpired(copy)) {
+        copy.endedAt = new Date(shiftTime + (8 * 3600000)).toISOString();
+      }
+      result.push(copy);
     } else {
       const existing = result[existingIndex];
       if (shift.endedAt && !existing.endedAt) existing.endedAt = shift.endedAt;
@@ -17071,6 +17085,10 @@ function getActiveShift(user = currentUser) {
 
   return state.shifts.find(shift => {
     if (shift.endedAt && String(shift.endedAt).trim() !== '' && shift.endedAt !== 'null' && shift.endedAt !== 'undefined') {
+      return false;
+    }
+    // Si la jornada empezó hace más de 14 horas, no se considera activa bajo ninguna circunstancia
+    if (isShiftExpired(shift)) {
       return false;
     }
     return (userAuthId && shift.operatorId === userAuthId) ||
@@ -18658,7 +18676,7 @@ function renderOperatorBoard() {
           </select>
           ${operatorDateFilter ? `<button class="clear-filter-btn" onclick="clearOperatorDateFilter()" type="button" title="Ver todos">✕</button>` : ''}
         </div>
-        <button class="button-secondary end-shift-compact-btn" id="end-shift" type="button">Finalizar jornada</button>
+        <button class="button-secondary end-shift-compact-btn" id="end-shift" type="button" title="Finalizar jornada actual y registrar horas de trabajo">⏹ Finalizar jornada</button>
       </div>
     </header>
 
