@@ -17973,7 +17973,7 @@ function renderOperator() {
 
 function renderContactColumn(title, description, items, tone, selectedContact) {
   const currentQuery = columnSearchQueries[tone] || '';
-  return `<section class="contact-column ${tone}"><div class="contact-column-header"><div><h2>${title}</h2><p>${description}</p></div><strong>${items.length}</strong></div><div class="column-search-wrap"><input class="column-search" data-column-search="${tone}" type="search" placeholder="Buscar por nombre o teléfono..." value="${escapeHtml(currentQuery)}" aria-label="Buscar en ${title}" autocomplete="off" /></div><div class="contact-column-list">${items.length ? items.map(item => `<button class="contact-board-card ${selectedContact && item.id === selectedContact.id ? 'selected' : ''}" data-contact-id="${item.id}"><div class="contact-board-card-top"><span class="contact-board-initials">${initials(item.name)}</span><span class="contact-board-status">${item.rescheduledFor ? '⏰ Reprogramado' : (item.attempts ? `${item.attempts} intento${item.attempts === 1 ? '' : 's'}` : 'Nuevo')}</span></div><strong>${escapeHtml(item.name)}</strong><span style="font-family:var(--font-mono);font-size:11.5px;color:#10b981;font-weight:700;">📞 ${escapeHtml(item.phone)}</span><small style="color:var(--text-muted);">📍 ${escapeHtml(item.barrio || item.parish)} &bull; ${escapeHtml(item.courseName || 'GIZ')}</small>${item.rescheduledFor ? `<span class="card-rescheduled-badge">⏰ ${escapeHtml(formatRescheduleDate(item.rescheduledFor))}</span>` : ''}</button>`).join('') : '<div class="column-empty">No hay contactos aquí.</div>'}</div></section>`;
+  return `<section class="contact-column ${tone}"><div class="contact-column-header"><div><h2>${title}</h2><p>${description}</p></div><strong>${items.length}</strong></div><div class="column-search-wrap"><input class="column-search" data-column-search="${tone}" type="search" placeholder="Buscar por nombre o teléfono..." value="${escapeHtml(currentQuery)}" aria-label="Buscar en ${title}" autocomplete="off" /></div><div class="contact-column-list">${items.length ? items.map(item => `<button class="contact-board-card ${selectedContact && item.id === selectedContact.id ? 'selected' : ''}" data-contact-id="${item.id}"><div class="contact-board-card-top"><span class="contact-board-initials">${initials(item.name)}</span><span class="contact-board-status">${item.rescheduledFor ? '⏰ Reprogramado' : (item.attempts ? `${item.attempts} intento${item.attempts === 1 ? '' : 's'}` : 'Nuevo')}</span></div><strong>${escapeHtml(item.name)}</strong><span style="font-family:var(--font-mono);font-size:11.5px;color:#10b981;font-weight:700;">📞 ${escapeHtml(item.phone)}</span><div class="card-course-row"><span class="course-code-pill">${escapeHtml(item.courseCode || 'GIZ')}</span><span class="card-course-name" title="${escapeHtml(item.courseName || '')}">${escapeHtml(item.courseName || 'GIZ')}</span></div><small style="color:var(--text-muted);display:block;margin-top:2px;">📍 ${escapeHtml(item.canton ? `${item.canton} · ` : '')}${escapeHtml(item.barrio || item.parish || '')}</small>${item.rescheduledFor ? `<span class="card-rescheduled-badge">⏰ ${escapeHtml(formatRescheduleDate(item.rescheduledFor))}</span>` : ''}</button>`).join('') : '<div class="column-empty">No hay contactos aquí.</div>'}</div></section>`;
 }
 
 function contactGreetingName(contact) {
@@ -18005,6 +18005,7 @@ function renderSelectedContact(contact) {
           <div class="contact-hero-info">
             <div class="contact-meta-tags">
               <span class="tag-code">COD: ${escapeHtml(contact.id)}</span>
+              ${contact.courseCode ? `<span class="tag-course-code">🎓 CURSO ${escapeHtml(contact.courseCode)}</span>` : ''}
               <span class="tag-attempt">Intento ${contact.attempts + 1} de ${MAX_ATTEMPTS}</span>
               <span class="table-status ${contact.status}">${contactStatusLabel(contact)}</span>
               <span class="tag-recency">📅 Culminó: ${escapeHtml(contact.courseEndDate || '2025')}</span>
@@ -18051,12 +18052,20 @@ function renderSelectedContact(contact) {
               </div>
               <div class="detail-items-list">
                 <div class="detail-row">
+                  <span class="detail-lbl">Código / N.º:</span>
+                  <span class="detail-val"><span class="course-code-pill-lg">🎓 ${escapeHtml(contact.courseCode || 'S/C')}</span></span>
+                </div>
+                <div class="detail-row">
                   <span class="detail-lbl">Curso:</span>
-                  <span class="detail-val highlight">${escapeHtml(courseStr)}</span>
+                  <span class="detail-val highlight"><strong>${escapeHtml(courseStr)}</strong></span>
+                </div>
+                <div class="detail-row">
+                  <span class="detail-lbl">Cantón:</span>
+                  <span class="detail-val"><strong>${escapeHtml(cantonStr)}</strong></span>
                 </div>
                 <div class="detail-row">
                   <span class="detail-lbl">Ubicación:</span>
-                  <span class="detail-val"><strong>${escapeHtml(barrioStr)}</strong> &bull; ${escapeHtml(cantonStr)}</span>
+                  <span class="detail-val">${escapeHtml(barrioStr)}</span>
                 </div>
                 <div class="detail-row">
                   <span class="detail-lbl">Inicio:</span>
@@ -18259,7 +18268,7 @@ function renderSelectedContact(contact) {
           <div class="script-step-item">
             <span class="step-num-badge">3. Motivo</span>
             <div class="script-step-text">
-              "Queremos invitarle a responder una breve encuesta sobre cómo ha aplicado los conocimientos adquiridos en el curso en el que participó: <strong>${escapeHtml(courseStr)}</strong>, facilitado por <strong>${escapeHtml(orgStr)}</strong>. Esta información nos permitirá conocer la utilidad de los procesos de formación y contribuir a mejorar el trabajo que realiza la GIZ junto con sus socios en territorio."
+              "Queremos invitarle a responder una breve encuesta sobre cómo ha aplicado los conocimientos adquiridos en el curso en el que participó: <strong>${escapeHtml(courseStr)}</strong>${contact.courseCode ? ` (Código <strong>${escapeHtml(contact.courseCode)}</strong>)` : ''}, facilitado por <strong>${escapeHtml(orgStr)}</strong> en <strong>${escapeHtml(cantonStr)}</strong>. Esta información nos permitirá conocer la utilidad de los procesos de formación y contribuir a mejorar el trabajo que realiza la GIZ junto con sus socios en territorio."
             </div>
           </div>
 
@@ -18484,7 +18493,7 @@ function renderOperatorSearchResults(assigned, query) {
             <span class="search-avatar">${initials(c.name)}</span>
             <div class="search-item-info">
               <strong>${escapeHtml(c.name)}</strong>
-              <span>📞 ${escapeHtml(c.phone)} · 📍 ${escapeHtml(c.barrio || c.parish || 'S/N')}</span>
+              <span>📞 ${escapeHtml(c.phone)} · ${c.courseCode ? `<span class="search-course-code">${escapeHtml(c.courseCode)}</span> ` : ''}${escapeHtml(c.courseName || '')} · 📍 ${escapeHtml(c.canton || c.barrio || c.parish || 'S/N')}</span>
             </div>
           </div>
           <div class="search-item-right">
@@ -18572,7 +18581,7 @@ function renderOperatorBoard() {
   if (operatorCourseFilter) {
     filteredQueue = filteredQueue.filter(item => item.courseCode === operatorCourseFilter || item.courseName === operatorCourseFilter);
   }
-  const operatorCourses = [...new Map(allAssigned.map(c => [c.courseCode || c.courseName, { code: c.courseCode, name: c.courseName }])).values()]
+  const operatorCourses = [...new Map(allAssigned.map(c => [c.courseCode || c.courseName, { code: c.courseCode, name: c.courseName, canton: c.canton }])).values()]
     .sort((a, b) => (a.code || '').localeCompare(b.code || ''));
 
   const selected = getContact(selectedContactId);
@@ -18656,7 +18665,8 @@ function renderOperatorBoard() {
             <option value="" ${!operatorCourseFilter ? 'selected' : ''}>🎓 Todos los cursos (${allAssigned.length})</option>
             ${operatorCourses.map(c => {
               const countInCourse = allAssigned.filter(item => (item.courseCode === c.code || item.courseName === c.name)).length;
-              return `<option value="${escapeHtml(c.code || c.name)}" ${operatorCourseFilter === (c.code || c.name) ? 'selected' : ''}>${escapeHtml(c.code ? `${c.code} · ${c.name}` : c.name)} (${countInCourse})</option>`;
+              const label = c.code ? `${c.code} · ${c.name}${c.canton ? ` (${c.canton})` : ''}` : `${c.name}${c.canton ? ` (${c.canton})` : ''}`;
+              return `<option value="${escapeHtml(c.code || c.name)}" ${operatorCourseFilter === (c.code || c.name) ? 'selected' : ''}>${escapeHtml(label)} (${countInCourse})</option>`;
             }).join('')}
           </select>
           ${operatorCourseFilter ? `<button class="clear-filter-btn" onclick="clearOperatorCourseFilter()" type="button" title="Ver todos">✕</button>` : ''}
@@ -18934,7 +18944,10 @@ function contactRows(contacts, showAssignment = false) {
       </td>
       <td>
         <div style="display:flex;flex-direction:column;gap:2px;">
-          <strong style="color:var(--primary);font-size:12px;">${escapeHtml(contact.courseName || 'Salud Sexual y Reproductiva')}</strong>
+          <div style="display:flex;align-items:center;gap:5px;">
+            ${contact.courseCode ? `<span class="course-code-pill">${escapeHtml(contact.courseCode)}</span>` : ''}
+            <strong style="color:var(--primary);font-size:12px;">${escapeHtml(contact.courseName || 'Salud Sexual y Reproductiva')}</strong>
+          </div>
           <span style="font-size:10.5px;color:var(--text-muted);font-family:var(--font-mono);">${escapeHtml(contact.courseDates || 'Jun 2025 – Jul 2025')}</span>
         </div>
       </td>

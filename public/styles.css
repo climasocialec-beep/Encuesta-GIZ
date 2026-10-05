@@ -1576,6 +1576,21 @@ h1 {
   letter-spacing: 0.03em;
 }
 
+.tag-course-code {
+  font-family: var(--font-mono);
+  font-size: 11.5px;
+  font-weight: 800;
+  color: #34d399;
+  background: rgba(16, 185, 129, 0.22);
+  border: 1px solid rgba(52, 211, 153, 0.45);
+  padding: 3px 8px;
+  border-radius: 4px;
+  letter-spacing: 0.04em;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
 .tag-attempt {
   font-size: 11.5px;
   font-weight: 700;
@@ -2278,6 +2293,51 @@ h1 {
   font-size: 10px;
   color: var(--text-muted);
   margin-top: 4px;
+}
+
+.card-course-row {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  margin-top: 4px;
+  overflow: hidden;
+}
+
+.course-code-pill {
+  font-family: var(--font-mono);
+  font-size: 9.5px;
+  font-weight: 800;
+  padding: 1.5px 6px;
+  border-radius: 4px;
+  background: rgba(79, 126, 144, 0.16);
+  color: var(--cs-teal-dark);
+  border: 1px solid rgba(79, 126, 144, 0.38);
+  letter-spacing: 0.03em;
+  flex-shrink: 0;
+}
+
+.card-course-name {
+  font-size: 10.5px;
+  font-weight: 600;
+  color: var(--text-soft);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.course-code-pill-lg {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  font-weight: 800;
+  padding: 3px 9px;
+  border-radius: 5px;
+  background: rgba(79, 126, 144, 0.15);
+  color: var(--cs-teal-dark);
+  border: 1px solid rgba(79, 126, 144, 0.38);
+  letter-spacing: 0.03em;
 }
 
 .card-rescheduled-badge {
@@ -3803,6 +3863,19 @@ h1 {
   background: var(--bg-canvas);
   padding: 2px 5px;
   border-radius: 4px;
+}
+
+.search-course-code {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 800;
+  padding: 1px 5px;
+  border-radius: 4px;
+  background: rgba(79, 126, 144, 0.16);
+  color: var(--cs-teal-dark);
+  border: 1px solid rgba(79, 126, 144, 0.35);
+  margin-right: 3px;
+  letter-spacing: 0.02em;
 }
 
 .search-no-results {
