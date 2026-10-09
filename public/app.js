@@ -17802,13 +17802,14 @@ function renderSupervisorDashboard() {
   const refused = count('refused');
   const discarded = count('discarded');
   const activeOperators = appUsers.filter(user => user.role === 'operator' && getActiveShift(user)).length;
+  const totalCalls = (state.history || []).length || managed;
 
   return `
     ${pageHeading('Monitoreo de campo', 'Estado de la operación GIZ', 'Supervisa en tiempo real el avance de encuestas asistidas, reprogramaciones y reintentos.', '<div style="display:flex;gap:8px;"><button class="button-secondary" onclick="exportHistoryXlsx()">⬇ Exportar Excel</button><button class="button-primary" data-view-action="import" onclick="event.stopPropagation(); openImportView()"><span class="plus">+</span> Importar base</button></div>')}
     <section class="metric-grid supervisor-kpis">
       ${metricCard('Operadores en jornada', activeOperators, 'de 3 operadores', '')}
       ${metricCard('Contactos asignados', assigned, `de ${total} en base`, '')}
-      ${metricCard('Gestiones realizadas', managed, 'llamadas registradas', '')}
+      ${metricCard('Gestiones realizadas', totalCalls, `en ${managed} participantes`, '')}
       ${metricCard('Encuestas en vivo', effective, 'efectivas Kobo', 'trend-up')}
       ${metricCard('Reprogramadas', rescheduled, 'citas pendientes', '')}
       ${metricCard('No contestan', noAnswer, 'reintentos 1 y 2', '')}
@@ -17830,7 +17831,7 @@ function renderSupervisorDashboard() {
         </div>
         <div class="operation-summary-list">
           <div><span class="summary-dot assigned"></span><strong>Asignados</strong><b>${assigned}</b></div>
-          <div><span class="summary-dot managed"></span><strong>Gestionados</strong><b>${managed}</b></div>
+          <div><span class="summary-dot managed"></span><strong>Gestiones totales</strong><b>${totalCalls} (${managed} cont.)</b></div>
           <div><span class="summary-dot effective"></span><strong>Efectivas en vivo</strong><b>${effective}</b></div>
           <div><span class="summary-dot pending"></span><strong>Reprogramadas</strong><b>${rescheduled}</b></div>
           <div><span class="summary-dot no-answer"></span><strong>No contestan</strong><b>${noAnswer}</b></div>
@@ -20177,10 +20178,27 @@ window.syncStateFromServer = async function(silent = true) {
         const scAttempts = Number(sc.attempts || 0);
         const lcAttempts = Number(lc.attempts || 0);
         const scHasEff = sc.status === 'effective';
-        const isResidualLinkedEff = lc.status === 'effective' && !scHasEff && (lc.notes || '').includes('Encuesta ya realizada en');
-        if (isResidualLinkedEff || scAttempts > lcAttempts ||
+        const lcHasEff = lc.status === 'effective';
+
+        // 1. INMUNIDAD DE EFECTIVAS: Si ya es efectiva en cliente o servidor, SIEMPRE permanece efectiva
+        if (scHasEff && !lcHasEff) {
+          Object.assign(lc, sc);
+          changed = true;
+          return;
+        }
+        if (lcHasEff && !scHasEff) {
+          // El cliente local ya completó la encuesta: NUNCA degradar a pendiente
+          return;
+        }
+
+        // 2. Si el cliente local tiene más intentos que el servidor, proteger datos locales
+        if (lcAttempts > scAttempts) {
+          return;
+        }
+
+        // 3. Si el servidor tiene más intentos o datos más recientes, actualizar
+        if (scAttempts > lcAttempts ||
             (scAttempts === lcAttempts && sc.lastAttemptAt && sc.lastAttemptAt !== lc.lastAttemptAt) ||
-            sc.status !== lc.status ||
             sc.operator !== lc.operator ||
             sc.notes !== lc.notes) {
           Object.assign(lc, sc);
@@ -20189,6 +20207,7 @@ window.syncStateFromServer = async function(silent = true) {
       }
     });
 
+    let unpushedHistory = [];
     if (Array.isArray(serverData.history)) {
       const allHistoryMap = new Map();
       (serverData.history || []).forEach(h => {
@@ -20197,6 +20216,7 @@ window.syncStateFromServer = async function(silent = true) {
       (state.history || []).forEach(h => {
         if (h && h.id && !allHistoryMap.has(`${h.id}-${h.attempt}`)) {
           allHistoryMap.set(`${h.id}-${h.attempt}`, h);
+          unpushedHistory.push(h);
           changed = true;
         }
       });
@@ -20205,6 +20225,15 @@ window.syncStateFromServer = async function(silent = true) {
         state.history = mergedHist;
         changed = true;
       }
+    }
+
+    // Auto-Push bidireccional si el cliente tiene llamadas que el servidor no tiene
+    if (unpushedHistory.length > 0) {
+      fetch('/api/sync/push', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ history: unpushedHistory })
+      }).catch(err => console.warn('Sync push notice:', err.message));
     }
 
     if (Array.isArray(serverData.shifts)) {

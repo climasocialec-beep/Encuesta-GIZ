@@ -459,6 +459,10 @@ function reconcileContactsWithHistory() {
     const list = historyByContact.get(c.id);
     const base = initialContactsMap.get(c.id);
     if (!list || list.length === 0) {
+      if (c.status === 'effective') {
+        // Inmunidad de efectivas
+        return;
+      }
       if (c.status !== 'pending' || (c.attempts || 0) !== 0 || (c.notes && c.notes.includes('Encuesta ya realizada en'))) {
         c.status = 'pending';
         c.attempts = 0;
@@ -475,7 +479,7 @@ function reconcileContactsWithHistory() {
       const hasEffective = list.some(item => item.result === 'effective');
 
       c.attempts = maxAttempt;
-      c.status = hasEffective ? 'effective' : (latest.result || c.status);
+      c.status = (c.status === 'effective' || hasEffective) ? 'effective' : (latest.result || c.status);
       c.last = latest.date || c.last;
       c.notes = (latest.notes || '').replace(/\s*·\s*Encuesta ya realizada en.*$/, '').trim();
       c.rescheduledFor = latest.rescheduledFor || '';
@@ -513,6 +517,51 @@ app.get('/api/state', (_req, res) => {
     history: serverState.history,
     shifts: serverState.shifts
   });
+});
+
+// API REST: Push bidireccional desde clientes (para restaurar y respaldar llamadas)
+app.post('/api/sync/push', (req, res) => {
+  if (!serverState) loadServerState();
+  const { history, contacts } = req.body;
+  let changed = false;
+
+  if (Array.isArray(history) && history.length > 0) {
+    const existingKeys = new Set(serverState.history.map(h => `${h.id}-${h.attempt}`));
+    history.forEach(h => {
+      if (h && h.id && !existingKeys.has(`${h.id}-${h.attempt}`)) {
+        serverState.history.unshift(h);
+        existingKeys.add(`${h.id}-${h.attempt}`);
+        changed = true;
+      }
+    });
+  }
+
+  if (Array.isArray(contacts) && contacts.length > 0) {
+    const serverMap = new Map(serverState.contacts.map(c => [c.id, c]));
+    contacts.forEach(cc => {
+      const sc = serverMap.get(cc.id);
+      if (sc) {
+        if (cc.status === 'effective' && sc.status !== 'effective') {
+          sc.status = 'effective';
+          sc.attempts = Math.max(sc.attempts || 0, cc.attempts || 1);
+          sc.last = cc.last || sc.last;
+          if (cc.notes) sc.notes = cc.notes;
+          changed = true;
+        } else if (Number(cc.attempts || 0) > Number(sc.attempts || 0)) {
+          sc.attempts = Number(cc.attempts);
+          sc.status = cc.status;
+          sc.last = cc.last;
+          changed = true;
+        }
+      }
+    });
+  }
+
+  if (changed) {
+    saveServerState();
+  }
+
+  return res.json({ success: true, changed, totalHistory: serverState.history.length });
 });
 
 // API REST: Guardar intento de llamada en cascada en la base general
