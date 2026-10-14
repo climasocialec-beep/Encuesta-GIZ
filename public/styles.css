@@ -1418,6 +1418,14 @@ h1 {
   border-radius: 50%;
 }
 
+.metric-pill.pill-effective {
+  background: rgba(16, 185, 129, 0.12);
+  border-color: rgba(16, 185, 129, 0.35);
+}
+.metric-pill.pill-effective .pill-dot { background: #10b981; }
+.metric-pill.pill-effective .pill-lbl { color: #065f46; }
+.metric-pill.pill-effective strong { color: #047857; }
+
 .metric-pill.pill-new .pill-dot { background: var(--cs-teal); }
 .metric-pill.pill-pending .pill-dot { background: var(--cs-gold); }
 .metric-pill.pill-no-answer .pill-dot { background: var(--cs-coral); }

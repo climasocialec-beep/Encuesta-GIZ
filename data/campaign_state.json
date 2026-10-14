@@ -85,11 +85,12 @@
       "baseName": "GIZ · OE1 - ProCohesión (Fase III · 2026)",
       "status": "effective",
       "attempts": 1,
-      "last": "06/10/26, 03:27 pm",
+      "last": "1/10/26, 12:03 p. m.",
       "operator": "JC",
-      "lastAttemptAt": "2026-10-06T15:27:23.138000",
+      "lastAttemptAt": "2026-10-01T17:03:07.357Z",
       "rescheduledFor": "",
-      "notes": "Encuesta efectiva completada en KoboToolbox"
+      "notes": "Dos llamadas realizadas, timbra y no contesta. Le envié mensaje por Whatsapp y me quedo atenta a la respuesta.",
+      "pendingReason": null
     },
     {
       "id": "GIZ-004",
@@ -234,11 +235,12 @@
       "baseName": "GIZ · OE1 - ProCohesión (Fase III · 2026)",
       "status": "effective",
       "attempts": 1,
-      "last": "02/10/26, 11:05 am",
+      "last": "1/10/26, 12:49 p. m.",
       "operator": "JC",
-      "lastAttemptAt": "2026-10-02T11:05:20.582000",
+      "lastAttemptAt": "2026-10-01T17:49:01.484Z",
       "rescheduledFor": "",
-      "notes": "ninguna"
+      "notes": "Dos llamadas realizadas, timbra y no contesta. Le envié mensaje por Whatsapp y me quedo atenta a la respuesta.",
+      "pendingReason": null
     },
     {
       "id": "GIZ-009",
@@ -351,14 +353,14 @@
       "organization": "Fe y Alegría - CECAL Manta",
       "referencia": "Equipo Técnico Clima Social / GIZ",
       "baseName": "GIZ · OE1 - ProCohesión (Fase III · 2026)",
-      "status": "no-answer",
-      "attempts": 1,
-      "last": "1/10/26, 11:13 a. m.",
+      "status": "effective",
+      "attempts": 3,
+      "last": "14/10/26, 8:29 a. m.",
       "operator": "DO",
-      "lastAttemptAt": "2026-10-01T16:13:37.310Z",
+      "lastAttemptAt": "2026-10-14T13:29:28.578Z",
       "rescheduledFor": "",
-      "notes": "No contesta y se le envía mensaje whatsapp",
-      "pendingReason": "no_answer"
+      "notes": "",
+      "pendingReason": null
     },
     {
       "id": "GIZ-013",
@@ -473,11 +475,12 @@
       "baseName": "GIZ · OE1 - ProCohesión (Fase III · 2026)",
       "status": "effective",
       "attempts": 1,
-      "last": "06/10/26, 03:36 pm",
+      "last": "1/10/26, 10:28 a. m.",
       "operator": "JC",
-      "notes": "Encuesta efectiva completada en KoboToolbox",
-      "lastAttemptAt": "2026-10-06T15:36:27.259000",
-      "rescheduledFor": ""
+      "notes": "Dos llamadas realizadas, timbra y no contesta. Le envié mensaje por Whatsapp y me quedo atenta a la respuesta.",
+      "lastAttemptAt": "2026-10-01T15:28:50.819Z",
+      "rescheduledFor": "",
+      "pendingReason": null
     },
     {
       "id": "GIZ-017",
@@ -502,11 +505,12 @@
       "baseName": "GIZ · OE1 - ProCohesión (Fase III · 2026)",
       "status": "effective",
       "attempts": 1,
-      "last": "06/10/26, 03:45 pm",
+      "last": "1/10/26, 10:33 a. m.",
       "operator": "JC",
-      "notes": "Encuesta realizada con autorización y supervisión materna.",
-      "lastAttemptAt": "2026-10-06T15:45:26.789000",
-      "rescheduledFor": ""
+      "notes": "Dos llamadas realizadas, se va directo al buzón. Le envié mensaje por Whatsapp y me quedo atenta a la respuesta.",
+      "lastAttemptAt": "2026-10-01T15:33:40.644Z",
+      "rescheduledFor": "",
+      "pendingReason": null
     },
     {
       "id": "GIZ-018",
@@ -771,11 +775,12 @@
       "baseName": "GIZ · OE1 - ProCohesión (Fase III · 2026)",
       "status": "effective",
       "attempts": 2,
-      "last": "03/10/26, 09:05 am",
+      "last": "1/10/26, 1:03 p. m.",
       "operator": "DO",
-      "lastAttemptAt": "2026-10-03T09:05:08.115000",
-      "rescheduledFor": "",
-      "notes": "Menor de edad 17 años y realiza la encuesta con la autorización de su madre"
+      "lastAttemptAt": "2026-10-01T18:03:52.393Z",
+      "rescheduledFor": "2026-10-02T14:00",
+      "notes": "",
+      "pendingReason": null
     },
     {
       "id": "GIZ-027",
@@ -1220,11 +1225,12 @@
       "baseName": "GIZ · OE1 - ProCohesión (Fase III · 2026)",
       "status": "effective",
       "attempts": 1,
-      "last": "03/10/26, 09:22 am",
+      "last": "1/10/26, 1:19 p. m.",
       "operator": "DO",
-      "notes": "Encuesta efectiva completada en KoboToolbox",
-      "lastAttemptAt": "2026-10-03T09:22:14.782000",
-      "rescheduledFor": ""
+      "notes": "No contesta y se le envía mensaje whatsapp",
+      "lastAttemptAt": "2026-10-01T18:19:15.371Z",
+      "rescheduledFor": "",
+      "pendingReason": null
     },
     {
       "id": "GIZ-042",
@@ -1249,11 +1255,12 @@
       "baseName": "GIZ · OE1 - ProCohesión (Fase III · 2026)",
       "status": "effective",
       "attempts": 1,
-      "last": "01/10/26, 02:17 pm",
+      "last": "1/10/26, 1:23 p. m.",
       "operator": "DO",
-      "notes": "Ninguna",
-      "lastAttemptAt": "2026-10-01T14:17:46.253000",
-      "rescheduledFor": ""
+      "notes": "No contesta y se envía mensaje whatsapp",
+      "lastAttemptAt": "2026-10-01T18:23:11.643Z",
+      "rescheduledFor": "",
+      "pendingReason": null
     },
     {
       "id": "GIZ-043",
@@ -1308,11 +1315,12 @@
       "baseName": "GIZ · OE1 - ProCohesión (Fase III · 2026)",
       "status": "effective",
       "attempts": 1,
-      "last": "02/10/26, 01:53 pm",
+      "last": "1/10/26, 1:35 p. m.",
       "operator": "DO",
-      "notes": "Ninguna",
-      "lastAttemptAt": "2026-10-02T13:53:08.722000",
-      "rescheduledFor": ""
+      "notes": "No contesta y se envía mensaje whatsapp",
+      "lastAttemptAt": "2026-10-01T18:35:43.117Z",
+      "rescheduledFor": "",
+      "pendingReason": null
     },
     {
       "id": "GIZ-045",
@@ -1637,11 +1645,12 @@
       "baseName": "GIZ · OE1 - ProCohesión (Fase III · 2026)",
       "status": "effective",
       "attempts": 1,
-      "last": "06/10/26, 08:30 am",
+      "last": "1/10/26, 3:42 p. m.",
       "operator": "JC",
-      "notes": "Ninguna",
-      "lastAttemptAt": "2026-10-06T08:30:43.139000",
-      "rescheduledFor": ""
+      "notes": "Dos llamadas realizadas, timbra y no contesta. Le envié mensaje por Whatsapp y me quedo atenta a la respuesta.",
+      "lastAttemptAt": "2026-10-01T20:42:00.608Z",
+      "rescheduledFor": "",
+      "pendingReason": null
     },
     {
       "id": "GIZ-056",
@@ -1786,11 +1795,12 @@
       "baseName": "GIZ · OE1 - ProCohesión (Fase III · 2026)",
       "status": "effective",
       "attempts": 1,
-      "last": "02/10/26, 09:43 am",
+      "last": "1/10/26, 4:08 p. m.",
       "operator": "DO",
-      "rescheduledFor": "",
-      "lastAttemptAt": "2026-10-02T09:43:23.328000",
-      "notes": "Ninguna"
+      "rescheduledFor": "2026-10-02T10:00",
+      "lastAttemptAt": "2026-10-01T21:08:48.158Z",
+      "notes": "",
+      "pendingReason": null
     },
     {
       "id": "GIZ-061",
@@ -1939,7 +1949,8 @@
       "operator": "JC",
       "notes": "ninguna, ella realizó dos encuestas una por cada curso",
       "rescheduledFor": "",
-      "lastAttemptAt": "2026-10-06T09:02:19.990000"
+      "lastAttemptAt": "2026-10-06T09:02:19.990000",
+      "pendingReason": null
     },
     {
       "id": "GIZ-066",
@@ -1964,11 +1975,12 @@
       "baseName": "GIZ · OE1 - ProCohesión (Fase III · 2026)",
       "status": "effective",
       "attempts": 1,
-      "last": "06/10/26, 08:41 am",
+      "last": "1/10/26, 4:05 p. m.",
       "operator": "JC",
-      "notes": "ninguna",
-      "lastAttemptAt": "2026-10-06T08:41:12.032000",
-      "rescheduledFor": ""
+      "notes": "cuando contesté también realizar la encuesta de belleza 2",
+      "lastAttemptAt": "2026-10-01T21:05:41.605Z",
+      "rescheduledFor": "",
+      "pendingReason": null
     },
     {
       "id": "GIZ-067",
@@ -1993,11 +2005,12 @@
       "baseName": "GIZ · OE1 - ProCohesión (Fase III · 2026)",
       "status": "effective",
       "attempts": 1,
-      "last": "02/10/26, 12:05 pm",
+      "last": "1/10/26, 4:26 p. m.",
       "operator": "DO",
-      "notes": "Ninguna",
-      "lastAttemptAt": "2026-10-02T12:05:47.815000",
-      "rescheduledFor": ""
+      "notes": "No contesta y se envía mensaje whatsapp",
+      "lastAttemptAt": "2026-10-01T21:26:04.837Z",
+      "rescheduledFor": "",
+      "pendingReason": null
     },
     {
       "id": "GIZ-068",
@@ -2134,11 +2147,12 @@
       "baseName": "GIZ · OE1 - ProCohesión (Fase III · 2026)",
       "status": "effective",
       "attempts": 1,
-      "last": "02/10/26, 09:03 am",
+      "last": "1/10/26, 4:10 p. m.",
       "operator": "JC",
-      "notes": "ninguna",
-      "lastAttemptAt": "2026-10-02T09:03:02.507000",
-      "rescheduledFor": ""
+      "notes": "Dos llamadas realizadas, timbra y no contesta. Le envié mensaje por Whatsapp y me quedo atenta a la respuesta.",
+      "lastAttemptAt": "2026-10-01T21:10:34.327Z",
+      "rescheduledFor": "",
+      "pendingReason": null
     },
     {
       "id": "GIZ-073",
@@ -2253,11 +2267,12 @@
       "baseName": "GIZ · OE1 - ProCohesión (Fase III · 2026)",
       "status": "effective",
       "attempts": 1,
-      "last": "02/10/26, 03:44 pm",
+      "last": "1/10/26, 4:38 p. m.",
       "operator": "JC",
-      "notes": "encuesta realizada con supervisión materna",
-      "rescheduledFor": "",
-      "lastAttemptAt": "2026-10-02T15:44:36.758000"
+      "notes": "su mamá contesto, dijo que a las 7pm ya va a estar con gustavo",
+      "rescheduledFor": "2026-10-01T19:00",
+      "lastAttemptAt": "2026-10-01T21:38:41.327Z",
+      "pendingReason": null
     },
     {
       "id": "GIZ-077",
@@ -2286,7 +2301,8 @@
       "operator": "DO",
       "lastAttemptAt": "2026-10-02T08:25:03.763000",
       "notes": "Menor de edad 17 años y responde la encuesta en companía y autorización de su madre",
-      "rescheduledFor": ""
+      "rescheduledFor": "",
+      "pendingReason": null
     },
     {
       "id": "GIZ-078",
@@ -2315,7 +2331,8 @@
       "operator": "DO",
       "lastAttemptAt": "2026-10-02T08:37:27.579000",
       "notes": "Ninguna",
-      "rescheduledFor": ""
+      "rescheduledFor": "",
+      "pendingReason": null
     },
     {
       "id": "GIZ-079",
@@ -2344,7 +2361,8 @@
       "operator": "DO",
       "lastAttemptAt": "2026-10-02T09:03:25.881000",
       "notes": "Ninguna",
-      "rescheduledFor": ""
+      "rescheduledFor": "",
+      "pendingReason": null
     },
     {
       "id": "GIZ-080",
@@ -2373,7 +2391,8 @@
       "operator": "DO",
       "lastAttemptAt": "2026-10-02T10:29:50.133000",
       "notes": "Encuesta efectiva completada en KoboToolbox",
-      "rescheduledFor": ""
+      "rescheduledFor": "",
+      "pendingReason": null
     },
     {
       "id": "GIZ-081",
@@ -2518,7 +2537,8 @@
       "operator": "JC",
       "lastAttemptAt": "2026-10-05T10:25:43.852000",
       "notes": "Encuesta efectiva completada en KoboToolbox",
-      "rescheduledFor": ""
+      "rescheduledFor": "",
+      "pendingReason": null
     },
     {
       "id": "GIZ-086",
@@ -2573,7 +2593,8 @@
       "operator": "JC",
       "lastAttemptAt": "2026-10-02T09:36:42.727000",
       "notes": "ninguna",
-      "rescheduledFor": ""
+      "rescheduledFor": "",
+      "pendingReason": null
     },
     {
       "id": "GIZ-088",
@@ -2654,7 +2675,8 @@
       "operator": "JC",
       "lastAttemptAt": "2026-10-02T09:48:41.131000",
       "notes": "ninguna",
-      "rescheduledFor": ""
+      "rescheduledFor": "",
+      "pendingReason": null
     },
     {
       "id": "GIZ-091",
@@ -2735,7 +2757,8 @@
       "operator": "DO",
       "lastAttemptAt": "2026-10-02T09:14:27.406000",
       "notes": "Ninguna",
-      "rescheduledFor": ""
+      "rescheduledFor": "",
+      "pendingReason": null
     },
     {
       "id": "GIZ-094",
@@ -2764,7 +2787,8 @@
       "operator": "DO",
       "lastAttemptAt": "2026-10-02T09:31:14.853000",
       "notes": "Ninguna",
-      "rescheduledFor": ""
+      "rescheduledFor": "",
+      "pendingReason": null
     },
     {
       "id": "GIZ-095",
@@ -2793,7 +2817,8 @@
       "operator": "DO",
       "lastAttemptAt": "2026-10-03T10:01:23.288000",
       "notes": "Menor de edad 17 años y realiza la encuesta con autorización de su madre",
-      "rescheduledFor": ""
+      "rescheduledFor": "",
+      "pendingReason": null
     },
     {
       "id": "GIZ-096",
@@ -2848,7 +2873,8 @@
       "operator": "DO",
       "notes": "Participante solicita que se de cursos en su cantón que es Santa Ana en Manabí",
       "rescheduledFor": "",
-      "lastAttemptAt": "2026-10-03T08:32:49.876000"
+      "lastAttemptAt": "2026-10-03T08:32:49.876000",
+      "pendingReason": null
     },
     {
       "id": "GIZ-098",
@@ -2877,7 +2903,8 @@
       "operator": "DO",
       "lastAttemptAt": "2026-10-03T09:34:38.694000",
       "notes": "Encuesta efectiva completada en KoboToolbox",
-      "rescheduledFor": ""
+      "rescheduledFor": "",
+      "pendingReason": null
     },
     {
       "id": "GIZ-099",
@@ -2906,7 +2933,8 @@
       "operator": "DO",
       "notes": "Ninguna",
       "rescheduledFor": "",
-      "lastAttemptAt": "2026-10-03T08:51:40.453000"
+      "lastAttemptAt": "2026-10-03T08:51:40.453000",
+      "pendingReason": null
     },
     {
       "id": "GIZ-100",
@@ -2929,12 +2957,14 @@
       "organization": "Fe y Alegría - CECAL Manta",
       "referencia": "Equipo Técnico Clima Social / GIZ",
       "baseName": "GIZ · OE1 - ProCohesión (Fase III · 2026)",
-      "status": "pending",
-      "attempts": 0,
-      "last": "Sin gestión",
+      "status": "effective",
+      "attempts": 1,
+      "last": "14/10/26, 8:29 a. m.",
       "operator": "DO",
       "notes": "",
-      "rescheduledFor": ""
+      "rescheduledFor": "",
+      "lastAttemptAt": "2026-10-14T13:29:41.808Z",
+      "pendingReason": null
     },
     {
       "id": "GIZ-101",
@@ -2963,7 +2993,8 @@
       "operator": "DO",
       "lastAttemptAt": "2026-10-02T10:13:20.141000",
       "notes": "Ninguna",
-      "rescheduledFor": ""
+      "rescheduledFor": "",
+      "pendingReason": null
     },
     {
       "id": "GIZ-102",
@@ -2992,7 +3023,8 @@
       "operator": "DO",
       "lastAttemptAt": "2026-10-02T10:37:37.057000",
       "notes": "Ninguna",
-      "rescheduledFor": ""
+      "rescheduledFor": "",
+      "pendingReason": null
     },
     {
       "id": "GIZ-103",
@@ -3021,7 +3053,8 @@
       "operator": "DO",
       "lastAttemptAt": "2026-10-02T10:55:36.415000",
       "notes": "Ninguna",
-      "rescheduledFor": ""
+      "rescheduledFor": "",
+      "pendingReason": null
     },
     {
       "id": "GIZ-104",
@@ -3050,7 +3083,8 @@
       "operator": "JC",
       "lastAttemptAt": "2026-10-02T08:54:33.117000",
       "notes": "encuestada junto a su padre",
-      "rescheduledFor": ""
+      "rescheduledFor": "",
+      "pendingReason": null
     },
     {
       "id": "GIZ-105",
@@ -3105,7 +3139,8 @@
       "operator": "JC",
       "lastAttemptAt": "2026-10-02T10:07:43.675000",
       "notes": "ninguna",
-      "rescheduledFor": ""
+      "rescheduledFor": "",
+      "pendingReason": null
     },
     {
       "id": "GIZ-107",
@@ -3160,7 +3195,8 @@
       "operator": "JC",
       "lastAttemptAt": "2026-10-02T14:42:12.136000",
       "notes": "encuesta realizada con supervisión materna",
-      "rescheduledFor": ""
+      "rescheduledFor": "",
+      "pendingReason": null
     },
     {
       "id": "GIZ-109",
@@ -3319,7 +3355,8 @@
       "operator": "DO",
       "lastAttemptAt": "2026-10-03T21:06:57.304000",
       "notes": "Encuesta efectiva completada en KoboToolbox",
-      "rescheduledFor": ""
+      "rescheduledFor": "",
+      "pendingReason": null
     },
     {
       "id": "GIZ-115",
@@ -3348,7 +3385,8 @@
       "operator": "DO",
       "lastAttemptAt": "2026-10-02T11:51:14.789000",
       "notes": "Menor de 17 años realiza la encuesta con consentimiento de sus padres",
-      "rescheduledFor": ""
+      "rescheduledFor": "",
+      "pendingReason": null
     },
     {
       "id": "GIZ-116",
@@ -3455,7 +3493,8 @@
       "operator": "DO",
       "lastAttemptAt": "2026-10-03T08:19:52.087000",
       "notes": "Menor de edad 16 años y realiza la encuesta con la autorización de sus padres",
-      "rescheduledFor": ""
+      "rescheduledFor": "",
+      "pendingReason": null
     },
     {
       "id": "GIZ-120",
@@ -3562,7 +3601,8 @@
       "operator": "DO",
       "lastAttemptAt": "2026-10-08T22:24:26.759000",
       "notes": "Encuesta efectiva completada en KoboToolbox",
-      "rescheduledFor": ""
+      "rescheduledFor": "",
+      "pendingReason": null
     },
     {
       "id": "GIZ-124",
@@ -3621,7 +3661,8 @@
       "operator": "JC",
       "lastAttemptAt": "2026-10-02T10:32:44.973000",
       "notes": "ninguna",
-      "rescheduledFor": ""
+      "rescheduledFor": "",
+      "pendingReason": null
     },
     {
       "id": "GIZ-126",
@@ -3702,7 +3743,8 @@
       "operator": "JC",
       "lastAttemptAt": "2026-10-03T12:30:10.937000",
       "notes": "Encuesta efectiva completada en KoboToolbox",
-      "rescheduledFor": ""
+      "rescheduledFor": "",
+      "pendingReason": null
     },
     {
       "id": "GIZ-129",
@@ -3783,7 +3825,8 @@
       "operator": "DO",
       "lastAttemptAt": "2026-10-03T10:30:34.132000",
       "notes": "Igualdad para todos los participantes solicita la madre de la menor de edad 16 años que responde la encuesta",
-      "rescheduledFor": ""
+      "rescheduledFor": "",
+      "pendingReason": null
     },
     {
       "id": "GIZ-132",
@@ -3812,7 +3855,8 @@
       "operator": "DO",
       "lastAttemptAt": "2026-10-02T14:21:34.489000",
       "notes": "Menor de edad 16 años responde encuesta con la autorización de la madre",
-      "rescheduledFor": ""
+      "rescheduledFor": "",
+      "pendingReason": null
     },
     {
       "id": "GIZ-133",
@@ -3867,7 +3911,8 @@
       "operator": "DO",
       "lastAttemptAt": "2026-10-03T09:29:21.885000",
       "notes": "Encuesta efectiva completada en KoboToolbox",
-      "rescheduledFor": ""
+      "rescheduledFor": "",
+      "pendingReason": null
     },
     {
       "id": "GIZ-135",
@@ -3922,7 +3967,8 @@
       "operator": "DO",
       "lastAttemptAt": "2026-10-08T09:43:32.264000",
       "notes": "Menor de edad 16 años realiza la encuesta con autorización de su padre",
-      "rescheduledFor": ""
+      "rescheduledFor": "",
+      "pendingReason": null
     },
     {
       "id": "GIZ-137",
@@ -4185,7 +4231,8 @@
       "operator": "DO",
       "lastAttemptAt": "2026-10-03T12:01:22.736000",
       "notes": "Menor edad 16 años aplica encuesta con conocimiento de sus padres",
-      "rescheduledFor": ""
+      "rescheduledFor": "",
+      "pendingReason": null
     },
     {
       "id": "GIZ-147",
@@ -4214,7 +4261,8 @@
       "operator": "DO",
       "lastAttemptAt": "2026-10-03T11:15:25.631000",
       "notes": "Menor de edad 16 años encuesta realiza con la autorización de sus padres",
-      "rescheduledFor": ""
+      "rescheduledFor": "",
+      "pendingReason": null
     },
     {
       "id": "GIZ-148",
@@ -4321,7 +4369,8 @@
       "operator": "DO",
       "lastAttemptAt": "2026-10-03T11:35:00.122000",
       "notes": "Menor de edad 16 años realiza la encuesta con autorización de la madre",
-      "rescheduledFor": ""
+      "rescheduledFor": "",
+      "pendingReason": null
     },
     {
       "id": "GIZ-152",
@@ -4350,7 +4399,8 @@
       "operator": "DO",
       "lastAttemptAt": "2026-10-03T12:34:18.133000",
       "notes": "Encuesta efectiva completada en KoboToolbox",
-      "rescheduledFor": ""
+      "rescheduledFor": "",
+      "pendingReason": null
     },
     {
       "id": "GIZ-153",
@@ -4431,7 +4481,8 @@
       "operator": "JC",
       "lastAttemptAt": "2026-10-03T12:58:20.014000",
       "notes": "ninguna",
-      "rescheduledFor": ""
+      "rescheduledFor": "",
+      "pendingReason": null
     },
     {
       "id": "GIZ-156",
@@ -4460,7 +4511,8 @@
       "operator": "JC",
       "lastAttemptAt": "2026-10-06T09:26:12.958000",
       "notes": "realiza con supervisión materna",
-      "rescheduledFor": ""
+      "rescheduledFor": "",
+      "pendingReason": null
     },
     {
       "id": "GIZ-157",
@@ -4541,7 +4593,8 @@
       "operator": "JC",
       "lastAttemptAt": "2026-10-05T20:19:41.339000",
       "notes": "ninguna",
-      "rescheduledFor": ""
+      "rescheduledFor": "",
+      "pendingReason": null
     },
     {
       "id": "GIZ-160",
@@ -4570,7 +4623,8 @@
       "operator": "JC",
       "lastAttemptAt": "2026-10-06T09:11:26.035000",
       "notes": "Le ha servido como curso básico pero está pensando en pagar un curso complementario",
-      "rescheduledFor": ""
+      "rescheduledFor": "",
+      "pendingReason": null
     },
     {
       "id": "GIZ-161",
@@ -4625,7 +4679,8 @@
       "operator": "DO",
       "lastAttemptAt": "2026-10-03T12:10:38.984000",
       "notes": "Encuesta responde la madre del participante por seguridad, ya que es menor de edad 16 años",
-      "rescheduledFor": ""
+      "rescheduledFor": "",
+      "pendingReason": null
     },
     {
       "id": "GIZ-163",
@@ -4732,7 +4787,8 @@
       "operator": "DO",
       "lastAttemptAt": "2026-10-08T11:42:42.849000",
       "notes": "Menor de edad 16 años responde encuesta con autorización de su padre",
-      "rescheduledFor": ""
+      "rescheduledFor": "",
+      "pendingReason": null
     },
     {
       "id": "GIZ-167",
@@ -4891,7 +4947,8 @@
       "operator": "DO",
       "lastAttemptAt": "2026-10-05T08:19:15.447000",
       "notes": "La madre de la menor 16 años, responde encuesta por seguridad",
-      "rescheduledFor": ""
+      "rescheduledFor": "",
+      "pendingReason": null
     },
     {
       "id": "GIZ-173",
@@ -4920,7 +4977,8 @@
       "operator": "DO",
       "lastAttemptAt": "2026-10-05T08:40:28.412000",
       "notes": "Menor de edad 16 años, responde la encuesta con autorización de la madre",
-      "rescheduledFor": ""
+      "rescheduledFor": "",
+      "pendingReason": null
     },
     {
       "id": "GIZ-174",
@@ -5183,7 +5241,8 @@
       "operator": "JC",
       "lastAttemptAt": "2026-10-08T10:13:56.308000",
       "notes": "Encuesta realizada con autorización materna.",
-      "rescheduledFor": ""
+      "rescheduledFor": "",
+      "pendingReason": null
     },
     {
       "id": "GIZ-184",
@@ -5238,7 +5297,8 @@
       "operator": "JC",
       "lastAttemptAt": "2026-10-08T08:40:53.447000",
       "notes": "El curso ayuda bastante y lo aprendido se puede utilizar en el futuro. Me pareció bastante bueno, con ideas interesantes que pueden ayudar a tener libertad financiera.",
-      "rescheduledFor": ""
+      "rescheduledFor": "",
+      "pendingReason": null
     },
     {
       "id": "GIZ-186",
@@ -5345,7 +5405,8 @@
       "operator": "JC",
       "lastAttemptAt": "2026-10-08T08:58:23.169000",
       "notes": "Encuesta realizado con autorización y supervisión materna.",
-      "rescheduledFor": ""
+      "rescheduledFor": "",
+      "pendingReason": null
     },
     {
       "id": "GIZ-190",
@@ -5400,7 +5461,8 @@
       "operator": "JC",
       "lastAttemptAt": "2026-10-08T09:26:21.343000",
       "notes": "Encuesta realizada con autorización del padre.",
-      "rescheduledFor": ""
+      "rescheduledFor": "",
+      "pendingReason": null
     },
     {
       "id": "GIZ-192",
@@ -5663,7 +5725,8 @@
       "operator": "JC",
       "lastAttemptAt": "2026-10-08T17:31:37.769000",
       "notes": "Encuesta realizada con autorización y supervisión materna.",
-      "rescheduledFor": ""
+      "rescheduledFor": "",
+      "pendingReason": null
     },
     {
       "id": "GIZ-202",
@@ -5692,7 +5755,8 @@
       "operator": "JC",
       "lastAttemptAt": "2026-10-08T10:37:47.347000",
       "notes": "Encuesta efectiva completada en KoboToolbox",
-      "rescheduledFor": ""
+      "rescheduledFor": "",
+      "pendingReason": null
     },
     {
       "id": "GIZ-203",
@@ -5799,7 +5863,8 @@
       "operator": "JC",
       "lastAttemptAt": "2026-10-08T11:09:17.281000",
       "notes": "Encuesta realizada con autorización y supervisión paterna.",
-      "rescheduledFor": ""
+      "rescheduledFor": "",
+      "pendingReason": null
     },
     {
       "id": "GIZ-207",
@@ -5958,7 +6023,8 @@
       "operator": "JC",
       "lastAttemptAt": "2026-10-08T11:25:41.336000",
       "notes": "Encuesta realizada con autorización y supervisión materna.",
-      "rescheduledFor": ""
+      "rescheduledFor": "",
+      "pendingReason": null
     },
     {
       "id": "GIZ-213",
@@ -6143,7 +6209,8 @@
       "operator": "JC",
       "lastAttemptAt": "2026-10-09T10:12:47.999000",
       "notes": "ENCUESTA AUTORIZADA Y SUPERVISADA POR LA MADRE",
-      "rescheduledFor": ""
+      "rescheduledFor": "",
+      "pendingReason": null
     },
     {
       "id": "GIZ-220",
@@ -6172,7 +6239,8 @@
       "operator": "JC",
       "lastAttemptAt": "2026-10-08T13:42:52.138000",
       "notes": "Encuesta realizada con autorización y supervisión materna.",
-      "rescheduledFor": ""
+      "rescheduledFor": "",
+      "pendingReason": null
     },
     {
       "id": "GIZ-221",
@@ -6279,7 +6347,8 @@
       "operator": "DO",
       "lastAttemptAt": "2026-10-05T09:41:41.168000",
       "notes": "Encuesta efectiva completada en KoboToolbox",
-      "rescheduledFor": ""
+      "rescheduledFor": "",
+      "pendingReason": null
     },
     {
       "id": "GIZ-225",
@@ -6666,10 +6735,14 @@
       "organization": "Fe y Alegría - CECAL Manta",
       "referencia": "Equipo Técnico Clima Social / GIZ",
       "baseName": "GIZ · OE1 - ProCohesión (Fase III · 2026)",
-      "status": "pending",
-      "attempts": 0,
-      "last": "Sin gestión",
-      "operator": "DO"
+      "status": "effective",
+      "attempts": 1,
+      "last": "14/10/26, 8:22 a. m.",
+      "operator": "DO",
+      "lastAttemptAt": "2026-10-14T13:22:44.237Z",
+      "rescheduledFor": "",
+      "notes": "",
+      "pendingReason": null
     },
     {
       "id": "GIZ-240",
@@ -6796,10 +6869,14 @@
       "organization": "Fe y Alegría - CECAL Manta",
       "referencia": "Equipo Técnico Clima Social / GIZ",
       "baseName": "GIZ · OE1 - ProCohesión (Fase III · 2026)",
-      "status": "pending",
-      "attempts": 0,
-      "last": "Sin gestión",
-      "operator": "DO"
+      "status": "effective",
+      "attempts": 1,
+      "last": "14/10/26, 9:10 a. m.",
+      "operator": "DO",
+      "lastAttemptAt": "2026-10-14T14:10:54.257Z",
+      "rescheduledFor": "",
+      "notes": "",
+      "pendingReason": null
     },
     {
       "id": "GIZ-245",
@@ -6822,10 +6899,14 @@
       "organization": "Fe y Alegría - CECAL Manta",
       "referencia": "Equipo Técnico Clima Social / GIZ",
       "baseName": "GIZ · OE1 - ProCohesión (Fase III · 2026)",
-      "status": "pending",
-      "attempts": 0,
-      "last": "Sin gestión",
-      "operator": "DO"
+      "status": "wrong",
+      "attempts": 1,
+      "last": "14/10/26, 9:12 a. m.",
+      "operator": "DO",
+      "lastAttemptAt": "2026-10-14T14:12:18.675Z",
+      "rescheduledFor": "",
+      "notes": "Buzón de voz dice Número marcado es incorrecto",
+      "pendingReason": null
     },
     {
       "id": "GIZ-246",
@@ -6848,10 +6929,14 @@
       "organization": "Fe y Alegría - CECAL Manta",
       "referencia": "Equipo Técnico Clima Social / GIZ",
       "baseName": "GIZ · OE1 - ProCohesión (Fase III · 2026)",
-      "status": "pending",
-      "attempts": 0,
-      "last": "Sin gestión",
-      "operator": "DO"
+      "status": "effective",
+      "attempts": 1,
+      "last": "14/10/26, 9:19 a. m.",
+      "operator": "DO",
+      "lastAttemptAt": "2026-10-14T14:19:29.519Z",
+      "rescheduledFor": "",
+      "notes": "",
+      "pendingReason": null
     },
     {
       "id": "GIZ-247",
@@ -7082,10 +7167,14 @@
       "organization": "Fe y Alegría - CECAL Manta",
       "referencia": "Equipo Técnico Clima Social / GIZ",
       "baseName": "GIZ · OE1 - ProCohesión (Fase III · 2026)",
-      "status": "pending",
-      "attempts": 0,
-      "last": "Sin gestión",
-      "operator": "DO"
+      "status": "effective",
+      "attempts": 2,
+      "last": "14/10/26, 9:31 a. m.",
+      "operator": "DO",
+      "lastAttemptAt": "2026-10-14T14:31:23.319Z",
+      "rescheduledFor": "2026-10-14T11:00",
+      "notes": "Menor de edad 17 años realiza la encuesta con autorización de su madre",
+      "pendingReason": null
     },
     {
       "id": "GIZ-256",
@@ -7368,10 +7457,14 @@
       "organization": "Fe y Alegría - CECAL Manta",
       "referencia": "Equipo Técnico Clima Social / GIZ",
       "baseName": "GIZ · OE1 - ProCohesión (Fase III · 2026)",
-      "status": "pending",
-      "attempts": 0,
-      "last": "Sin gestión",
-      "operator": "DO"
+      "status": "effective",
+      "attempts": 1,
+      "last": "14/10/26, 8:50 a. m.",
+      "operator": "DO",
+      "lastAttemptAt": "2026-10-14T13:50:29.108Z",
+      "rescheduledFor": "",
+      "notes": "",
+      "pendingReason": null
     },
     {
       "id": "GIZ-267",
@@ -7452,7 +7545,8 @@
       "operator": "JC",
       "lastAttemptAt": "2026-10-03T12:31:39.074000",
       "notes": "ninguna",
-      "rescheduledFor": ""
+      "rescheduledFor": "",
+      "pendingReason": null
     },
     {
       "id": "GIZ-270",
@@ -7481,7 +7575,8 @@
       "operator": "JC",
       "lastAttemptAt": "2026-10-03T12:49:33.744000",
       "notes": "ninguna",
-      "rescheduledFor": ""
+      "rescheduledFor": "",
+      "pendingReason": null
     },
     {
       "id": "GIZ-271",
@@ -7666,7 +7761,8 @@
       "operator": "DO",
       "lastAttemptAt": "2026-10-05T16:48:32.745000",
       "notes": "Encuesta efectiva completada en KoboToolbox",
-      "rescheduledFor": ""
+      "rescheduledFor": "",
+      "pendingReason": null
     },
     {
       "id": "GIZ-278",
@@ -7695,7 +7791,8 @@
       "operator": "DO",
       "lastAttemptAt": "2026-10-05T10:10:05.420000",
       "notes": "Encuesta efectiva completada en KoboToolbox",
-      "rescheduledFor": ""
+      "rescheduledFor": "",
+      "pendingReason": null
     },
     {
       "id": "GIZ-279",
@@ -7802,7 +7899,8 @@
       "operator": "DO",
       "lastAttemptAt": "2026-10-06T08:49:50.517000",
       "notes": "Encuesta efectiva completada en KoboToolbox",
-      "rescheduledFor": ""
+      "rescheduledFor": "",
+      "pendingReason": null
     },
     {
       "id": "GIZ-283",
@@ -8091,7 +8189,8 @@
       "operator": "DO",
       "lastAttemptAt": "2026-10-05T17:53:30.256000",
       "notes": "Encuesta efectiva completada en KoboToolbox",
-      "rescheduledFor": ""
+      "rescheduledFor": "",
+      "pendingReason": null
     },
     {
       "id": "GIZ-294",
@@ -8146,7 +8245,8 @@
       "operator": "DO",
       "lastAttemptAt": "2026-10-05T11:25:07.882000",
       "notes": "Encuesta efectiva completada en KoboToolbox",
-      "rescheduledFor": ""
+      "rescheduledFor": "",
+      "pendingReason": null
     },
     {
       "id": "GIZ-296",
@@ -8175,7 +8275,8 @@
       "operator": "DO",
       "lastAttemptAt": "2026-10-08T13:32:09.899000",
       "notes": "Ninguna",
-      "rescheduledFor": ""
+      "rescheduledFor": "",
+      "pendingReason": null
     },
     {
       "id": "GIZ-297",
@@ -8230,7 +8331,8 @@
       "operator": "DO",
       "lastAttemptAt": "2026-10-08T12:19:23.120000",
       "notes": "Ninguna",
-      "rescheduledFor": ""
+      "rescheduledFor": "",
+      "pendingReason": null
     },
     {
       "id": "GIZ-299",
@@ -8259,7 +8361,8 @@
       "operator": "DO",
       "lastAttemptAt": "2026-10-08T14:19:10.113000",
       "notes": "Participante un poco molesta al final porque no le han entregado el segundo certificado (eso menciono)",
-      "rescheduledFor": ""
+      "rescheduledFor": "",
+      "pendingReason": null
     },
     {
       "id": "GIZ-300",
@@ -8288,7 +8391,8 @@
       "operator": "DO",
       "lastAttemptAt": "2026-10-08T12:29:47.764000",
       "notes": "Ninguna",
-      "rescheduledFor": ""
+      "rescheduledFor": "",
+      "pendingReason": null
     },
     {
       "id": "GIZ-301",
@@ -8343,7 +8447,8 @@
       "operator": "JC",
       "lastAttemptAt": "2026-10-03T08:40:44.577000",
       "notes": "NINGUNA",
-      "rescheduledFor": ""
+      "rescheduledFor": "",
+      "pendingReason": null
     },
     {
       "id": "GIZ-303",
@@ -8372,7 +8477,8 @@
       "operator": "JC",
       "lastAttemptAt": "2026-10-05T17:03:05.868000",
       "notes": "encuesta realizada con supervisión materna",
-      "rescheduledFor": ""
+      "rescheduledFor": "",
+      "pendingReason": null
     },
     {
       "id": "GIZ-304",
@@ -8505,7 +8611,8 @@
       "operator": "JC",
       "lastAttemptAt": "2026-10-03T12:12:57.117000",
       "notes": "encuesta realizada después de haberle realizado la encuesta a la hermana menor",
-      "rescheduledFor": ""
+      "rescheduledFor": "",
+      "pendingReason": null
     },
     {
       "id": "GIZ-309",
@@ -8560,7 +8667,8 @@
       "operator": "DO",
       "lastAttemptAt": "2026-10-08T13:17:31.399000",
       "notes": "Ninguna",
-      "rescheduledFor": ""
+      "rescheduledFor": "",
+      "pendingReason": null
     },
     {
       "id": "GIZ-311",
@@ -8615,7 +8723,8 @@
       "operator": "DO",
       "lastAttemptAt": "2026-10-08T14:39:09.117000",
       "notes": "Participante menciona que le avisen cuando tengan nuevos cursos",
-      "rescheduledFor": ""
+      "rescheduledFor": "",
+      "pendingReason": null
     },
     {
       "id": "GIZ-313",
@@ -8644,7 +8753,8 @@
       "operator": "DO",
       "lastAttemptAt": "2026-10-08T14:54:43.326000",
       "notes": "Ninguna",
-      "rescheduledFor": ""
+      "rescheduledFor": "",
+      "pendingReason": null
     },
     {
       "id": "GIZ-314",
@@ -8699,7 +8809,8 @@
       "operator": "DO",
       "lastAttemptAt": "2026-10-08T15:31:35.981000",
       "notes": "Menor de edad 16 años realiza la encuesta con acompañamiento y autorización de su madre",
-      "rescheduledFor": ""
+      "rescheduledFor": "",
+      "pendingReason": null
     },
     {
       "id": "GIZ-316",
@@ -8728,7 +8839,8 @@
       "operator": "DO",
       "lastAttemptAt": "2026-10-08T16:14:27.640000",
       "notes": "Ninguna",
-      "rescheduledFor": ""
+      "rescheduledFor": "",
+      "pendingReason": null
     },
     {
       "id": "GIZ-317",
@@ -9147,7 +9259,8 @@
       "operator": "DO",
       "lastAttemptAt": "2026-10-08T15:54:49.303000",
       "notes": "Ninguna",
-      "rescheduledFor": ""
+      "rescheduledFor": "",
+      "pendingReason": null
     },
     {
       "id": "GIZ-333",
@@ -9956,7 +10069,8 @@
       "operator": "JC",
       "lastAttemptAt": "2026-10-06T11:01:51.176000",
       "notes": "La participante espera que no se olviden de la comunidad de San Lorenzo",
-      "rescheduledFor": ""
+      "rescheduledFor": "",
+      "pendingReason": null
     },
     {
       "id": "GIZ-364",
@@ -9985,7 +10099,8 @@
       "operator": "JC",
       "lastAttemptAt": "2026-10-06T11:13:45.035000",
       "notes": "Ninguna",
-      "rescheduledFor": ""
+      "rescheduledFor": "",
+      "pendingReason": null
     },
     {
       "id": "GIZ-365",
@@ -10066,7 +10181,8 @@
       "operator": "JC",
       "lastAttemptAt": "2026-10-06T15:05:30.384000",
       "notes": "participante de 16 años realiza la encuesta con la autorización de la madre",
-      "rescheduledFor": ""
+      "rescheduledFor": "",
+      "pendingReason": null
     },
     {
       "id": "GIZ-368",
@@ -10147,7 +10263,8 @@
       "operator": "JC",
       "lastAttemptAt": "2026-10-06T11:52:53.768000",
       "notes": "ninguna",
-      "rescheduledFor": ""
+      "rescheduledFor": "",
+      "pendingReason": null
     },
     {
       "id": "GIZ-371",
@@ -10176,7 +10293,8 @@
       "operator": "JC",
       "lastAttemptAt": "2026-10-06T12:13:07.015000",
       "notes": "NINGUNA",
-      "rescheduledFor": ""
+      "rescheduledFor": "",
+      "pendingReason": null
     },
     {
       "id": "GIZ-372",
@@ -10361,7 +10479,8 @@
       "operator": "JC",
       "lastAttemptAt": "2026-10-08T06:27:27.379000",
       "notes": "Encuesta efectiva completada en KoboToolbox",
-      "rescheduledFor": ""
+      "rescheduledFor": "",
+      "pendingReason": null
     },
     {
       "id": "GIZ-379",
@@ -10390,7 +10509,8 @@
       "operator": "JC",
       "lastAttemptAt": "2026-10-06T14:49:10.242000",
       "notes": "Encuesta efectiva completada en KoboToolbox",
-      "rescheduledFor": ""
+      "rescheduledFor": "",
+      "pendingReason": null
     },
     {
       "id": "GIZ-380",
@@ -10445,7 +10565,8 @@
       "operator": "JC",
       "lastAttemptAt": "2026-10-06T19:15:49.754000",
       "notes": "Encuesta efectiva completada en KoboToolbox",
-      "rescheduledFor": ""
+      "rescheduledFor": "",
+      "pendingReason": null
     },
     {
       "id": "GIZ-382",
@@ -10552,7 +10673,8 @@
       "operator": "DO",
       "lastAttemptAt": "2026-10-02T14:35:10.369000",
       "notes": "La señora comenta que no ha podido terminar el curso",
-      "rescheduledFor": ""
+      "rescheduledFor": "",
+      "pendingReason": null
     },
     {
       "id": "GIZ-386",
@@ -10581,7 +10703,8 @@
       "operator": "DO",
       "lastAttemptAt": "2026-10-02T15:14:18.100000",
       "notes": "Ninguna",
-      "rescheduledFor": ""
+      "rescheduledFor": "",
+      "pendingReason": null
     },
     {
       "id": "GIZ-387",
@@ -10610,7 +10733,8 @@
       "operator": "DO",
       "lastAttemptAt": "2026-10-05T13:00:09.553000",
       "notes": "Ninguna",
-      "rescheduledFor": ""
+      "rescheduledFor": "",
+      "pendingReason": null
     },
     {
       "id": "GIZ-388",
@@ -10639,7 +10763,8 @@
       "operator": "DO",
       "lastAttemptAt": "2026-10-02T15:27:03.266000",
       "notes": "Ninguna",
-      "rescheduledFor": ""
+      "rescheduledFor": "",
+      "pendingReason": null
     },
     {
       "id": "GIZ-389",
@@ -10720,7 +10845,8 @@
       "operator": "DO",
       "lastAttemptAt": "2026-10-02T15:40:57.124000",
       "notes": "El participante solicita que haya mas cursos en la ciudad de Esmeraldas",
-      "rescheduledFor": ""
+      "rescheduledFor": "",
+      "pendingReason": null
     },
     {
       "id": "GIZ-392",
@@ -10749,7 +10875,8 @@
       "operator": "DO",
       "lastAttemptAt": "2026-10-02T16:10:05.651000",
       "notes": "Ninguna",
-      "rescheduledFor": ""
+      "rescheduledFor": "",
+      "pendingReason": null
     },
     {
       "id": "GIZ-393",
@@ -10830,7 +10957,8 @@
       "operator": "DO",
       "lastAttemptAt": "2026-10-02T16:25:37.226000",
       "notes": "Ninguna",
-      "rescheduledFor": ""
+      "rescheduledFor": "",
+      "pendingReason": null
     },
     {
       "id": "GIZ-396",
@@ -10885,7 +11013,8 @@
       "operator": "DO",
       "lastAttemptAt": "2026-10-02T16:46:23.368000",
       "notes": "Ninguna",
-      "rescheduledFor": ""
+      "rescheduledFor": "",
+      "pendingReason": null
     },
     {
       "id": "GIZ-398",
@@ -10940,7 +11069,8 @@
       "operator": "DO",
       "lastAttemptAt": "2026-10-08T08:08:15.517000",
       "notes": "Ninguna",
-      "rescheduledFor": ""
+      "rescheduledFor": "",
+      "pendingReason": null
     },
     {
       "id": "GIZ-400",
@@ -10969,7 +11099,8 @@
       "operator": "DO",
       "lastAttemptAt": "2026-10-08T09:35:27.851000",
       "notes": "Ninguna",
-      "rescheduledFor": ""
+      "rescheduledFor": "",
+      "pendingReason": null
     },
     {
       "id": "GIZ-401",
@@ -10998,7 +11129,8 @@
       "operator": "DO",
       "lastAttemptAt": "2026-10-08T14:10:11.030000",
       "notes": "Ninguna",
-      "rescheduledFor": ""
+      "rescheduledFor": "",
+      "pendingReason": null
     },
     {
       "id": "GIZ-402",
@@ -11053,7 +11185,8 @@
       "operator": "DO",
       "lastAttemptAt": "2026-10-08T08:40:41.304000",
       "notes": "Ninguna",
-      "rescheduledFor": ""
+      "rescheduledFor": "",
+      "pendingReason": null
     },
     {
       "id": "GIZ-404",
@@ -11108,7 +11241,8 @@
       "operator": "DO",
       "lastAttemptAt": "2026-10-08T16:41:27.165000",
       "notes": "Ninguna",
-      "rescheduledFor": ""
+      "rescheduledFor": "",
+      "pendingReason": null
     },
     {
       "id": "GIZ-406",
@@ -11137,7 +11271,8 @@
       "operator": "DO",
       "lastAttemptAt": "2026-10-08T09:04:00.928000",
       "notes": "Ninguna",
-      "rescheduledFor": ""
+      "rescheduledFor": "",
+      "pendingReason": null
     },
     {
       "id": "GIZ-407",
@@ -11192,7 +11327,8 @@
       "operator": "JC",
       "lastAttemptAt": "2026-10-03T11:01:46.738000",
       "notes": "le gusta lo que hace, tienen un grupo en el cual tejen muñequitos",
-      "rescheduledFor": ""
+      "rescheduledFor": "",
+      "pendingReason": null
     },
     {
       "id": "GIZ-412",
@@ -11449,10 +11585,14 @@
       "organization": "ChildFund",
       "referencia": "Equipo Técnico Clima Social / GIZ",
       "baseName": "GIZ · OE1 - ProCohesión (Fase III · 2026)",
-      "status": "pending",
-      "attempts": 0,
-      "last": "Sin gestión",
-      "operator": "DO"
+      "status": "effective",
+      "attempts": 1,
+      "last": "14/10/26, 8:15 a. m.",
+      "operator": "DO",
+      "lastAttemptAt": "2026-10-14T13:15:29.466Z",
+      "rescheduledFor": "",
+      "notes": "",
+      "pendingReason": null
     },
     {
       "id": "GIZ-432",
@@ -11475,10 +11615,14 @@
       "organization": "ChildFund",
       "referencia": "Equipo Técnico Clima Social / GIZ",
       "baseName": "GIZ · OE1 - ProCohesión (Fase III · 2026)",
-      "status": "pending",
-      "attempts": 0,
-      "last": "Sin gestión",
-      "operator": "DO"
+      "status": "effective",
+      "attempts": 1,
+      "last": "14/10/26, 9:16 a. m.",
+      "operator": "DO",
+      "lastAttemptAt": "2026-10-14T14:16:35.211Z",
+      "rescheduledFor": "",
+      "notes": "",
+      "pendingReason": null
     },
     {
       "id": "GIZ-434",
@@ -11501,10 +11645,14 @@
       "organization": "ChildFund",
       "referencia": "Equipo Técnico Clima Social / GIZ",
       "baseName": "GIZ · OE1 - ProCohesión (Fase III · 2026)",
-      "status": "pending",
-      "attempts": 0,
-      "last": "Sin gestión",
-      "operator": "DO"
+      "status": "effective",
+      "attempts": 1,
+      "last": "14/10/26, 9:16 a. m.",
+      "operator": "DO",
+      "lastAttemptAt": "2026-10-14T14:16:38.314Z",
+      "rescheduledFor": "",
+      "notes": "",
+      "pendingReason": null
     },
     {
       "id": "GIZ-437",
@@ -11527,10 +11675,14 @@
       "organization": "ChildFund",
       "referencia": "Equipo Técnico Clima Social / GIZ",
       "baseName": "GIZ · OE1 - ProCohesión (Fase III · 2026)",
-      "status": "pending",
-      "attempts": 0,
-      "last": "Sin gestión",
-      "operator": "DO"
+      "status": "effective",
+      "attempts": 1,
+      "last": "14/10/26, 9:16 a. m.",
+      "operator": "DO",
+      "lastAttemptAt": "2026-10-14T14:16:41.306Z",
+      "rescheduledFor": "",
+      "notes": "",
+      "pendingReason": null
     },
     {
       "id": "GIZ-440",
@@ -11741,7 +11893,8 @@
       "operator": "JC",
       "lastAttemptAt": "2026-10-02T10:15:06.390000",
       "notes": "ninguna",
-      "rescheduledFor": ""
+      "rescheduledFor": "",
+      "pendingReason": null
     },
     {
       "id": "GIZ-452",
@@ -11796,7 +11949,8 @@
       "operator": "JC",
       "lastAttemptAt": "2026-10-02T10:24:27.587000",
       "notes": "ninguna",
-      "rescheduledFor": ""
+      "rescheduledFor": "",
+      "pendingReason": null
     },
     {
       "id": "GIZ-454",
@@ -11851,7 +12005,8 @@
       "operator": "JC",
       "lastAttemptAt": "2026-10-02T10:56:37.293000",
       "notes": "ninguna",
-      "rescheduledFor": ""
+      "rescheduledFor": "",
+      "pendingReason": null
     },
     {
       "id": "GIZ-456",
@@ -11880,7 +12035,8 @@
       "operator": "JC",
       "lastAttemptAt": "2026-10-02T10:41:40.239000",
       "notes": "el curso fue realizado de manera virtual, la participante preferiría que sea de manera presencial",
-      "rescheduledFor": ""
+      "rescheduledFor": "",
+      "pendingReason": null
     },
     {
       "id": "GIZ-457",
@@ -11909,7 +12065,8 @@
       "operator": "JC",
       "lastAttemptAt": "2026-10-08T14:28:42.412000",
       "notes": "Encuesta efectiva completada en KoboToolbox",
-      "rescheduledFor": ""
+      "rescheduledFor": "",
+      "pendingReason": null
     },
     {
       "id": "GIZ-458",
@@ -11938,7 +12095,8 @@
       "operator": "JC",
       "lastAttemptAt": "2026-10-02T11:16:25.475000",
       "notes": "ninguna",
-      "rescheduledFor": ""
+      "rescheduledFor": "",
+      "pendingReason": null
     },
     {
       "id": "GIZ-459",
@@ -11967,7 +12125,8 @@
       "operator": "JC",
       "lastAttemptAt": "2026-10-09T10:35:55.624000",
       "notes": "Como Manifiesto Juvenil Carchi: están a la orden para otras capacitaciones.",
-      "rescheduledFor": ""
+      "rescheduledFor": "",
+      "pendingReason": null
     },
     {
       "id": "GIZ-460",
@@ -12100,7 +12259,8 @@
       "operator": "JC",
       "lastAttemptAt": "2026-10-06T19:03:04.544000",
       "notes": "Encuesta efectiva completada en KoboToolbox",
-      "rescheduledFor": ""
+      "rescheduledFor": "",
+      "pendingReason": null
     },
     {
       "id": "GIZ-465",
@@ -12129,7 +12289,8 @@
       "operator": "JC",
       "lastAttemptAt": "2026-10-02T21:51:02.088000",
       "notes": "Encuesta efectiva completada en KoboToolbox",
-      "rescheduledFor": ""
+      "rescheduledFor": "",
+      "pendingReason": null
     },
     {
       "id": "GIZ-466",
@@ -12184,7 +12345,8 @@
       "operator": "JC",
       "lastAttemptAt": "2026-10-07T12:21:12.020000",
       "notes": "Encuesta efectiva completada en KoboToolbox",
-      "rescheduledFor": ""
+      "rescheduledFor": "",
+      "pendingReason": null
     },
     {
       "id": "GIZ-468",
@@ -12213,7 +12375,8 @@
       "operator": "JC",
       "lastAttemptAt": "2026-10-02T11:48:54.567000",
       "notes": "ninguna",
-      "rescheduledFor": ""
+      "rescheduledFor": "",
+      "pendingReason": null
     },
     {
       "id": "GIZ-469",
@@ -12242,7 +12405,8 @@
       "operator": "JC",
       "lastAttemptAt": "2026-10-02T12:10:08.201000",
       "notes": "NINGUNA",
-      "rescheduledFor": ""
+      "rescheduledFor": "",
+      "pendingReason": null
     },
     {
       "id": "GIZ-470",
@@ -12297,7 +12461,8 @@
       "operator": "JC",
       "lastAttemptAt": "2026-10-02T12:16:48.675000",
       "notes": "NINGUNA",
-      "rescheduledFor": ""
+      "rescheduledFor": "",
+      "pendingReason": null
     },
     {
       "id": "GIZ-472",
@@ -12378,7 +12543,8 @@
       "operator": "JC",
       "lastAttemptAt": "2026-10-07T15:17:33.647000",
       "notes": "Encuesta efectiva completada en KoboToolbox",
-      "rescheduledFor": ""
+      "rescheduledFor": "",
+      "pendingReason": null
     },
     {
       "id": "GIZ-475",
@@ -12407,7 +12573,8 @@
       "operator": "JC",
       "lastAttemptAt": "2026-10-02T14:27:17.435000",
       "notes": "ninguna",
-      "rescheduledFor": ""
+      "rescheduledFor": "",
+      "pendingReason": null
     },
     {
       "id": "GIZ-476",
@@ -12436,7 +12603,8 @@
       "operator": "JC",
       "lastAttemptAt": "2026-10-02T12:33:42.810000",
       "notes": "ninguna",
-      "rescheduledFor": ""
+      "rescheduledFor": "",
+      "pendingReason": null
     },
     {
       "id": "GIZ-477",
@@ -12465,7 +12633,8 @@
       "operator": "JC",
       "lastAttemptAt": "2026-10-02T12:40:35.045000",
       "notes": "ninguna",
-      "rescheduledFor": ""
+      "rescheduledFor": "",
+      "pendingReason": null
     },
     {
       "id": "GIZ-478",
@@ -12572,7 +12741,8 @@
       "operator": "JC",
       "lastAttemptAt": "2026-10-02T16:35:03.233000",
       "notes": "ninguna",
-      "rescheduledFor": ""
+      "rescheduledFor": "",
+      "pendingReason": null
     },
     {
       "id": "GIZ-482",
@@ -12653,7 +12823,8 @@
       "operator": "JC",
       "lastAttemptAt": "2026-10-08T16:05:54.223000",
       "notes": "Encuesta efectiva completada en KoboToolbox",
-      "rescheduledFor": ""
+      "rescheduledFor": "",
+      "pendingReason": null
     },
     {
       "id": "GIZ-485",
@@ -12708,7 +12879,8 @@
       "operator": "JC",
       "lastAttemptAt": "2026-10-02T21:12:54.811000",
       "notes": "Encuesta efectiva completada en KoboToolbox",
-      "rescheduledFor": ""
+      "rescheduledFor": "",
+      "pendingReason": null
     },
     {
       "id": "GIZ-487",
@@ -12737,7 +12909,8 @@
       "operator": "JC",
       "lastAttemptAt": "2026-10-02T15:25:42.738000",
       "notes": "ninguna",
-      "rescheduledFor": ""
+      "rescheduledFor": "",
+      "pendingReason": null
     },
     {
       "id": "GIZ-488",
@@ -12792,7 +12965,8 @@
       "operator": "JC",
       "lastAttemptAt": "2026-10-07T12:50:47.683000",
       "notes": "Encuesta efectiva completada en KoboToolbox",
-      "rescheduledFor": ""
+      "rescheduledFor": "",
+      "pendingReason": null
     },
     {
       "id": "GIZ-490",
@@ -12821,7 +12995,8 @@
       "operator": "JC",
       "lastAttemptAt": "2026-10-02T15:37:46.419000",
       "notes": "ninguna",
-      "rescheduledFor": ""
+      "rescheduledFor": "",
+      "pendingReason": null
     },
     {
       "id": "GIZ-491",
@@ -12850,7 +13025,8 @@
       "operator": "JC",
       "lastAttemptAt": "2026-10-02T15:58:16.756000",
       "notes": "ninguna",
-      "rescheduledFor": ""
+      "rescheduledFor": "",
+      "pendingReason": null
     },
     {
       "id": "GIZ-492",
@@ -12905,7 +13081,8 @@
       "operator": "JC",
       "lastAttemptAt": "2026-10-02T16:21:42.894000",
       "notes": "ninguna",
-      "rescheduledFor": ""
+      "rescheduledFor": "",
+      "pendingReason": null
     },
     {
       "id": "GIZ-494",
@@ -12934,7 +13111,8 @@
       "operator": "JC",
       "lastAttemptAt": "2026-10-02T16:10:56.024000",
       "notes": "ninguna",
-      "rescheduledFor": ""
+      "rescheduledFor": "",
+      "pendingReason": null
     },
     {
       "id": "GIZ-495",
@@ -12963,7 +13141,8 @@
       "operator": "JC",
       "lastAttemptAt": "2026-10-05T16:55:41.848000",
       "notes": "ninguna",
-      "rescheduledFor": ""
+      "rescheduledFor": "",
+      "pendingReason": null
     },
     {
       "id": "GIZ-496",
@@ -12992,7 +13171,8 @@
       "operator": "JC",
       "lastAttemptAt": "2026-10-02T16:45:48.236000",
       "notes": "ninguna",
-      "rescheduledFor": ""
+      "rescheduledFor": "",
+      "pendingReason": null
     },
     {
       "id": "GIZ-497",
@@ -13021,7 +13201,8 @@
       "operator": "JC",
       "lastAttemptAt": "2026-10-07T12:29:21.435000",
       "notes": "Encuesta efectiva completada en KoboToolbox",
-      "rescheduledFor": ""
+      "rescheduledFor": "",
+      "pendingReason": null
     },
     {
       "id": "GIZ-498",
@@ -13128,7 +13309,8 @@
       "operator": "JC",
       "lastAttemptAt": "2026-10-08T17:06:59.995000",
       "notes": "Encuesta efectiva completada en KoboToolbox",
-      "rescheduledFor": ""
+      "rescheduledFor": "",
+      "pendingReason": null
     },
     {
       "id": "GIZ-502",
@@ -13157,7 +13339,8 @@
       "operator": "JC",
       "lastAttemptAt": "2026-10-07T14:41:03.148000",
       "notes": "Encuesta efectiva completada en KoboToolbox",
-      "rescheduledFor": ""
+      "rescheduledFor": "",
+      "pendingReason": null
     },
     {
       "id": "GIZ-503",
@@ -13238,7 +13421,8 @@
       "operator": "JC",
       "lastAttemptAt": "2026-10-07T15:04:49.336000",
       "notes": "Encuesta efectiva completada en KoboToolbox",
-      "rescheduledFor": ""
+      "rescheduledFor": "",
+      "pendingReason": null
     },
     {
       "id": "GIZ-506",
@@ -13267,7 +13451,8 @@
       "operator": "JC",
       "lastAttemptAt": "2026-10-08T16:34:10.262000",
       "notes": "Encuesta efectiva completada en KoboToolbox",
-      "rescheduledFor": ""
+      "rescheduledFor": "",
+      "pendingReason": null
     },
     {
       "id": "GIZ-507",
@@ -13348,7 +13533,8 @@
       "operator": "JC",
       "lastAttemptAt": "2026-10-05T14:49:05.792000",
       "notes": "ninguna",
-      "rescheduledFor": ""
+      "rescheduledFor": "",
+      "pendingReason": null
     },
     {
       "id": "GIZ-510",
@@ -13377,7 +13563,8 @@
       "operator": "JC",
       "lastAttemptAt": "2026-10-07T16:51:15.326000",
       "notes": "Encuesta efectiva completada en KoboToolbox",
-      "rescheduledFor": ""
+      "rescheduledFor": "",
+      "pendingReason": null
     },
     {
       "id": "GIZ-511",
@@ -13406,7 +13593,8 @@
       "operator": "JC",
       "lastAttemptAt": "2026-10-07T15:54:15.520000",
       "notes": "Encuesta efectiva completada en KoboToolbox",
-      "rescheduledFor": ""
+      "rescheduledFor": "",
+      "pendingReason": null
     },
     {
       "id": "GIZ-512",
@@ -13435,7 +13623,8 @@
       "operator": "JC",
       "lastAttemptAt": "2026-10-07T16:04:07.201000",
       "notes": "Para las futuras capacitaciones o implementaciones, sería bueno que también se tome en cuenta la necesidad de adaptar la metodología y los materiales para las personas con discapacidad, según sus necesidades.",
-      "rescheduledFor": ""
+      "rescheduledFor": "",
+      "pendingReason": null
     },
     {
       "id": "GIZ-513",
@@ -13464,7 +13653,8 @@
       "operator": "JC",
       "lastAttemptAt": "2026-10-07T17:34:46.695000",
       "notes": "Encuesta efectiva completada en KoboToolbox",
-      "rescheduledFor": ""
+      "rescheduledFor": "",
+      "pendingReason": null
     },
     {
       "id": "GIZ-514",
@@ -13623,7 +13813,8 @@
       "operator": "DO",
       "lastAttemptAt": "2026-10-07T16:13:06.618000",
       "notes": "Ninguna",
-      "rescheduledFor": ""
+      "rescheduledFor": "",
+      "pendingReason": null
     },
     {
       "id": "GIZ-520",
@@ -13652,7 +13843,8 @@
       "operator": "DO",
       "lastAttemptAt": "2026-10-05T12:12:52.290000",
       "notes": "Ninguna",
-      "rescheduledFor": ""
+      "rescheduledFor": "",
+      "pendingReason": null
     },
     {
       "id": "GIZ-521",
@@ -13681,7 +13873,8 @@
       "operator": "DO",
       "lastAttemptAt": "2026-10-05T11:56:57.603000",
       "notes": "Ninguna",
-      "rescheduledFor": ""
+      "rescheduledFor": "",
+      "pendingReason": null
     },
     {
       "id": "GIZ-522",
@@ -13710,7 +13903,8 @@
       "operator": "DO",
       "lastAttemptAt": "2026-10-05T12:22:52.428000",
       "notes": "Ninguna",
-      "rescheduledFor": ""
+      "rescheduledFor": "",
+      "pendingReason": null
     },
     {
       "id": "GIZ-523",
@@ -13739,7 +13933,8 @@
       "operator": "DO",
       "lastAttemptAt": "2026-10-05T12:42:34.202000",
       "notes": "El participante comenta que no termino el curso por eso no lo ha aplicado",
-      "rescheduledFor": ""
+      "rescheduledFor": "",
+      "pendingReason": null
     },
     {
       "id": "GIZ-524",
@@ -13794,7 +13989,8 @@
       "operator": "DO",
       "lastAttemptAt": "2026-10-05T15:25:27.625000",
       "notes": "Ninguna",
-      "rescheduledFor": ""
+      "rescheduledFor": "",
+      "pendingReason": null
     },
     {
       "id": "GIZ-526",
@@ -13823,7 +14019,8 @@
       "operator": "DO",
       "lastAttemptAt": "2026-10-08T07:59:56.511000",
       "notes": "Participante solicita verbalmente que le llamen para nuevas capacitaciones que estén dictando",
-      "rescheduledFor": ""
+      "rescheduledFor": "",
+      "pendingReason": null
     },
     {
       "id": "GIZ-527",
@@ -13852,7 +14049,8 @@
       "operator": "DO",
       "lastAttemptAt": "2026-10-05T14:02:44.754000",
       "notes": "Ninguna",
-      "rescheduledFor": ""
+      "rescheduledFor": "",
+      "pendingReason": null
     },
     {
       "id": "GIZ-528",
@@ -13881,7 +14079,8 @@
       "operator": "DO",
       "lastAttemptAt": "2026-10-05T16:35:02.358000",
       "notes": "Ninguna",
-      "rescheduledFor": ""
+      "rescheduledFor": "",
+      "pendingReason": null
     },
     {
       "id": "GIZ-529",
@@ -13910,7 +14109,8 @@
       "operator": "DO",
       "lastAttemptAt": "2026-10-05T14:10:24.122000",
       "notes": "Comenta el participante que no le llega el certificado y que por favor lo envíen por correo Gracias",
-      "rescheduledFor": ""
+      "rescheduledFor": "",
+      "pendingReason": null
     },
     {
       "id": "GIZ-530",
@@ -13939,7 +14139,8 @@
       "operator": "DO",
       "lastAttemptAt": "2026-10-05T14:41:46.415000",
       "notes": "Ninguna",
-      "rescheduledFor": ""
+      "rescheduledFor": "",
+      "pendingReason": null
     },
     {
       "id": "GIZ-531",
@@ -13968,7 +14169,8 @@
       "operator": "DO",
       "lastAttemptAt": "2026-10-05T14:59:35.661000",
       "notes": "Ninguna",
-      "rescheduledFor": ""
+      "rescheduledFor": "",
+      "pendingReason": null
     },
     {
       "id": "GIZ-532",
@@ -13997,7 +14199,8 @@
       "operator": "DO",
       "lastAttemptAt": "2026-10-05T15:09:37.711000",
       "notes": "Ninguna",
-      "rescheduledFor": ""
+      "rescheduledFor": "",
+      "pendingReason": null
     },
     {
       "id": "GIZ-533",
@@ -14104,7 +14307,8 @@
       "operator": "DO",
       "lastAttemptAt": "2026-10-05T15:44:38.911000",
       "notes": "Ninguna",
-      "rescheduledFor": ""
+      "rescheduledFor": "",
+      "pendingReason": null
     },
     {
       "id": "GIZ-537",
@@ -14133,7 +14337,8 @@
       "operator": "DO",
       "lastAttemptAt": "2026-10-05T15:57:14.206000",
       "notes": "Ninguna",
-      "rescheduledFor": ""
+      "rescheduledFor": "",
+      "pendingReason": null
     },
     {
       "id": "GIZ-538",
@@ -14162,7 +14367,8 @@
       "operator": "DO",
       "lastAttemptAt": "2026-10-05T16:06:03.274000",
       "notes": "Ninguna",
-      "rescheduledFor": ""
+      "rescheduledFor": "",
+      "pendingReason": null
     },
     {
       "id": "GIZ-539",
@@ -14217,7 +14423,8 @@
       "operator": "DO",
       "lastAttemptAt": "2026-10-07T16:04:19.667000",
       "notes": "Encuesta efectiva completada en KoboToolbox",
-      "rescheduledFor": ""
+      "rescheduledFor": "",
+      "pendingReason": null
     },
     {
       "id": "GIZ-541",
@@ -14246,7 +14453,8 @@
       "operator": "DO",
       "lastAttemptAt": "2026-10-05T16:16:44.267000",
       "notes": "Ninguna",
-      "rescheduledFor": ""
+      "rescheduledFor": "",
+      "pendingReason": null
     },
     {
       "id": "GIZ-542",
@@ -14301,7 +14509,8 @@
       "operator": "DO",
       "lastAttemptAt": "2026-10-06T08:39:12.727000",
       "notes": "Encuesta efectiva completada en KoboToolbox",
-      "rescheduledFor": ""
+      "rescheduledFor": "",
+      "pendingReason": null
     },
     {
       "id": "GIZ-544",
@@ -14330,7 +14539,8 @@
       "operator": "DO",
       "lastAttemptAt": "2026-10-06T09:57:58.235000",
       "notes": "Encuesta efectiva completada en KoboToolbox",
-      "rescheduledFor": ""
+      "rescheduledFor": "",
+      "pendingReason": null
     },
     {
       "id": "GIZ-545",
@@ -14359,7 +14569,8 @@
       "operator": "DO",
       "lastAttemptAt": "2026-10-06T08:39:42.872000",
       "notes": "Ninguna",
-      "rescheduledFor": ""
+      "rescheduledFor": "",
+      "pendingReason": null
     },
     {
       "id": "GIZ-546",
@@ -14388,7 +14599,8 @@
       "operator": "DO",
       "lastAttemptAt": "2026-10-06T08:49:23.300000",
       "notes": "Ninguna",
-      "rescheduledFor": ""
+      "rescheduledFor": "",
+      "pendingReason": null
     },
     {
       "id": "GIZ-547",
@@ -14521,7 +14733,8 @@
       "operator": "DO",
       "lastAttemptAt": "2026-10-06T09:02:42.508000",
       "notes": "Ninguna",
-      "rescheduledFor": ""
+      "rescheduledFor": "",
+      "pendingReason": null
     },
     {
       "id": "GIZ-552",
@@ -14550,7 +14763,8 @@
       "operator": "DO",
       "lastAttemptAt": "2026-10-06T09:42:52.098000",
       "notes": "Ninguna",
-      "rescheduledFor": ""
+      "rescheduledFor": "",
+      "pendingReason": null
     },
     {
       "id": "GIZ-553",
@@ -14605,7 +14819,8 @@
       "operator": "DO",
       "lastAttemptAt": "2026-10-06T10:09:52.263000",
       "notes": "Ninguna",
-      "rescheduledFor": ""
+      "rescheduledFor": "",
+      "pendingReason": null
     },
     {
       "id": "GIZ-555",
@@ -14634,7 +14849,8 @@
       "operator": "DO",
       "lastAttemptAt": "2026-10-06T13:17:11.618000",
       "notes": "Ninguna",
-      "rescheduledFor": ""
+      "rescheduledFor": "",
+      "pendingReason": null
     },
     {
       "id": "GIZ-556",
@@ -14663,7 +14879,8 @@
       "operator": "DO",
       "lastAttemptAt": "2026-10-06T10:42:29.436000",
       "notes": "Ninguna",
-      "rescheduledFor": ""
+      "rescheduledFor": "",
+      "pendingReason": null
     },
     {
       "id": "GIZ-557",
@@ -14692,7 +14909,8 @@
       "operator": "DO",
       "lastAttemptAt": "2026-10-06T11:01:00.953000",
       "notes": "Ninguna",
-      "rescheduledFor": ""
+      "rescheduledFor": "",
+      "pendingReason": null
     },
     {
       "id": "GIZ-558",
@@ -14721,7 +14939,8 @@
       "operator": "DO",
       "lastAttemptAt": "2026-10-06T11:09:52.026000",
       "notes": "Ninguna",
-      "rescheduledFor": ""
+      "rescheduledFor": "",
+      "pendingReason": null
     },
     {
       "id": "GIZ-559",
@@ -14750,7 +14969,8 @@
       "operator": "DO",
       "lastAttemptAt": "2026-10-06T14:27:28.967000",
       "notes": "Encuesta efectiva completada en KoboToolbox",
-      "rescheduledFor": ""
+      "rescheduledFor": "",
+      "pendingReason": null
     },
     {
       "id": "GIZ-560",
@@ -14779,7 +14999,8 @@
       "operator": "DO",
       "lastAttemptAt": "2026-10-06T11:17:35.358000",
       "notes": "Ninguna",
-      "rescheduledFor": ""
+      "rescheduledFor": "",
+      "pendingReason": null
     },
     {
       "id": "GIZ-561",
@@ -14808,7 +15029,8 @@
       "operator": "DO",
       "lastAttemptAt": "2026-10-06T16:01:31.990000",
       "notes": "Ninguna",
-      "rescheduledFor": ""
+      "rescheduledFor": "",
+      "pendingReason": null
     },
     {
       "id": "GIZ-562",
@@ -14837,7 +15059,8 @@
       "operator": "DO",
       "lastAttemptAt": "2026-10-06T11:36:16.705000",
       "notes": "Ninguna",
-      "rescheduledFor": ""
+      "rescheduledFor": "",
+      "pendingReason": null
     },
     {
       "id": "GIZ-563",
@@ -14892,7 +15115,8 @@
       "operator": "DO",
       "lastAttemptAt": "2026-10-07T10:11:40.830000",
       "notes": "Encuesta efectiva completada en KoboToolbox",
-      "rescheduledFor": ""
+      "rescheduledFor": "",
+      "pendingReason": null
     },
     {
       "id": "GIZ-565",
@@ -14921,7 +15145,8 @@
       "operator": "DO",
       "lastAttemptAt": "2026-10-06T12:38:34.402000",
       "notes": "Ninguna",
-      "rescheduledFor": ""
+      "rescheduledFor": "",
+      "pendingReason": null
     },
     {
       "id": "GIZ-566",
@@ -14950,7 +15175,8 @@
       "operator": "DO",
       "lastAttemptAt": "2026-10-06T11:51:22.555000",
       "notes": "Ninguna",
-      "rescheduledFor": ""
+      "rescheduledFor": "",
+      "pendingReason": null
     },
     {
       "id": "GIZ-567",
@@ -14979,7 +15205,8 @@
       "operator": "DO",
       "lastAttemptAt": "2026-10-06T12:42:15.635000",
       "notes": "Encuesta efectiva completada en KoboToolbox",
-      "rescheduledFor": ""
+      "rescheduledFor": "",
+      "pendingReason": null
     },
     {
       "id": "GIZ-568",
@@ -15008,7 +15235,8 @@
       "operator": "DO",
       "lastAttemptAt": "2026-10-06T12:19:10.533000",
       "notes": "Ninguna",
-      "rescheduledFor": ""
+      "rescheduledFor": "",
+      "pendingReason": null
     },
     {
       "id": "GIZ-569",
@@ -15063,7 +15291,8 @@
       "operator": "DO",
       "lastAttemptAt": "2026-10-06T14:42:51.213000",
       "notes": "Ninguna",
-      "rescheduledFor": ""
+      "rescheduledFor": "",
+      "pendingReason": null
     },
     {
       "id": "GIZ-571",
@@ -15118,7 +15347,8 @@
       "operator": "DO",
       "lastAttemptAt": "2026-10-06T13:32:52.469000",
       "notes": "Ninguna",
-      "rescheduledFor": ""
+      "rescheduledFor": "",
+      "pendingReason": null
     },
     {
       "id": "GIZ-573",
@@ -15147,7 +15377,8 @@
       "operator": "DO",
       "lastAttemptAt": "2026-10-06T14:53:32.010000",
       "notes": "Ninguna",
-      "rescheduledFor": ""
+      "rescheduledFor": "",
+      "pendingReason": null
     },
     {
       "id": "GIZ-574",
@@ -15202,7 +15433,8 @@
       "operator": "DO",
       "lastAttemptAt": "2026-10-06T15:06:27.928000",
       "notes": "Ninguna",
-      "rescheduledFor": ""
+      "rescheduledFor": "",
+      "pendingReason": null
     },
     {
       "id": "GIZ-576",
@@ -15283,7 +15515,8 @@
       "operator": "DO",
       "lastAttemptAt": "2026-10-06T15:29:35.547000",
       "notes": "Ninguna",
-      "rescheduledFor": ""
+      "rescheduledFor": "",
+      "pendingReason": null
     },
     {
       "id": "GIZ-579",
@@ -15312,7 +15545,8 @@
       "operator": "DO",
       "lastAttemptAt": "2026-10-06T16:46:08.928000",
       "notes": "Encuesta efectiva completada en KoboToolbox",
-      "rescheduledFor": ""
+      "rescheduledFor": "",
+      "pendingReason": null
     },
     {
       "id": "GIZ-580",
@@ -15393,7 +15627,8 @@
       "operator": "DO",
       "lastAttemptAt": "2026-10-07T08:20:39.852000",
       "notes": "Ninguna",
-      "rescheduledFor": ""
+      "rescheduledFor": "",
+      "pendingReason": null
     },
     {
       "id": "GIZ-583",
@@ -15422,7 +15657,8 @@
       "operator": "JC",
       "lastAttemptAt": "2026-10-05T09:28:03.597000",
       "notes": "ninguna",
-      "rescheduledFor": ""
+      "rescheduledFor": "",
+      "pendingReason": null
     },
     {
       "id": "GIZ-584",
@@ -15451,7 +15687,8 @@
       "operator": "JC",
       "lastAttemptAt": "2026-10-07T11:32:44.588000",
       "notes": "Encuesta efectiva completada en KoboToolbox",
-      "rescheduledFor": ""
+      "rescheduledFor": "",
+      "pendingReason": null
     },
     {
       "id": "GIZ-585",
@@ -15480,7 +15717,8 @@
       "operator": "JC",
       "lastAttemptAt": "2026-10-05T11:48:44.855000",
       "notes": "ninguna",
-      "rescheduledFor": ""
+      "rescheduledFor": "",
+      "pendingReason": null
     },
     {
       "id": "GIZ-586",
@@ -15509,7 +15747,8 @@
       "operator": "JC",
       "lastAttemptAt": "2026-10-07T17:10:25.099000",
       "notes": "Encuesta efectiva completada en KoboToolbox",
-      "rescheduledFor": ""
+      "rescheduledFor": "",
+      "pendingReason": null
     },
     {
       "id": "GIZ-587",
@@ -15538,7 +15777,8 @@
       "operator": "JC",
       "lastAttemptAt": "2026-10-05T12:02:28.138000",
       "notes": "ninguna",
-      "rescheduledFor": ""
+      "rescheduledFor": "",
+      "pendingReason": null
     },
     {
       "id": "GIZ-588",
@@ -15567,7 +15807,8 @@
       "operator": "JC",
       "lastAttemptAt": "2026-10-05T12:16:20.605000",
       "notes": "ninguna",
-      "rescheduledFor": ""
+      "rescheduledFor": "",
+      "pendingReason": null
     },
     {
       "id": "GIZ-589",
@@ -15674,7 +15915,8 @@
       "operator": "JC",
       "lastAttemptAt": "2026-10-05T12:45:02.531000",
       "notes": "ninguna",
-      "rescheduledFor": ""
+      "rescheduledFor": "",
+      "pendingReason": null
     },
     {
       "id": "GIZ-593",
@@ -15703,7 +15945,8 @@
       "operator": "JC",
       "lastAttemptAt": "2026-10-05T12:52:11.796000",
       "notes": "ninguna",
-      "rescheduledFor": ""
+      "rescheduledFor": "",
+      "pendingReason": null
     },
     {
       "id": "GIZ-594",
@@ -15732,7 +15975,8 @@
       "operator": "JC",
       "lastAttemptAt": "2026-10-05T12:31:09.379000",
       "notes": "ninguna",
-      "rescheduledFor": ""
+      "rescheduledFor": "",
+      "pendingReason": null
     },
     {
       "id": "GIZ-595",
@@ -15761,7 +16005,8 @@
       "operator": "JC",
       "lastAttemptAt": "2026-10-05T12:38:26.398000",
       "notes": "ninguna",
-      "rescheduledFor": ""
+      "rescheduledFor": "",
+      "pendingReason": null
     },
     {
       "id": "GIZ-596",
@@ -15790,7 +16035,8 @@
       "operator": "JC",
       "lastAttemptAt": "2026-10-05T15:18:21.139000",
       "notes": "NINGUNA",
-      "rescheduledFor": ""
+      "rescheduledFor": "",
+      "pendingReason": null
     },
     {
       "id": "GIZ-597",
@@ -15819,7 +16065,8 @@
       "operator": "JC",
       "lastAttemptAt": "2026-10-05T14:38:05.018000",
       "notes": "ninguna",
-      "rescheduledFor": ""
+      "rescheduledFor": "",
+      "pendingReason": null
     },
     {
       "id": "GIZ-598",
@@ -15900,7 +16147,8 @@
       "operator": "JC",
       "lastAttemptAt": "2026-10-07T11:52:04.482000",
       "notes": "Muy buena metodología, está bien planteada. Sin embargo, sería recomendable incorporar actividades más dinámicas y didácticas. Aunque ya se han utilizado algunas estrategias, la información puede resultar pesada, extensa y tediosa, por lo que sería conveniente hacerla más interactiva para evitar que se vuelva aburrida y mantener el interés de los participantes.",
-      "rescheduledFor": ""
+      "rescheduledFor": "",
+      "pendingReason": null
     },
     {
       "id": "GIZ-601",
@@ -15955,7 +16203,8 @@
       "operator": "DO",
       "lastAttemptAt": "2026-10-07T08:27:30.452000",
       "notes": "Ninguna",
-      "rescheduledFor": ""
+      "rescheduledFor": "",
+      "pendingReason": null
     },
     {
       "id": "GIZ-603",
@@ -15984,7 +16233,8 @@
       "operator": "DO",
       "lastAttemptAt": "2026-10-07T14:01:53.723000",
       "notes": "La participante inste e que le ayuden con capacitadores para un evento que será de unos 1000 jóvenes para tratar la prevención de la violencia de genero",
-      "rescheduledFor": ""
+      "rescheduledFor": "",
+      "pendingReason": null
     },
     {
       "id": "GIZ-604",
@@ -16039,7 +16289,8 @@
       "operator": "DO",
       "lastAttemptAt": "2026-10-07T08:55:47.148000",
       "notes": "Ninguna",
-      "rescheduledFor": ""
+      "rescheduledFor": "",
+      "pendingReason": null
     },
     {
       "id": "GIZ-606",
@@ -16094,7 +16345,8 @@
       "operator": "DO",
       "lastAttemptAt": "2026-10-07T09:24:16.739000",
       "notes": "Ninguna",
-      "rescheduledFor": ""
+      "rescheduledFor": "",
+      "pendingReason": null
     },
     {
       "id": "GIZ-608",
@@ -16149,7 +16401,8 @@
       "operator": "DO",
       "lastAttemptAt": "2026-10-07T09:48:35.132000",
       "notes": "Ninguna",
-      "rescheduledFor": ""
+      "rescheduledFor": "",
+      "pendingReason": null
     },
     {
       "id": "GIZ-610",
@@ -16178,7 +16431,8 @@
       "operator": "DO",
       "lastAttemptAt": "2026-10-07T14:31:56.035000",
       "notes": "Ninguna",
-      "rescheduledFor": ""
+      "rescheduledFor": "",
+      "pendingReason": null
     },
     {
       "id": "GIZ-611",
@@ -16207,7 +16461,8 @@
       "operator": "DO",
       "lastAttemptAt": "2026-10-07T10:47:37.457000",
       "notes": "Ninguna",
-      "rescheduledFor": ""
+      "rescheduledFor": "",
+      "pendingReason": null
     },
     {
       "id": "GIZ-612",
@@ -16236,7 +16491,8 @@
       "operator": "DO",
       "lastAttemptAt": "2026-10-09T12:40:07.209000",
       "notes": "Encuesta efectiva completada en KoboToolbox",
-      "rescheduledFor": ""
+      "rescheduledFor": "",
+      "pendingReason": null
     },
     {
       "id": "GIZ-613",
@@ -16265,7 +16521,8 @@
       "operator": "DO",
       "lastAttemptAt": "2026-10-07T10:08:30.599000",
       "notes": "Ninguna",
-      "rescheduledFor": ""
+      "rescheduledFor": "",
+      "pendingReason": null
     },
     {
       "id": "GIZ-614",
@@ -16294,7 +16551,8 @@
       "operator": "DO",
       "lastAttemptAt": "2026-10-07T15:03:52.484000",
       "notes": "Ninguna",
-      "rescheduledFor": ""
+      "rescheduledFor": "",
+      "pendingReason": null
     },
     {
       "id": "GIZ-615",
@@ -16375,7 +16633,8 @@
       "operator": "DO",
       "lastAttemptAt": "2026-10-07T10:54:38.878000",
       "notes": "Ninguna",
-      "rescheduledFor": ""
+      "rescheduledFor": "",
+      "pendingReason": null
     },
     {
       "id": "GIZ-618",
@@ -16404,7 +16663,8 @@
       "operator": "DO",
       "lastAttemptAt": "2026-10-07T15:54:51.817000",
       "notes": "Ninguna",
-      "rescheduledFor": ""
+      "rescheduledFor": "",
+      "pendingReason": null
     },
     {
       "id": "GIZ-619",
@@ -16459,7 +16719,8 @@
       "operator": "JC",
       "lastAttemptAt": "2026-10-03T11:19:19.052000",
       "notes": "tienen un taller de danza",
-      "rescheduledFor": ""
+      "rescheduledFor": "",
+      "pendingReason": null
     },
     {
       "id": "GIZ-621",
@@ -16488,7 +16749,8 @@
       "operator": "JC",
       "lastAttemptAt": "2026-10-03T11:32:30.710000",
       "notes": "la participante aparece en la base de datos como asistente al curso c25 de empoderamiento pero, ella no siguió ese curso. Pero sí siguió el c21 de participación comunitaria",
-      "rescheduledFor": ""
+      "rescheduledFor": "",
+      "pendingReason": null
     },
     {
       "id": "GIZ-622",
@@ -16543,7 +16805,8 @@
       "operator": "DO",
       "lastAttemptAt": "2026-10-07T11:25:31.686000",
       "notes": "Ninguna",
-      "rescheduledFor": ""
+      "rescheduledFor": "",
+      "pendingReason": null
     },
     {
       "id": "GIZ-624",
@@ -16650,7 +16913,8 @@
       "operator": "JC",
       "lastAttemptAt": "2026-10-03T08:54:11.455000",
       "notes": "ninguna",
-      "rescheduledFor": ""
+      "rescheduledFor": "",
+      "pendingReason": null
     },
     {
       "id": "GIZ-628",
@@ -16679,7 +16943,8 @@
       "operator": "JC",
       "lastAttemptAt": "2026-10-05T14:40:01.351000",
       "notes": "Encuesta efectiva completada en KoboToolbox",
-      "rescheduledFor": ""
+      "rescheduledFor": "",
+      "pendingReason": null
     },
     {
       "id": "GIZ-629",
@@ -16734,7 +16999,8 @@
       "operator": "JC",
       "lastAttemptAt": "2026-10-03T17:06:53.689000",
       "notes": "ninguna",
-      "rescheduledFor": ""
+      "rescheduledFor": "",
+      "pendingReason": null
     },
     {
       "id": "GIZ-631",
@@ -16763,7 +17029,8 @@
       "operator": "JC",
       "lastAttemptAt": "2026-10-03T09:25:41.037000",
       "notes": "ninguna",
-      "rescheduledFor": ""
+      "rescheduledFor": "",
+      "pendingReason": null
     },
     {
       "id": "GIZ-632",
@@ -16818,7 +17085,8 @@
       "operator": "JC",
       "lastAttemptAt": "2026-10-03T17:18:46.274000",
       "notes": "ninguna",
-      "rescheduledFor": ""
+      "rescheduledFor": "",
+      "pendingReason": null
     },
     {
       "id": "GIZ-634",
@@ -16847,7 +17115,8 @@
       "operator": "JC",
       "lastAttemptAt": "2026-10-05T16:34:57.325000",
       "notes": "ninguna",
-      "rescheduledFor": ""
+      "rescheduledFor": "",
+      "pendingReason": null
     },
     {
       "id": "GIZ-635",
@@ -16876,7 +17145,8 @@
       "operator": "JC",
       "lastAttemptAt": "2026-10-05T20:02:16.827000",
       "notes": "Ninguna",
-      "rescheduledFor": ""
+      "rescheduledFor": "",
+      "pendingReason": null
     },
     {
       "id": "GIZ-636",
@@ -16905,7 +17175,8 @@
       "operator": "JC",
       "lastAttemptAt": "2026-10-05T12:42:45.055000",
       "notes": "Encuesta efectiva completada en KoboToolbox",
-      "rescheduledFor": ""
+      "rescheduledFor": "",
+      "pendingReason": null
     },
     {
       "id": "GIZ-637",
@@ -16960,7 +17231,8 @@
       "operator": "JC",
       "lastAttemptAt": "2026-10-05T08:58:27.288000",
       "notes": "ninguna",
-      "rescheduledFor": ""
+      "rescheduledFor": "",
+      "pendingReason": null
     },
     {
       "id": "GIZ-639",
@@ -16989,7 +17261,8 @@
       "operator": "JC",
       "lastAttemptAt": "2026-10-03T09:56:45.713000",
       "notes": "ninguna",
-      "rescheduledFor": ""
+      "rescheduledFor": "",
+      "pendingReason": null
     },
     {
       "id": "GIZ-640",
@@ -17018,7 +17291,8 @@
       "operator": "DO",
       "lastAttemptAt": "2026-10-07T11:44:16.121000",
       "notes": "Ninguna",
-      "rescheduledFor": ""
+      "rescheduledFor": "",
+      "pendingReason": null
     },
     {
       "id": "GIZ-641",
@@ -17047,7 +17321,8 @@
       "operator": "DO",
       "lastAttemptAt": "2026-10-07T12:13:40.474000",
       "notes": "Ninguna",
-      "rescheduledFor": ""
+      "rescheduledFor": "",
+      "pendingReason": null
     },
     {
       "id": "GIZ-642",
@@ -17076,7 +17351,8 @@
       "operator": "DO",
       "lastAttemptAt": "2026-10-07T14:14:03.233000",
       "notes": "Ninguna",
-      "rescheduledFor": ""
+      "rescheduledFor": "",
+      "pendingReason": null
     },
     {
       "id": "GIZ-643",
@@ -17105,7 +17381,8 @@
       "operator": "DO",
       "lastAttemptAt": "2026-10-07T16:04:51.197000",
       "notes": "Ninguna",
-      "rescheduledFor": ""
+      "rescheduledFor": "",
+      "pendingReason": null
     },
     {
       "id": "GIZ-644",
@@ -17160,7 +17437,8 @@
       "operator": "DO",
       "lastAttemptAt": "2026-10-07T16:49:53.220000",
       "notes": "Menor de edad 17 años se realiza la encuesta con la aprobación de sus padres",
-      "rescheduledFor": ""
+      "rescheduledFor": "",
+      "pendingReason": null
     },
     {
       "id": "GIZ-646",
@@ -17215,7 +17493,8 @@
       "operator": "DO",
       "lastAttemptAt": "2026-10-07T15:41:01.759000",
       "notes": "Autorización del padre nos comunicamos para hacer la encuesta a un nuevo numero del menor de edad 16 años",
-      "rescheduledFor": ""
+      "rescheduledFor": "",
+      "pendingReason": null
     },
     {
       "id": "GIZ-648",
@@ -17244,7 +17523,8 @@
       "operator": "DO",
       "lastAttemptAt": "2026-10-07T14:45:42.524000",
       "notes": "Ninguna",
-      "rescheduledFor": ""
+      "rescheduledFor": "",
+      "pendingReason": null
     },
     {
       "id": "GIZ-649",
@@ -17273,7 +17553,8 @@
       "operator": "DO",
       "lastAttemptAt": "2026-10-07T14:54:20.593000",
       "notes": "Ninguna",
-      "rescheduledFor": ""
+      "rescheduledFor": "",
+      "pendingReason": null
     },
     {
       "id": "GIZ-650",
@@ -17302,7 +17583,8 @@
       "operator": "DO",
       "lastAttemptAt": "2026-10-07T15:13:49.091000",
       "notes": "Ninguna",
-      "rescheduledFor": ""
+      "rescheduledFor": "",
+      "pendingReason": null
     },
     {
       "id": "GIZ-651",
@@ -17331,10 +17613,263 @@
       "operator": "DO",
       "lastAttemptAt": "2026-10-07T15:24:53.878000",
       "notes": "Ninguna",
-      "rescheduledFor": ""
+      "rescheduledFor": "",
+      "pendingReason": null
     }
   ],
   "history": [
+    {
+      "id": "GIZ-255",
+      "contact": "Ormaza Zambrano Stephany Elizabeth",
+      "phone": "0998430371",
+      "courseCode": "C13",
+      "courseName": "Generación De Ideas De Negocio Para Estudiantes De Bachillerato",
+      "organization": "Fe y Alegría - CECAL Manta",
+      "canton": "Manta",
+      "provincia": "Manabí",
+      "result": "effective",
+      "operator": "Darwin Olivo",
+      "operatorInitials": "DO",
+      "attempt": 2,
+      "date": "14/10/26, 9:31 a. m.",
+      "rawDate": "2026-10-14T14:31:23.319Z",
+      "notes": "Menor de edad 17 años realiza la encuesta con autorización de su madre",
+      "rescheduledFor": "2026-10-14T11:00"
+    },
+    {
+      "id": "GIZ-246",
+      "contact": "Fernández Intriago Erick Rafael",
+      "phone": "0968279309",
+      "courseCode": "C13",
+      "courseName": "Generación De Ideas De Negocio Para Estudiantes De Bachillerato",
+      "organization": "Fe y Alegría - CECAL Manta",
+      "canton": "Manta",
+      "provincia": "Manabí",
+      "result": "effective",
+      "operator": "Darwin Olivo",
+      "operatorInitials": "DO",
+      "attempt": 1,
+      "date": "14/10/26, 9:19 a. m.",
+      "rawDate": "2026-10-14T14:19:29.519Z",
+      "notes": "",
+      "rescheduledFor": ""
+    },
+    {
+      "id": "GIZ-437",
+      "contact": "Eloisa Isabel Valles",
+      "phone": "0994155707",
+      "courseCode": "C21",
+      "courseName": "Escuela de Participación Comunitaria y Liderazgo",
+      "organization": "ChildFund",
+      "canton": "Ibarra",
+      "provincia": "Imbabura",
+      "result": "effective",
+      "operator": "Darwin Olivo",
+      "operatorInitials": "DO",
+      "attempt": 1,
+      "date": "14/10/26, 9:16 a. m.",
+      "rawDate": "2026-10-14T14:16:41.306Z",
+      "notes": "",
+      "rescheduledFor": ""
+    },
+    {
+      "id": "GIZ-434",
+      "contact": "Juan Galarza",
+      "phone": "0998267416",
+      "courseCode": "C21",
+      "courseName": "Escuela de Participación Comunitaria y Liderazgo",
+      "organization": "ChildFund",
+      "canton": "Ibarra",
+      "provincia": "Imbabura",
+      "result": "effective",
+      "operator": "Darwin Olivo",
+      "operatorInitials": "DO",
+      "attempt": 1,
+      "date": "14/10/26, 9:16 a. m.",
+      "rawDate": "2026-10-14T14:16:38.314Z",
+      "notes": "",
+      "rescheduledFor": ""
+    },
+    {
+      "id": "GIZ-432",
+      "contact": "Mélida Salcedo",
+      "phone": "0995078822",
+      "courseCode": "C21",
+      "courseName": "Escuela de Participación Comunitaria y Liderazgo",
+      "organization": "ChildFund",
+      "canton": "Ibarra",
+      "provincia": "Imbabura",
+      "result": "effective",
+      "operator": "Darwin Olivo",
+      "operatorInitials": "DO",
+      "attempt": 1,
+      "date": "14/10/26, 9:16 a. m.",
+      "rawDate": "2026-10-14T14:16:35.211Z",
+      "notes": "",
+      "rescheduledFor": ""
+    },
+    {
+      "id": "GIZ-245",
+      "contact": "Cevallos Mieles Francesca Anthonella",
+      "phone": "0999986059",
+      "courseCode": "C13",
+      "courseName": "Generación De Ideas De Negocio Para Estudiantes De Bachillerato",
+      "organization": "Fe y Alegría - CECAL Manta",
+      "canton": "Manta",
+      "provincia": "Manabí",
+      "result": "wrong",
+      "operator": "Darwin Olivo",
+      "operatorInitials": "DO",
+      "attempt": 1,
+      "date": "14/10/26, 9:12 a. m.",
+      "rawDate": "2026-10-14T14:12:18.675Z",
+      "notes": "Buzón de voz dice Número marcado es incorrecto",
+      "rescheduledFor": ""
+    },
+    {
+      "id": "GIZ-244",
+      "contact": "Cedeño Sornoza Kristel Pierina",
+      "phone": "0990766408",
+      "courseCode": "C13",
+      "courseName": "Generación De Ideas De Negocio Para Estudiantes De Bachillerato",
+      "organization": "Fe y Alegría - CECAL Manta",
+      "canton": "Manta",
+      "provincia": "Manabí",
+      "result": "effective",
+      "operator": "Darwin Olivo",
+      "operatorInitials": "DO",
+      "attempt": 1,
+      "date": "14/10/26, 9:10 a. m.",
+      "rawDate": "2026-10-14T14:10:54.257Z",
+      "notes": "",
+      "rescheduledFor": ""
+    },
+    {
+      "id": "GIZ-255",
+      "contact": "Ormaza Zambrano Stephany Elizabeth",
+      "phone": "0998430371",
+      "courseCode": "C13",
+      "courseName": "Generación De Ideas De Negocio Para Estudiantes De Bachillerato",
+      "organization": "Fe y Alegría - CECAL Manta",
+      "canton": "Manta",
+      "provincia": "Manabí",
+      "result": "pending",
+      "operator": "Darwin Olivo",
+      "operatorInitials": "DO",
+      "attempt": 1,
+      "date": "14/10/26, 9:02 a. m.",
+      "rawDate": "2026-10-14T14:02:33.448Z",
+      "notes": "Madre contesta y pide que le llame a otro número que nos enviara",
+      "rescheduledFor": "2026-10-14T11:00"
+    },
+    {
+      "id": "GIZ-266",
+      "contact": "Yosa Parraga Luis Daniel",
+      "phone": "0939996631",
+      "courseCode": "C13",
+      "courseName": "Generación De Ideas De Negocio Para Estudiantes De Bachillerato",
+      "organization": "Fe y Alegría - CECAL Manta",
+      "canton": "Manta",
+      "provincia": "Manabí",
+      "result": "effective",
+      "operator": "Darwin Olivo",
+      "operatorInitials": "DO",
+      "attempt": 1,
+      "date": "14/10/26, 8:50 a. m.",
+      "rawDate": "2026-10-14T13:50:29.108Z",
+      "notes": "",
+      "rescheduledFor": ""
+    },
+    {
+      "id": "GIZ-100",
+      "contact": "Rosa Robertina Conforme Carrillo",
+      "phone": "0939827701",
+      "courseCode": "C07",
+      "courseName": "Corte Y Confección",
+      "organization": "Fe y Alegría - CECAL Manta",
+      "canton": "Manta",
+      "provincia": "Manabí",
+      "result": "effective",
+      "operator": "Darwin Olivo",
+      "operatorInitials": "DO",
+      "attempt": 1,
+      "date": "14/10/26, 8:29 a. m.",
+      "rawDate": "2026-10-14T13:29:41.808Z",
+      "notes": "",
+      "rescheduledFor": ""
+    },
+    {
+      "id": "GIZ-012",
+      "contact": "Rosa Robertina Conforme Carrillo",
+      "phone": "0981472500",
+      "courseCode": "C01",
+      "courseName": "Panadería 1",
+      "organization": "Fe y Alegría - CECAL Manta",
+      "canton": "Manta",
+      "provincia": "Manabí",
+      "result": "effective",
+      "operator": "Darwin Olivo",
+      "operatorInitials": "DO",
+      "attempt": 3,
+      "date": "14/10/26, 8:29 a. m.",
+      "rawDate": "2026-10-14T13:29:28.578Z",
+      "notes": "",
+      "rescheduledFor": ""
+    },
+    {
+      "contact": "Rosa Robertina Conforme Carrillo",
+      "id": "GIZ-012",
+      "phone": "0981472500",
+      "courseCode": "C01",
+      "courseName": "Panadería 1",
+      "organization": "Fe y Alegría - CECAL Manta",
+      "canton": "Manta",
+      "provincia": "Manabí",
+      "result": "effective",
+      "operator": "Darwin Olivo",
+      "operatorInitials": "DO",
+      "attempt": 2,
+      "date": "14/10/26, 8:29 a. m.",
+      "rawDate": "2026-10-14T13:29:26.232Z",
+      "notes": "",
+      "rescheduledFor": ""
+    },
+    {
+      "id": "GIZ-239",
+      "contact": "Carrion Zambrano Gladys Analy",
+      "phone": "0995766692",
+      "courseCode": "C13",
+      "courseName": "Generación De Ideas De Negocio Para Estudiantes De Bachillerato",
+      "organization": "Fe y Alegría - CECAL Manta",
+      "canton": "Manta",
+      "provincia": "Manabí",
+      "result": "effective",
+      "operator": "Darwin Olivo",
+      "operatorInitials": "DO",
+      "attempt": 1,
+      "date": "14/10/26, 8:22 a. m.",
+      "rawDate": "2026-10-14T13:22:44.237Z",
+      "notes": "",
+      "rescheduledFor": ""
+    },
+    {
+      "id": "GIZ-430",
+      "contact": "Gloria Cadena",
+      "phone": "0990274559",
+      "courseCode": "C21",
+      "courseName": "Escuela de Participación Comunitaria y Liderazgo",
+      "organization": "ChildFund",
+      "canton": "Ibarra",
+      "provincia": "Imbabura",
+      "result": "effective",
+      "operator": "Darwin Olivo",
+      "operatorInitials": "DO",
+      "attempt": 1,
+      "date": "14/10/26, 8:15 a. m.",
+      "rawDate": "2026-10-14T13:15:29.466Z",
+      "notes": "",
+      "rescheduledFor": ""
+    },
     {
       "contact": "María Belén Terán Villegas",
       "id": "GIZ-612",
@@ -23169,6 +23704,14 @@
     }
   ],
   "shifts": [
+    {
+      "id": "shift-1791983342873",
+      "operatorId": "darwin",
+      "username": "darwin",
+      "operator": "Darwin Olivo",
+      "startedAt": "2026-10-14T13:09:04.936Z",
+      "endedAt": null
+    },
     {
       "id": "shift-1790946232236",
       "operatorId": "darwin",

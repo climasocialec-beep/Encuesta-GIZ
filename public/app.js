@@ -17416,7 +17416,8 @@ function contactGreetingName(contact) {
 function renderSelectedContact(contact) {
   if (!contact) return '<article class="card selected-contact-card"><div class="empty-state">Selecciona un contacto de las bandejas inferiores para comenzar.</div></article>';
 
-    const barrioStr = contact.barrio || contact.parish || 'Sector urbano';
+  const isCompleted = !isActionableContact(contact);
+  const barrioStr = contact.barrio || contact.parish || 'Sector urbano';
   const cantonStr = contact.canton || 'Territorio GIZ';
   const provinciaStr = contact.provincia || 'Ecuador';
   const courseStr = contact.courseName || 'Curso ProCohesión GIZ';
@@ -17437,7 +17438,9 @@ function renderSelectedContact(contact) {
             <div class="contact-meta-tags">
               <span class="tag-code">COD: ${escapeHtml(contact.id)}</span>
               ${contact.courseCode ? `<span class="tag-course-code">🎓 CURSO ${escapeHtml(contact.courseCode)}</span>` : ''}
-              <span class="tag-attempt">Intento ${contact.attempts + 1} de ${MAX_ATTEMPTS}</span>
+              ${isCompleted 
+                ? `<span class="tag-attempt" style="background:#059669;color:#ffffff;font-weight:700;">✓ Encuesta completada</span>` 
+                : `<span class="tag-attempt">Intento ${contact.attempts + 1} de ${MAX_ATTEMPTS}</span>`}
               <span class="table-status ${contact.status}">${contactStatusLabel(contact)}</span>
               <span class="tag-recency">📅 Culminó: ${escapeHtml(contact.courseEndDate || '2025')}</span>
             </div>
@@ -17460,18 +17463,32 @@ function renderSelectedContact(contact) {
         </div>
 
         <div class="selected-contact-body">
-          <!-- Banner de Acción Principal: KoboToolbox en Vivo -->
-          <div class="kobo-action-banner">
-            <div class="kobo-banner-text">
-              <span class="kobo-banner-badge">ENCUESTA EN VIVO &bull; 4 A 5 MIN</span>
-              <h3>Formulario Oficial de Evaluación KoboToolbox</h3>
-              <p>Abre la encuesta para registrar las respuestas en tiempo real durante la llamada.</p>
+          ${isCompleted ? `
+            <!-- Banner Informativo de Encuesta Finalizada -->
+            <div class="kobo-action-banner" style="background:linear-gradient(135deg, rgba(16,185,129,0.14), rgba(5,150,105,0.08));border:1.5px solid #10b981;border-radius:12px;padding:16px 20px;">
+              <div class="kobo-banner-text">
+                <span class="kobo-banner-badge" style="background:#059669;color:#fff;">✓ GESTIÓN REGISTRADA Y GUARDADA</span>
+                <h3 style="color:#065f46;margin:4px 0;">Encuesta finalizada · ${contactStatusLabel(contact)}</h3>
+                <p style="color:#047857;margin:0;">Este contacto fue completado por <strong>${escapeHtml(contact.operator || 'Operador')}</strong> el <strong>${escapeHtml(contact.last || 'recientemente')}</strong> (Intento ${contact.attempts || 1} de ${MAX_ATTEMPTS}). Ya no requiere más llamadas.</p>
+              </div>
+              <button class="button-primary" onclick="window.selectNextOperatorContact()" type="button" style="white-space:nowrap;padding:12px 20px;font-weight:700;">
+                <span>Siguiente por llamar ➔</span>
+              </button>
             </div>
-            <a class="kobo-launch-btn" href="${SURVEY_URL}" target="_blank" rel="noreferrer">
-              <span>📋 Abrir Kobo en Vivo</span>
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6M15 3h6v6M10 14L21 3"/></svg>
-            </a>
-          </div>
+          ` : `
+            <!-- Banner de Acción Principal: KoboToolbox en Vivo -->
+            <div class="kobo-action-banner">
+              <div class="kobo-banner-text">
+                <span class="kobo-banner-badge">ENCUESTA EN VIVO &bull; 4 A 5 MIN</span>
+                <h3>Formulario Oficial de Evaluación KoboToolbox</h3>
+                <p>Abre la encuesta para registrar las respuestas en tiempo real durante la llamada.</p>
+              </div>
+              <a class="kobo-launch-btn" href="${SURVEY_URL}" target="_blank" rel="noreferrer">
+                <span>📋 Abrir Kobo en Vivo</span>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6M15 3h6v6M10 14L21 3"/></svg>
+              </a>
+            </div>
+          `}
 
           <!-- Ficha de Datos en 2 Columnas (Curso y Contacto) -->
           <div class="contact-details-panels">
@@ -17616,131 +17633,164 @@ function renderSelectedContact(contact) {
             `;
           })()}
 
-          <!-- Registro de Resultado de la Llamada -->
-          <div class="call-actions-clean">
-            <div class="actions-header-clean">
-              <h3>Resultado de la llamada</h3>
-              <span>Selecciona el estado y guarda</span>
+          ${isCompleted ? `
+            <!-- Ficha de Cierre cuando ya está completada -->
+            <div class="completed-summary-footer" style="margin-top:20px;padding:18px 22px;background:#f0fdf4;border:1.5px solid #bbf7d0;border-radius:12px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:14px;">
+              <div>
+                <strong style="color:#166534;font-size:14px;display:block;">✓ Participante ya gestionado exitosamente</strong>
+                <span style="color:#15803d;font-size:12.5px;">El resultado está respaldado en la base central y en el historial auditable.</span>
+              </div>
+              <button class="button-primary" onclick="window.selectNextOperatorContact()" type="button" style="padding:10px 18px;">
+                <span>Continuar llamadas pendientes ➔</span>
+              </button>
             </div>
+          ` : `
+            <!-- Registro de Resultado de la Llamada -->
+            <div class="call-actions-clean">
+              <div class="actions-header-clean">
+                <h3>Resultado de la llamada</h3>
+                <span>Selecciona el estado y guarda</span>
+              </div>
 
-            <div class="outcome-grid-clean">
-              <button type="button" class="outcome-btn-clean outcome-effective ${selectedOutcome === 'effective' ? 'active' : ''}" data-outcome="effective" title="Encuesta completada">
-                <span class="btn-indicator">✓</span>
-                <span class="btn-label">Completada</span>
-              </button>
-              <button type="button" class="outcome-btn-clean outcome-pending ${selectedOutcome === 'pending' ? 'active' : ''}" data-outcome="pending" title="Reprogramada / Volver a llamar">
-                <span class="btn-indicator">◷</span>
-                <span class="btn-label">Reprogramar</span>
-              </button>
-              <button type="button" class="outcome-btn-clean outcome-no-answer ${selectedOutcome === 'no-answer' ? 'active' : ''}" data-outcome="no-answer" title="No contesta">
-                <span class="btn-indicator">◌</span>
-                <span class="btn-label">No contesta</span>
-              </button>
-              <button type="button" class="outcome-btn-clean outcome-refused ${selectedOutcome === 'refused' ? 'active' : ''}" data-outcome="refused" title="Rechaza participar">
-                <span class="btn-indicator">⊘</span>
-                <span class="btn-label">Rechazó</span>
-              </button>
-              <button type="button" class="outcome-btn-clean outcome-wrong ${selectedOutcome === 'wrong' ? 'active' : ''}" data-outcome="wrong" title="Número incorrecto / equivocado">
-                <span class="btn-indicator">×</span>
-                <span class="btn-label">Incorrecto</span>
-              </button>
-            </div>
+              <div class="outcome-grid-clean">
+                <button type="button" class="outcome-btn-clean outcome-effective ${selectedOutcome === 'effective' ? 'active' : ''}" data-outcome="effective" title="Encuesta completada">
+                  <span class="btn-indicator">✓</span>
+                  <span class="btn-label">Completada</span>
+                </button>
+                <button type="button" class="outcome-btn-clean outcome-pending ${selectedOutcome === 'pending' ? 'active' : ''}" data-outcome="pending" title="Reprogramada / Volver a llamar">
+                  <span class="btn-indicator">◷</span>
+                  <span class="btn-label">Reprogramar</span>
+                </button>
+                <button type="button" class="outcome-btn-clean outcome-no-answer ${selectedOutcome === 'no-answer' ? 'active' : ''}" data-outcome="no-answer" title="No contesta">
+                  <span class="btn-indicator">◌</span>
+                  <span class="btn-label">No contesta</span>
+                </button>
+                <button type="button" class="outcome-btn-clean outcome-refused ${selectedOutcome === 'refused' ? 'active' : ''}" data-outcome="refused" title="Rechaza participar">
+                  <span class="btn-indicator">⊘</span>
+                  <span class="btn-label">Rechazó</span>
+                </button>
+                <button type="button" class="outcome-btn-clean outcome-wrong ${selectedOutcome === 'wrong' ? 'active' : ''}" data-outcome="wrong" title="Número incorrecto / equivocado">
+                  <span class="btn-indicator">×</span>
+                  <span class="btn-label">Incorrecto</span>
+                </button>
+              </div>
 
-            <div id="reschedule-box" class="reschedule-box-clean ${selectedOutcome === 'pending' ? 'show' : ''}">
-              <label for="reschedule-time">⏰ Fecha y hora acordada para volver a llamar (opcional):</label>
-              <input type="datetime-local" id="reschedule-time" value="${escapeHtml(draftRescheduleByContact[contact.id] !== undefined ? draftRescheduleByContact[contact.id] : (contact.rescheduledFor || ''))}" />
-            </div>
+              <div id="reschedule-box" class="reschedule-box-clean ${selectedOutcome === 'pending' ? 'show' : ''}">
+                <label for="reschedule-time">⏰ Fecha y hora acordada para volver a llamar (opcional):</label>
+                <input type="datetime-local" id="reschedule-time" value="${escapeHtml(draftRescheduleByContact[contact.id] !== undefined ? draftRescheduleByContact[contact.id] : (contact.rescheduledFor || ''))}" />
+              </div>
 
-            <div class="notes-block">
-              <label for="notes">Observaciones / Novedades de la llamada</label>
-              <textarea id="notes" class="notes-clean" placeholder="Escribe aquí cualquier detalle de la llamada (ej. acordó llamar a las 16h00, o encuesta completada)...">${escapeHtml(draftNotesByContact[contact.id] !== undefined ? draftNotesByContact[contact.id] : '')}</textarea>
-            </div>
+              <div class="notes-block">
+                <label for="notes">Observaciones / Novedades de la llamada</label>
+                <textarea id="notes" class="notes-clean" placeholder="Escribe aquí cualquier detalle de la llamada (ej. acordó llamar a las 16h00, o encuesta completada)...">${escapeHtml(draftNotesByContact[contact.id] !== undefined ? draftNotesByContact[contact.id] : '')}</textarea>
+              </div>
 
-            <div class="save-actions-bar">
-              <span class="save-hint">Se guardará con tu usuario e intento actual.</span>
-              <button class="button-primary save-btn-main" id="save-call" ${selectedOutcome ? '' : 'disabled'}>
-                <span>Guardar gestión</span>
-                <span>→</span>
-              </button>
+              <div class="save-actions-bar">
+                <span class="save-hint">Se guardará con tu usuario e intento actual.</span>
+                <button class="button-primary save-btn-main" id="save-call" ${selectedOutcome ? '' : 'disabled'}>
+                  <span>Guardar gestión</span>
+                  <span>→</span>
+                </button>
+              </div>
             </div>
-          </div>
+          `}
         </div>
       </article>
 
       <!-- 2. TARJETA DEL GUION OFICIAL DE LLAMADA (DERECHA) -->
       <article class="card script-side-card">
-        <div class="script-head-clean">
-          <div class="script-head-title">
-            <span>🗣️</span>
-            <strong>Guion Oficial de Llamadas &bull; ProCohesión GIZ</strong>
-          </div>
-          <span class="recency-pill">⏱️ Duración: 4 a 5 min</span>
-        </div>
-
-        <!-- Pasos Principales de la Conversación -->
-        <div class="script-steps-list">
-          <!-- Momento 1: Verificación de Identidad -->
-          <div class="script-step-item">
-            <span class="step-num-badge">1. Identidad</span>
-            <div class="script-step-text">
-              "Buenos días/tardes, ¿me comunico con <strong>${escapeHtml(contact.name)}</strong>?"
+        ${isCompleted ? `
+          <div class="script-head-clean">
+            <div class="script-head-title">
+              <span>✓</span>
+              <strong>Gestión completada</strong>
             </div>
+            <span class="recency-pill" style="background:#10b981;color:#fff;">Finalizado</span>
           </div>
-
-          <!-- Momento 2: Presentación Institucional -->
-          <div class="script-step-item">
-            <span class="step-num-badge">2. Presentación</span>
-            <div class="script-step-text">
-              "Mi nombre es <strong>${escapeHtml(currentUser.name)}</strong>, le llamo de <strong>Clima Social</strong>. Estamos realizando un seguimiento para el <strong>Programa ProCohesión de la Cooperación Alemana - GIZ</strong>."
-            </div>
+          <div style="padding:32px 20px;text-align:center;">
+            <div style="font-size:36px;margin-bottom:12px;">✅</div>
+            <h3 style="font-size:16px;color:var(--text-main);margin-bottom:6px;">Encuesta registrada con éxito</h3>
+            <p style="color:var(--text-muted);font-size:13px;margin-bottom:20px;line-height:1.5;">
+              Este contacto ya fue completado y sus datos se encuentran a salvo en la base central. Presiona el botón para avanzar al siguiente contacto por llamar.
+            </p>
+            <button class="button-primary" onclick="window.selectNextOperatorContact()" type="button" style="width:100%;">
+              <span>Ir al siguiente contacto por llamar ➔</span>
+            </button>
           </div>
-
-          <!-- Momento 3: Motivo del Contacto -->
-          <div class="script-step-item">
-            <span class="step-num-badge">3. Motivo</span>
-            <div class="script-step-text">
-              "Queremos invitarle a responder una breve encuesta sobre cómo ha aplicado los conocimientos adquiridos en el curso en el que participó: <strong>${escapeHtml(courseStr)}</strong>${contact.courseCode ? ` (Código <strong>${escapeHtml(contact.courseCode)}</strong>)` : ''}, facilitado por <strong>${escapeHtml(orgStr)}</strong> en <strong>${escapeHtml(cantonStr)}</strong>. Esta información nos permitirá conocer la utilidad de los procesos de formación y contribuir a mejorar el trabajo que realiza la GIZ junto con sus socios en territorio."
+        ` : `
+          <div class="script-head-clean">
+            <div class="script-head-title">
+              <span>🗣️</span>
+              <strong>Guion Oficial de Llamadas &bull; ProCohesión GIZ</strong>
             </div>
+            <span class="recency-pill">⏱️ Duración: 4 a 5 min</span>
           </div>
 
-          <!-- Momento 4: Garantías Éticas y Duración -->
-          <div class="script-step-item">
-            <span class="step-num-badge">4. Ética y tiempo</span>
-            <div class="script-step-text">
-              "La encuesta es totalmente anónima y confidencial. No pediremos datos personales. Toma alrededor de <strong>4 a 5 minutos</strong>. ¿Me permite continuar?"
+          <!-- Pasos Principales de la Conversación -->
+          <div class="script-steps-list">
+            <!-- Momento 1: Verificación de Identidad -->
+            <div class="script-step-item">
+              <span class="step-num-badge">1. Identidad</span>
+              <div class="script-step-text">
+                "Buenos días/tardes, ¿me comunico con <strong>${escapeHtml(contact.name)}</strong>?"
+              </div>
             </div>
-          </div>
-        </div>
 
-        <!-- Respuestas y Situaciones (Momentos 5 a 8) -->
-        <div class="script-cases-accordion">
-          <div class="script-cases-header">
-            <span>📋</span>
-            <strong>Respuestas y manejo de situaciones</strong>
-          </div>
-          <div class="script-cases-grid">
-            <div class="case-box case-accept">
-              <strong>5. Si Acepta</strong>
-              <span>"Perfecto, muchas gracias. Empezamos."</span>
+            <!-- Momento 2: Presentación Institucional -->
+            <div class="script-step-item">
+              <span class="step-num-badge">2. Presentación</span>
+              <div class="script-step-text">
+                "Mi nombre es <strong>${escapeHtml(currentUser.name)}</strong>, le llamo de <strong>Clima Social</strong>. Estamos realizando un seguimiento para el <strong>Programa ProCohesión de la Cooperación Alemana - GIZ</strong>."
+              </div>
             </div>
-            <div class="case-box case-reschedule">
-              <strong>5. Si Pospone / Reagenda</strong>
-              <span>"Sin problema. ¿Qué horario le queda más conveniente para llamarle nuevamente?"</span>
+
+            <!-- Momento 3: Motivo del Contacto -->
+            <div class="script-step-item">
+              <span class="step-num-badge">3. Motivo</span>
+              <div class="script-step-text">
+                "Queremos invitarle a responder una breve encuesta sobre cómo ha aplicado los conocimientos adquiridos en el curso en el que participó: <strong>${escapeHtml(courseStr)}</strong>${contact.courseCode ? ` (Código <strong>${escapeHtml(contact.courseCode)}</strong>)` : ''}, facilitado por <strong>${escapeHtml(orgStr)}</strong> en <strong>${escapeHtml(cantonStr)}</strong>. Esta información nos permitirá conocer la utilidad de los procesos de formación y contribuir a mejorar el trabajo que realiza la GIZ junto con sus socios en territorio."
+              </div>
             </div>
-            <div class="case-box case-doubts">
-              <strong>6. Si Manifiesta Dudas</strong>
-              <span>"No se preocupe, solo queremos conocer su experiencia aplicando lo aprendido. Su información está protegida y es solo para fines de investigación."</span>
-            </div>
-            <div class="case-box case-refuse">
-              <strong>7. Si Rechaza Participar</strong>
-              <span>"Gracias por su tiempo. Que tenga un buen día."</span>
-            </div>
-            <div class="case-box case-close">
-              <strong>8. Cierre de Encuesta</strong>
-              <span>"Le agradezco mucho por su colaboración. Sus respuestas son de gran apoyo para el programa. Que tenga un excelente día."</span>
+
+            <!-- Momento 4: Garantías Éticas y Duración -->
+            <div class="script-step-item">
+              <span class="step-num-badge">4. Ética y tiempo</span>
+              <div class="script-step-text">
+                "La encuesta es totalmente anónima y confidencial. No pediremos datos personales. Toma alrededor de <strong>4 a 5 minutos</strong>. ¿Me permite continuar?"
+              </div>
             </div>
           </div>
-        </div>
+
+          <!-- Respuestas y Situaciones (Momentos 5 a 8) -->
+          <div class="script-cases-accordion">
+            <div class="script-cases-header">
+              <span>📋</span>
+              <strong>Respuestas y manejo de situaciones</strong>
+            </div>
+            <div class="script-cases-grid">
+              <div class="case-box case-accept">
+                <strong>5. Si Acepta</strong>
+                <span>"Perfecto, muchas gracias. Empezamos."</span>
+              </div>
+              <div class="case-box case-reschedule">
+                <strong>5. Si Pospone / Reagenda</strong>
+                <span>"Sin problema. ¿Qué horario le queda más conveniente para llamarle nuevamente?"</span>
+              </div>
+              <div class="case-box case-doubts">
+                <strong>6. Si Manifiesta Dudas</strong>
+                <span>"No se preocupe, solo queremos conocer su experiencia aplicando lo aprendido. Su información está protegida y es solo para fines de investigación."</span>
+              </div>
+              <div class="case-box case-refuse">
+                <strong>7. Si Rechaza Participar</strong>
+                <span>"Gracias por su tiempo. Que tenga un buen día."</span>
+              </div>
+              <div class="case-box case-close">
+                <strong>8. Cierre de Encuesta</strong>
+                <span>"Le agradezco mucho por su colaboración. Sus respuestas son de gran apoyo para el programa. Que tenga un excelente día."</span>
+              </div>
+            </div>
+          </div>
+        `}
       </article>
     </div>
   `;
@@ -17860,8 +17910,10 @@ window.setOperatorDateFilter = function(val) {
   operatorDateFilter = val;
   const allAssigned = visibleContacts();
   const activeActionable = allAssigned.filter(isActionableContact);
-  const filtered = val ? activeActionable.filter(item => isContactInOperatorDate(item, val)) : activeActionable;
-  const action = firstActionable(filtered) || filtered[0];
+  let filtered = activeActionable;
+  if (operatorCourseFilter) filtered = filtered.filter(item => item.courseCode === operatorCourseFilter || item.courseName === operatorCourseFilter);
+  if (val) filtered = filtered.filter(item => isContactInOperatorDate(item, val));
+  const action = firstActionable(filtered) || firstActionable(activeActionable) || null;
   selectedContactId = action ? action.id : null;
   render();
 };
@@ -17876,15 +17928,28 @@ window.setOperatorCourseFilter = function(val) {
   const allAssigned = visibleContacts();
   const activeActionable = allAssigned.filter(isActionableContact);
   let filtered = activeActionable;
-  if (operatorDateFilter) filtered = filtered.filter(item => isContactInOperatorDate(item, operatorDateFilter));
   if (operatorCourseFilter) filtered = filtered.filter(item => item.courseCode === operatorCourseFilter || item.courseName === operatorCourseFilter);
-  const action = firstActionable(filtered) || filtered[0];
+  if (operatorDateFilter) filtered = filtered.filter(item => isContactInOperatorDate(item, operatorDateFilter));
+  const action = firstActionable(filtered) || firstActionable(activeActionable) || null;
   selectedContactId = action ? action.id : null;
   render();
 };
 
 window.clearOperatorCourseFilter = function() {
   window.setOperatorCourseFilter('');
+};
+
+window.selectNextOperatorContact = function() {
+  const allAssigned = visibleContacts();
+  const activeActionable = allAssigned.filter(isActionableContact);
+  let filtered = activeActionable;
+  if (operatorCourseFilter) filtered = filtered.filter(item => item.courseCode === operatorCourseFilter || item.courseName === operatorCourseFilter);
+  if (operatorDateFilter) filtered = filtered.filter(item => isContactInOperatorDate(item, operatorDateFilter));
+  const action = firstActionable(filtered) || firstActionable(activeActionable) || null;
+  selectedContactId = action ? action.id : null;
+  selectedOutcome = '';
+  render();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
 };
 
 
@@ -18002,6 +18067,11 @@ function renderOperatorBoard() {
   if (!activeShift) return `${pageHeading('Jornada de trabajo', `Hola, ${escapeHtml(currentUser.name.split(' ')[0])}`, 'Antes de comenzar tus llamadas debes registrar el inicio de tu jornada.', '')}<article class="card shift-start-card"><div class="shift-icon">◷</div><h2>¿Listo/a para comenzar?</h2><p>Al iniciar la jornada registraremos la fecha y hora. Cuando termines, recuerda finalizarla para calcular tu tiempo de trabajo.</p><button class="button-primary" id="start-shift">Iniciar jornada <span>→</span></button></article>`;
 
   const allAssigned = visibleContacts();
+  const assignedInCourse = operatorCourseFilter
+    ? allAssigned.filter(item => item.courseCode === operatorCourseFilter || item.courseName === operatorCourseFilter)
+    : allAssigned;
+
+  const completed = assignedInCourse.filter(item => item.status === 'effective');
   const activeQueue = allAssigned.filter(isActionableContact);
   const operatorDates = getOperatorActionableDates(activeQueue);
 
@@ -18016,17 +18086,22 @@ function renderOperatorBoard() {
     .sort((a, b) => (a.code || '').localeCompare(b.code || ''));
 
   const selected = getContact(selectedContactId);
-  const contact = (selected && allAssigned.some(item => item.id === selected.id))
+  const isSelectedActionable = selected && isActionableContact(selected) && allAssigned.some(item => item.id === selected.id);
+
+  // Auto-advance logic: Si el contacto seleccionado ya no es accionable (ej. encuesta completada),
+  // buscamos inmediatamente el siguiente contacto accionable en la cola.
+  const contact = isSelectedActionable
     ? selected
-    : (firstActionable(filteredQueue) || filteredQueue[0] || allAssigned[0] || null);
+    : (firstActionable(filteredQueue) || firstActionable(activeQueue) || (selected && allAssigned.some(item => item.id === selected.id) ? selected : null));
 
   if (contact && selectedContactId !== contact.id) {
     selectedContactId = contact.id;
-  } else if (!contact && allAssigned.length === 0) {
+  } else if (!contact && allAssigned.length > 0 && activeQueue.length === 0) {
     selectedContactId = null;
   }
 
-  const normal = filteredQueue.filter(item => item.status === 'pending' && (item.attempts || 0) === 0);
+  // Lista de contactos por llamar: muestra los nuevos del curso asignado
+  const normal = assignedInCourse.filter(item => item.status === 'pending' && (item.attempts || 0) === 0);
   const pending = filteredQueue.filter(item => item.status === 'pending' && (item.attempts || 0) > 0);
   const noAnswer = filteredQueue.filter(item => item.status === 'no-answer');
 
@@ -18054,16 +18129,21 @@ function renderOperatorBoard() {
         </div>
       </div>
 
-      <!-- 2. Mini Métricas Integradas (Pills en Línea) -->
+      <!-- 2. Mini Métricas Integradas (Pills en Línea con Efectivas Destacadas) -->
       <div class="topbar-metrics-pills">
+        <div class="metric-pill pill-effective" title="Encuestas completadas exitosamente">
+          <span class="pill-dot"></span>
+          <span class="pill-lbl">✓ Efectivas:</span>
+          <strong>${completed.length}</strong>
+        </div>
         <div class="metric-pill pill-new" title="Contactos nuevos por llamar">
           <span class="pill-dot"></span>
           <span class="pill-lbl">Por llamar:</span>
           <strong>${normal.length}</strong>
         </div>
-        <div class="metric-pill pill-pending" title="Contactos pendientes o reprogramados">
+        <div class="metric-pill pill-pending" title="Contactos reprogramados o con cita">
           <span class="pill-dot"></span>
-          <span class="pill-lbl">Pendientes:</span>
+          <span class="pill-lbl">Reprogramados:</span>
           <strong>${pending.length}</strong>
         </div>
         <div class="metric-pill pill-no-answer" title="Contactos que no contestaron">
@@ -18071,9 +18151,9 @@ function renderOperatorBoard() {
           <span class="pill-lbl">No contestan:</span>
           <strong>${noAnswer.length}</strong>
         </div>
-        <div class="metric-pill pill-total" title="Total de contactos en este filtro">
-          <span class="pill-lbl">Total filtro:</span>
-          <strong>${filteredQueue.length}</strong>
+        <div class="metric-pill pill-total" title="Total asignados en este curso/base">
+          <span class="pill-lbl">Total asignados:</span>
+          <strong>${assignedInCourse.length}</strong>
         </div>
       </div>
 
@@ -18105,11 +18185,11 @@ function renderOperatorBoard() {
 
         <div class="topbar-date-filter-wrap">
           <select id="operator-date-filter" class="filter-select-compact" onchange="setOperatorDateFilter(this.value)" title="Filtrar contactos por fecha">
-            <option value="" ${!operatorDateFilter ? 'selected' : ''}>📂 Todos (${activeQueue.length})</option>
-            ${uncalledCount > 0 ? `<option value="uncalled" ${operatorDateFilter === 'uncalled' ? 'selected' : ''}>🆕 Nuevos (${uncalledCount})</option>` : ''}
-            ${todayPendingCount > 0 ? `<option value="today" ${operatorDateFilter === 'today' ? 'selected' : ''}>📅 Hoy (${todayPendingCount})</option>` : ''}
-            ${yesterdayPendingCount > 0 ? `<option value="yesterday" ${operatorDateFilter === 'yesterday' ? 'selected' : ''}>📅 Ayer (${yesterdayPendingCount})</option>` : ''}
-            ${previousDayCount > 0 ? `<option value="previous" ${operatorDateFilter === 'previous' ? 'selected' : ''}>⏳ Anteriores (${previousDayCount})</option>` : ''}
+            <option value="" ${!operatorDateFilter ? 'selected' : ''}>📂 Todos los pendientes (${activeQueue.length})</option>
+            ${uncalledCount > 0 ? `<option value="uncalled" ${operatorDateFilter === 'uncalled' ? 'selected' : ''}>🆕 Solo nuevos por llamar (${uncalledCount})</option>` : ''}
+            ${todayPendingCount > 0 ? `<option value="today" ${operatorDateFilter === 'today' ? 'selected' : ''}>📅 Reprogramados para hoy (${todayPendingCount})</option>` : ''}
+            ${yesterdayPendingCount > 0 ? `<option value="yesterday" ${operatorDateFilter === 'yesterday' ? 'selected' : ''}>📅 Reprogramados ayer (${yesterdayPendingCount})</option>` : ''}
+            ${previousDayCount > 0 ? `<option value="previous" ${operatorDateFilter === 'previous' ? 'selected' : ''}>⏳ Reprogramados anteriores (${previousDayCount})</option>` : ''}
             ${specificDates.map(d => {
               const countOnDate = activeQueue.filter(c => isContactInOperatorDate(c, d)).length;
               return `<option value="${escapeHtml(d)}" ${operatorDateFilter === d ? 'selected' : ''}>📆 ${escapeHtml(d)} (${countOnDate})</option>`;
@@ -18126,21 +18206,31 @@ function renderOperatorBoard() {
       <div class="active-call-row">
         ${contact ? renderSelectedContact(contact) : `
           <article class="card selected-contact-card" style="width:100%;">
-            <div class="empty-state" style="padding:40px 20px;text-align:center;">
-              <div style="font-size:32px;margin-bottom:12px;">✓</div>
-              <h3>No hay contactos pendientes en este filtro</h3>
-              <p style="color:var(--text-muted);margin:8px 0 16px 0;">Todos los contactos de esta fecha ya fueron completados o no tienen llamadas pendientes.</p>
-              <button class="button-primary" onclick="clearOperatorDateFilter()" type="button">Ver todos los pendientes ➔</button>
+            <div class="empty-state" style="padding:48px 20px;text-align:center;">
+              <div style="font-size:36px;margin-bottom:12px;">🎉</div>
+              <h3 style="font-size:18px;margin-bottom:6px;">¡Sin llamadas pendientes en este filtro!</h3>
+              <p style="color:var(--text-muted);margin:8px auto 16px auto;max-width:500px;">
+                ${operatorCourseFilter || operatorDateFilter 
+                  ? 'No hay contactos pendientes en los filtros aplicados actualmente.' 
+                  : 'Has completado todas las llamadas de tu base asignada.'}
+              </p>
+              ${operatorCourseFilter || operatorDateFilter ? `
+                <button class="button-primary" onclick="clearOperatorDateFilter();clearOperatorCourseFilter();" type="button">Ver todos los pendientes ➔</button>
+              ` : `
+                <div style="display:inline-flex;padding:8px 16px;background:rgba(16,185,129,0.1);border-radius:20px;color:#047857;font-weight:700;">
+                  <span>✓ ${completed.length} encuestas efectivas finalizadas</span>
+                </div>
+              `}
             </div>
           </article>
         `}
       </div>
 
-      <!-- 2. SEGUNDA LÍNEA: LLAMADAS POR HACER, PENDIENTES Y NO CONTESTA -->
+      <!-- 2. SEGUNDA LÍNEA: LLAMADAS POR HACER, REPROGRAMADOS Y NO CONTESTA -->
       <div class="contact-board-bottom-grid">
         ${renderContactColumn('Por llamar', 'Llamadas por hacer / Nuevos', normal, 'column-normal', contact)}
-        ${renderContactColumn('Pendientes', 'Por reintentar / Reprogramados', pending, 'column-pending', contact)}
-        ${renderContactColumn('No contestan', 'Volver a llamar', noAnswer, 'column-no-answer', contact)}
+        ${renderContactColumn('Reprogramados', 'Citas y reintentos acordados', pending, 'column-pending', contact)}
+        ${renderContactColumn('No contestan', 'Por reintentar llamada', noAnswer, 'column-no-answer', contact)}
       </div>
     </section>
   `;
@@ -19411,7 +19501,11 @@ async function saveCall() {
     }).catch(err => console.warn('Background sync note:', err.message));
 
     const currentList = visibleContacts();
-    const nextContact = getNextActionableContact(contact.id, currentList);
+    let queueForNext = currentList;
+    if (operatorCourseFilter) {
+      queueForNext = queueForNext.filter(item => item.courseCode === operatorCourseFilter || item.courseName === operatorCourseFilter);
+    }
+    const nextContact = getNextActionableContact(contact.id, queueForNext) || getNextActionableContact(contact.id, currentList);
     selectedContactId = nextContact ? nextContact.id : null;
     selectedOutcome = '';
     showToast(shouldDiscard ? `Gestión guardada · ${contact.name} (3er intento finalizado)` : `Gestión guardada para ${contact.name}`);
@@ -19452,7 +19546,12 @@ const rescheduleTime = document.getElementById('reschedule-time')?.value ?? draf
   delete draftRescheduleByContact[contact.id];
   selectedOutcome = '';
   await loadRemoteState();
-  const nextContact = getNextActionableContact(contact.id, visibleContacts());
+  const currentList = visibleContacts();
+  let queueForNext = currentList;
+  if (operatorCourseFilter) {
+    queueForNext = queueForNext.filter(item => item.courseCode === operatorCourseFilter || item.courseName === operatorCourseFilter);
+  }
+  const nextContact = getNextActionableContact(contact.id, queueForNext) || getNextActionableContact(contact.id, currentList);
   selectedContactId = nextContact ? nextContact.id : null;
   showToast(shouldDiscard ? `Gestión guardada · ${contact.name} (3er intento finalizado)` : `Gestión guardada para ${contact.name}`);
   render();
