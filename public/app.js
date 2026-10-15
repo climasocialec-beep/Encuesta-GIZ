@@ -16419,8 +16419,22 @@ function visibleContacts() {
     : state.contacts;
 }
 
+function isDueReschedule(contact) {
+  if (!contact || contact.status !== 'pending' || !(Number(contact.attempts) > 0)) return false;
+  if (!contact.rescheduledFor) return true;
+  const due = new Date(contact.rescheduledFor).getTime();
+  return isNaN(due) || due <= Date.now();
+}
+
+function firstDueReschedule(contacts, excludeId) {
+  return (contacts || [])
+    .filter(c => c.id !== excludeId && isDueReschedule(c))
+    .sort((a, b) => new Date(a.rescheduledFor || 0) - new Date(b.rescheduledFor || 0))[0] || null;
+}
+
 function firstActionable(contacts) {
-  return contacts.find(contact => contact.status === 'pending' || contact.status === 'no-answer');
+  // Prioridad 1: reprogramados vencidos (ej. los de ayer); luego nuevos / no contesta en orden de lista
+  return firstDueReschedule(contacts) || contacts.find(contact => contact.status === 'pending' || contact.status === 'no-answer');
 }
 
 function getNextActionableContact(currentContactId, contacts) {
@@ -16428,6 +16442,10 @@ function getNextActionableContact(currentContactId, contacts) {
   if (!list || !list.length) return null;
 
   const currentIndex = list.findIndex(c => c.id === currentContactId);
+
+  // 0. Reprogramados vencidos (citas acordadas, incluidos los de días anteriores) tienen prioridad
+  const dueReschedule = firstDueReschedule(list, currentContactId);
+  if (dueReschedule) return dueReschedule;
 
   // 1. Siguiente contacto NUEVO (0 intentos) hacia adelante
   for (let i = currentIndex + 1; i < list.length; i++) {
