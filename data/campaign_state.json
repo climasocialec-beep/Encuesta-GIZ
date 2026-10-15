@@ -6321,10 +6321,14 @@
       "organization": "Fe y Alegría - CECAL Manta",
       "referencia": "Equipo Técnico Clima Social / GIZ",
       "baseName": "GIZ · OE1 - ProCohesión (Fase III · 2026)",
-      "status": "pending",
-      "attempts": 0,
-      "last": "Sin gestión",
-      "operator": "DO"
+      "status": "effective",
+      "attempts": 1,
+      "last": "15/10/26, 8:24 a. m.",
+      "operator": "DO",
+      "notes": "Encuesta completada en Kobo (conciliado giz 15oct)",
+      "rescheduledFor": "",
+      "lastAttemptAt": "2026-10-15T13:24:02Z",
+      "pendingReason": null
     },
     {
       "id": "GIZ-223",
@@ -6619,10 +6623,14 @@
       "organization": "Fe y Alegría - CECAL Manta",
       "referencia": "Equipo Técnico Clima Social / GIZ",
       "baseName": "GIZ · OE1 - ProCohesión (Fase III · 2026)",
-      "status": "pending",
-      "attempts": 0,
-      "last": "Sin gestión",
-      "operator": "DO"
+      "status": "effective",
+      "attempts": 1,
+      "last": "15/10/26, 9:33 a. m.",
+      "operator": "DO",
+      "notes": "Encuesta completada en Kobo (conciliado giz 15oct)",
+      "rescheduledFor": "",
+      "lastAttemptAt": "2026-10-15T14:33:04Z",
+      "pendingReason": null
     },
     {
       "id": "GIZ-234",
@@ -6749,10 +6757,14 @@
       "organization": "Fe y Alegría - CECAL Manta",
       "referencia": "Equipo Técnico Clima Social / GIZ",
       "baseName": "GIZ · OE1 - ProCohesión (Fase III · 2026)",
-      "status": "pending",
-      "attempts": 0,
-      "last": "Sin gestión",
-      "operator": "DO"
+      "status": "effective",
+      "attempts": 1,
+      "last": "15/10/26, 9:25 a. m.",
+      "operator": "DO",
+      "notes": "Encuesta completada en Kobo (conciliado giz 15oct)",
+      "rescheduledFor": "",
+      "lastAttemptAt": "2026-10-15T14:25:50Z",
+      "pendingReason": null
     },
     {
       "id": "GIZ-239",
@@ -10112,7 +10124,9 @@
       "last": "14/10/26, 10:29 a. m.",
       "operator": "DO",
       "lastAttemptAt": "2026-10-14T15:29:59.496Z",
-      "notes": "Encuesta completada en Kobo (Manicura y Pedicura Básico)"
+      "notes": "Encuesta completada en Kobo (Manicura y Pedicura Básico)",
+      "rescheduledFor": "",
+      "pendingReason": null
     },
     {
       "id": "GIZ-360",
@@ -11958,7 +11972,7 @@
       "lastAttemptAt": "2026-10-14T21:38:05.871Z",
       "rescheduledFor": "",
       "notes": "Encuesta completada en Kobo (Escuela de Participación Comunitaria y Liderazgo)",
-      "pendingReason": "no_answer"
+      "pendingReason": null
     },
     {
       "id": "GIZ-445",
@@ -12011,14 +12025,14 @@
       "organization": "ChildFund",
       "referencia": "Equipo Técnico Clima Social / GIZ",
       "baseName": "GIZ · OE1 - ProCohesión (Fase III · 2026)",
-      "status": "pending",
-      "attempts": 1,
-      "last": "14/10/26, 10:13 a. m.",
+      "status": "effective",
+      "attempts": 2,
+      "last": "15/10/26, 9:59 a. m.",
       "operator": "DO",
-      "lastAttemptAt": "2026-10-14T15:13:58.351Z",
-      "rescheduledFor": "2026-10-14T17:00",
-      "notes": "Participante un poco molesta por otra encuesta",
-      "pendingReason": "rescheduled"
+      "lastAttemptAt": "2026-10-15T14:59:40Z",
+      "rescheduledFor": "",
+      "notes": "Encuesta completada en Kobo (conciliado giz 15oct)",
+      "pendingReason": null
     },
     {
       "id": "GIZ-447",
@@ -16120,7 +16134,9 @@
       "last": "14/10/26, 3:04 p. m.",
       "operator": "DO",
       "lastAttemptAt": "2026-10-14T20:04:49.176Z",
-      "notes": "Encuesta completada en Kobo (Fortalecimiento de capacidades...)"
+      "notes": "Encuesta completada en Kobo (Fortalecimiento de capacidades...)",
+      "rescheduledFor": "",
+      "pendingReason": null
     },
     {
       "id": "GIZ-591",
@@ -16870,7 +16886,9 @@
       "last": "14/10/26, 8:31 p. m.",
       "operator": "DO",
       "lastAttemptAt": "2026-10-15T01:31:00.215Z",
-      "notes": "Encuesta completada en Kobo (Fortalecimiento de capacidades...)"
+      "notes": "Encuesta completada en Kobo (Fortalecimiento de capacidades...)",
+      "rescheduledFor": "",
+      "pendingReason": null
     },
     {
       "id": "GIZ-617",
@@ -17892,6 +17910,78 @@
     }
   ],
   "history": [
+    {
+      "id": "GIZ-446",
+      "contact": "Laura Alvarez",
+      "phone": "0969893987",
+      "courseCode": "C21",
+      "courseName": "Escuela de Participación Comunitaria y Liderazgo",
+      "organization": "ChildFund",
+      "canton": "Ibarra",
+      "provincia": "Imbabura",
+      "result": "effective",
+      "operator": "Darwin Olivo",
+      "operatorInitials": "DO",
+      "attempt": 2,
+      "date": "15/10/26, 9:59 a. m.",
+      "rawDate": "2026-10-15T14:59:40Z",
+      "notes": "Encuesta completada en Kobo (conciliado giz 15oct)",
+      "rescheduledFor": ""
+    },
+    {
+      "id": "GIZ-233",
+      "contact": "Tomala Estrada Luis Mario",
+      "phone": "0997851920",
+      "courseCode": "C13",
+      "courseName": "Generación De Ideas De Negocio Para Estudiantes De Bachillerato",
+      "organization": "Fe y Alegría - CECAL Manta",
+      "canton": "Manta",
+      "provincia": "Manabí",
+      "result": "effective",
+      "operator": "Darwin Olivo",
+      "operatorInitials": "DO",
+      "attempt": 1,
+      "date": "15/10/26, 9:33 a. m.",
+      "rawDate": "2026-10-15T14:33:04Z",
+      "notes": "Encuesta completada en Kobo (conciliado giz 15oct)",
+      "rescheduledFor": ""
+    },
+    {
+      "id": "GIZ-238",
+      "contact": "Cajape Zavala Jhonny Smelin",
+      "phone": "0980894284",
+      "courseCode": "C13",
+      "courseName": "Generación De Ideas De Negocio Para Estudiantes De Bachillerato",
+      "organization": "Fe y Alegría - CECAL Manta",
+      "canton": "Manta",
+      "provincia": "Manabí",
+      "result": "effective",
+      "operator": "Darwin Olivo",
+      "operatorInitials": "DO",
+      "attempt": 1,
+      "date": "15/10/26, 9:25 a. m.",
+      "rawDate": "2026-10-15T14:25:50Z",
+      "notes": "Encuesta completada en Kobo (conciliado giz 15oct)",
+      "rescheduledFor": ""
+    },
+    {
+      "id": "GIZ-222",
+      "contact": "Moreira Loor Hillary Gislayn",
+      "phone": "0992267014",
+      "courseCode": "C13",
+      "courseName": "Generación De Ideas De Negocio Para Estudiantes De Bachillerato",
+      "organization": "Fe y Alegría - CECAL Manta",
+      "canton": "Manta",
+      "provincia": "Manabí",
+      "result": "effective",
+      "operator": "Darwin Olivo",
+      "operatorInitials": "DO",
+      "attempt": 1,
+      "date": "15/10/26, 8:24 a. m.",
+      "rawDate": "2026-10-15T13:24:02Z",
+      "notes": "Encuesta completada en Kobo (conciliado giz 15oct)",
+      "rescheduledFor": ""
+    },
     {
       "id": "GIZ-359",
       "contact": "Piguave Garcia Raquel Alexandra",

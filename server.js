@@ -352,10 +352,20 @@ function normalizePhones(value) {
 }
 
 const DATA_DIR = path.join(__dirname, 'data');
-const STATE_FILE = path.join(DATA_DIR, 'campaign_state.json');
+// PERSISTENCIA: si existe STATE_DIR (disco persistente de Render, ej. /var/data), el estado vive ahí
+// y sobrevive a reinicios y deploys. Sin STATE_DIR se usa ./data (comportamiento anterior).
+const STATE_DIR = process.env.STATE_DIR || DATA_DIR;
+const STATE_FILE = path.join(STATE_DIR, 'campaign_state.json');
+const SEED_STATE_FILE = path.join(DATA_DIR, 'campaign_state.json');
 const INITIAL_CONTACTS_FILE = path.join(DATA_DIR, 'initial_contacts.json');
 
 if (!fs.existsSync(DATA_DIR)) fs.mkdirSync(DATA_DIR, { recursive: true });
+if (!fs.existsSync(STATE_DIR)) fs.mkdirSync(STATE_DIR, { recursive: true });
+// Primer arranque con disco vacío: sembrar con el estado versionado en el repo. Nunca sobrescribe un estado existente.
+if (STATE_DIR !== DATA_DIR && !fs.existsSync(STATE_FILE) && fs.existsSync(SEED_STATE_FILE)) {
+  try { fs.copyFileSync(SEED_STATE_FILE, STATE_FILE); console.log('Estado inicial sembrado en', STATE_FILE); }
+  catch (e) { console.warn('No se pudo sembrar el estado:', e.message); }
+}
 
 const MAX_SHIFT_HOURS = 14;
 
