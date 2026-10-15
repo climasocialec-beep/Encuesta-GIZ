@@ -19772,6 +19772,17 @@ window.syncStateFromServer = async function(silent = true) {
       }
     });
 
+    // AUTO-RESTAURACIÓN: si el servidor quedó atrás (reinicio/redeploy de Render borra su disco),
+    // el navegador empuja su estado completo para recuperar gestiones, rechazos e intentos.
+    const serverById = new Map(serverData.contacts.map(c => [c.id, c]));
+    const CLOSED_RESTORE = ['effective', 'refused', 'wrong', 'discarded'];
+    const serverBehind = state.contacts.some(lc => {
+      const sc = serverById.get(lc.id);
+      if (!sc) return false;
+      return Number(lc.attempts || 0) > Number(sc.attempts || 0) ||
+        (CLOSED_RESTORE.includes(lc.status) && !CLOSED_RESTORE.includes(sc.status));
+    });
+
     let unpushedHistory = [];
     if (Array.isArray(serverData.history)) {
       const allHistoryMap = new Map();
@@ -19800,6 +19811,8 @@ window.syncStateFromServer = async function(silent = true) {
         body: JSON.stringify({ history: unpushedHistory })
       }).catch(err => console.warn('Sync push notice:', err.message));
     }
+
+    if (serverBehind && currentUser && currentUser.role) debouncedServerSync();
 
     if (Array.isArray(serverData.shifts)) {
       const dedupedShifts = deduplicateShiftsClient(serverData.shifts);
