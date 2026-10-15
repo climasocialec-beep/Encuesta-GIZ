@@ -709,14 +709,23 @@ app.post('/api/sync', (req, res) => {
           return;
         }
 
+        const CLOSED_STATUSES = ['effective', 'refused', 'wrong', 'discarded'];
+        // Si ya está cerrado en el servidor (rechazado, equivocado, etc.), NUNCA degradar a pendiente o no-contesta
+        if (CLOSED_STATUSES.includes(existing.status) && !CLOSED_STATUSES.includes(clientContact.status)) {
+          return;
+        }
+
         const clientAttempts = Number(clientContact.attempts || 0);
         const serverAttempts = Number(existing.attempts || 0);
 
         if (clientAttempts > serverAttempts) {
           const wasEffective = existing.status === 'effective';
+          const wasClosed = CLOSED_STATUSES.includes(existing.status);
           Object.assign(existing, clientContact);
           if (wasEffective && existing.status !== 'effective') {
             existing.status = 'effective';
+          } else if (wasClosed && !CLOSED_STATUSES.includes(existing.status)) {
+            existing.status = existing.status || 'refused';
           }
         } else if (clientAttempts === serverAttempts) {
           if (clientContact.operator && clientContact.operator !== existing.operator) {

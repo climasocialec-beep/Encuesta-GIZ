@@ -19713,6 +19713,9 @@ window.syncStateFromServer = async function(silent = true) {
         const lcAttempts = Number(lc.attempts || 0);
         const scHasEff = sc.status === 'effective';
         const lcHasEff = lc.status === 'effective';
+        const CLOSED_STATUSES = ['effective', 'refused', 'wrong', 'discarded'];
+        const scIsClosed = CLOSED_STATUSES.includes(sc.status);
+        const lcIsClosed = CLOSED_STATUSES.includes(lc.status);
 
         // 1. INMUNIDAD DE EFECTIVAS: Si ya es efectiva en cliente o servidor, SIEMPRE permanece efectiva
         if (scHasEff && !lcHasEff) {
@@ -19721,16 +19724,26 @@ window.syncStateFromServer = async function(silent = true) {
           return;
         }
         if (lcHasEff && !scHasEff) {
-          // El cliente local ya completó la encuesta: NUNCA degradar a pendiente
+          // El cliente local ya completó la encuesta: NUNCA degradar
           return;
         }
 
-        // 2. Si el cliente local tiene más intentos que el servidor, proteger datos locales
+        // 2. INMUNIDAD DE CERRADAS: Si ya fue rechazada, número incorrecto o descartada, NUNCA degradar a pendiente
+        if (scIsClosed && !lcIsClosed) {
+          Object.assign(lc, sc);
+          changed = true;
+          return;
+        }
+        if (lcIsClosed && !scIsClosed) {
+          return;
+        }
+
+        // 3. Si el cliente local tiene más intentos que el servidor, proteger datos locales
         if (lcAttempts > scAttempts) {
           return;
         }
 
-        // 3. Si el servidor tiene más intentos o datos más recientes, actualizar
+        // 4. Si el servidor tiene más intentos o datos más recientes, actualizar
         if (scAttempts > lcAttempts ||
             (scAttempts === lcAttempts && sc.lastAttemptAt && sc.lastAttemptAt !== lc.lastAttemptAt) ||
             sc.operator !== lc.operator ||
